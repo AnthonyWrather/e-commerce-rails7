@@ -24,3 +24,23 @@ run `bin/rails db:migrate` to create the tables
 
 * Deployment instructions
 We deploy on Render create a free account here render.com
+
+* Initial Dev setup
+You need to build the Tailwind components before you can start the server.
+
+```bash
+bin/rails tailwindcss:build
+bin/rails s
+```
+
+Next you need to add 1 or more admin users.
+
+```bash
+bin/rails c
+```
+
+```ruby
+Admin.create(email: "admin1@example.com", password: "12345678")
+Admin.create(email: "admin2@example.com", password: "12345678")
+```
+
