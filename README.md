@@ -1,6 +1,12 @@
 # README
 
-This is the repo that goes along with my Fullstack E-Commerce app tutorial. Check it out here https://youtu.be/hURUMwdCWuI?si=YxSO5hpRAESz6rEU
+* This is a demo project based on a tutorial from Conner Jensen.
+
+> This is the repo that goes along with my Fullstack E-Commerce app tutorial.
+> Check it out here https://youtu.be/hURUMwdCWuI?si=YxSO5hpRAESz6rEU
+
+
+* About E-Commerce-Rails7
 
 Things you may want to cover:
 
