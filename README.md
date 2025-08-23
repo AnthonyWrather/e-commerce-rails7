@@ -45,7 +45,7 @@ Admin.create(email: "admin2@example.com", password: "12345678")
 
 You might need to install VIPS if running locally.
 
-```bash
+```sh
 brew install vips
 ```
 
