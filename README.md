@@ -48,3 +48,22 @@ You might need to install VIPS if running locally.
 ```bash
 brew install vips
 ```
+
+To build the Dockerfile you need to run
+
+```bash
+docker build -f Dockerfile -t e-commerce-rails7 .
+docker run -p 3000:3000 -v $(PWD):/rails e-commerce-rails7
+```
+
+Setup DevContainers with postgresql
+
+The devcontianers are setup but the app is still using sqlite.
+
+ToDo: Need to covert app to postpresql first.
+
+and pgadmin.
+pgadmin is
+
+<localhost:15432>
+
