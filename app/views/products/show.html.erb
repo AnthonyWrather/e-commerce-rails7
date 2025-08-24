@@ -7,24 +7,24 @@
   </div>
 
   <div data-controller="products" data-products-product-value="<%= @product.to_json %>" class="flex flex-col items-start max-w-sm">
-    <h1 class="font-bold text-4xl uppercase"><%= @product.name %></h1>
-    <p class="text-2xl mt-4">$<%= (@product.price/100.0).to_s %>
-    <p class="text-md py-8"><%= @product.description %></p>
+    <h1 class="text-4xl font-bold uppercase"><%= @product.name %></h1>
+    <p class="mt-4 text-2xl">$<%= (@product.price/100.0).to_s %>
+    <p class="py-8 text-md"><%= @product.description %></p>
     <div class="my-8">
-      <p class='uppercase text-lg'>Size</p>
+      <p class='text-lg uppercase'>Size</p>
       <% @product.stocks.each do |stock| %>
         <% if stock.amount > 0 %>
-          <button data-action="click->products#selectSize" value="<%= stock.size %>" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
+          <button data-action="click->products#selectSize" value="<%= stock.size %>" class="px-4 py-2 font-semibold text-gray-800 bg-gray-200 rounded hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
             <%= stock.size %>
           </button>
-        <% else %> 
-          <button disabled value="<%= stock.size %>" class="disabled:bg-gray-400 bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
+        <% else %>
+          <button disabled value="<%= stock.size %>" class="px-4 py-2 font-semibold text-gray-800 bg-gray-200 rounded disabled:bg-gray-400 hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
             <%= stock.size %>
           </button>
         <% end %>
       <% end %>
     </div>
     <div id="selected-size"></div>
-    <button data-action="click->products#addToCart" class="inline-flex items-center justify-center px-5 py-3 border border-transparent font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Add To Cart</button>
+    <button data-action="click->products#addToCart" class="inline-flex items-center justify-center px-5 py-3 font-medium text-white bg-gray-600 border border-transparent rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Add To Cart</button>
   </div>
 </div>
