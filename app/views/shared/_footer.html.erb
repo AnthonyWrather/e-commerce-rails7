@@ -1,19 +1,19 @@
-<footer class="bg-gray-800 text-white">
-  <div class="max-2-6xl max-auto px-4 py-10 md:py-20">
+<footer class="text-white bg-gray-700">
+  <div class="px-4 py-10 max-2-6xl max-auto md:py-20">
     <div class="xl:grid xl:grid-cols-3 xl:gap-8">
       <!-- About section -->
       <div class="space-y-8 xl:col-span-1">
-        <h3 class="text-sm font-semibold text-gray-200 tracking-wider uppercase">About Southcoast Fibreglass Supplies</h3>
-        <p class="text-white leading-6">
+        <h3 class="text-sm font-semibold tracking-wider text-gray-200 uppercase">About Southcoast Fibreglass Supplies</h3>
+        <p class="leading-6 text-white">
           Southcoast Fibreglass Supplies is a leading online supplier, offering a wide range of products to cater to all your needs. Our commitment ot quality and customer service ensures a great shopping experience.
         </p>
       </div>
 
       <!-- Quick Links -->
-      <div class="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
+      <div class="grid grid-cols-2 gap-8 mt-12 xl:mt-0 xl:col-span-1">
         <div class="md:grid md:grid-cols-2 md:gap-8">
           <div>
-            <h3 class="text-sm font-semibold text-gray-200 tracking wider uppercase">Quick Links</h3>
+            <h3 class="text-sm font-semibold text-gray-200 uppercase tracking wider">Quick Links</h3>
             <ul class="mt-4 space-y-4">
               <li>
                 <%= link_to "Home", root_path, class: "text-base leading-6 text-white hover:text-gray-100" %>
@@ -24,21 +24,21 @@
       </div>
 
       <!-- Contact information -->
-      <div class="mt-8 mb-8 md:grid md:grid-cols-2 md:gap-8 xl:col-span-3">
+      <div class="mt-8 mb-8 md:grid md:grid-cols-2 md:gap-8 xl:col-span-1">
         <div>
-          <h3 class="text-sm font-semibold tracking-wider uppercase text-gray-200">
+          <h3 class="text-sm font-semibold tracking-wider text-gray-200 uppercase">
             Contact
           </h3>
           <ul class="mt-4 space-y-4">
             <li>
               <p class="text-base leading-6 text-white">
-              Unit C Site 6 Fort Fareham, <br>
-              Fort Fareham Industrial Site, <br>
-              Fareham, <br>
-              Hampshire, <br>
-              United Kingdom, <br>
-              PO14 1AH <br>
-
+                Southcoast Fibreglass Supplies Ltd <br>
+                Unit C Site 6 Fort Fareham, <br>
+                Fort Fareham Industrial Site, <br>
+                Fareham, <br>
+                Hampshire, <br>
+                United Kingdom, <br>
+                PO14 1AH <br>
               </p>
             </li>
             <li>
@@ -54,14 +54,15 @@
           </ul>
         </div>
       </div>
+    </div>
 
-      <div class="border-t border-gray-700">
-        <div class="max-w-6xl mx-auto px-4 py-6 md:flex md:items-center md:justify-between">
-          <p class="mt-6 text-base leading-6 text-gray-400 md:mt-0 md:order-1">
-          &copy; <%= Time.now.year %> Southcoast Fibreglass Supplies Ltd. <br> Company number 09421473 <br> All rights reserved.
-          </p>
-        </div>
+    <div class="flex flex-wrap items-center border-t border-gray-300">
+      <div class="max-w-6xl px-4 py-6 mx-auto md:flex md:items-center md:justify-between">
+        <p class="mt-6 text-base leading-6 text-gray-400 md:mt-0 md:order-1">
+        &copy;<%= Time.now.year %> Southcoast Fibreglass Supplies Ltd<br> Company number 09421473 <br> All rights reserved.
+        </p>
       </div>
     </div>
   </div>
+
 </footer>
