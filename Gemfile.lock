@@ -285,7 +285,6 @@ GEM
     rubyzip (2.3.2)
     sassc (2.4.0)
       ffi (~> 1.9)
-    securerandom (0.4.1)
     selenium-webdriver (4.16.0)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
@@ -345,7 +344,6 @@ GEM
     unicode-display_width (3.1.5)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
-    uri (1.0.3)
     warden (1.2.9)
       rack (>= 2.0.9)
     web-console (4.2.1)
@@ -381,7 +379,6 @@ DEPENDENCIES
   htmlbeautifier
   image_processing (~> 1.2)
   importmap-rails
-  irb
   jbuilder
   pagy (~> 6.2)
   pg (~> 1.1)
@@ -389,7 +386,6 @@ DEPENDENCIES
   rails (~> 7.1.2)
   redis (>= 4.0.1)
   rubocop
-  securerandom
   selenium-webdriver
   solargraph
   sprockets-rails
@@ -399,7 +395,6 @@ DEPENDENCIES
   tailwindcss-rails
   turbo-rails
   tzinfo-data
-  uri
   web-console
 
 RUBY VERSION

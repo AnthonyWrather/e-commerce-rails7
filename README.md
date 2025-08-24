@@ -58,10 +58,9 @@ docker run -p 3000:3000 -v $(PWD):/rails e-commerce-rails7
 
 Setup DevContainers with postgresql
 
-The devcontianers are setup but the app is still using sqlite.
+The devcontainer's are setup but the app is still using sqlite.
 
 Change the app to use postgresql and pgadmin.
-
 
 ```bash
 rails db:system:change --to=postgresql
@@ -69,7 +68,48 @@ rails db:system:change --to=postgresql
 EDITOR="code --wait" rails credentials:edit
 ```
 
-
-The pgadmin web interface can be found here <localhost:15432> and needs user(postgress)/password(postgress)/host(postgres).
+The pgadmin web interface can be found here <localhost:15432> and needs user(postgres)/password(postgres)/host(postgres).
 
 You can also run pgadmin locally and connect via <localhost:5432>
+
+Added the VSCode extensions to autoload.
+
+```json
+// Configure tool-specific properties.
+"customizations": {
+  // Configure properties specific to VS Code.
+  "vscode": {
+    // Set *default* container specific settings.json values on container create.
+    "settings": {},
+    "extensions": [
+      "streetsidesoftware.code-spell-checker",
+      "ms-azuretools.vscode-containers",
+      "p1c2u.docker-compose",
+      "aliariff.vscode-erb-beautify",
+      "github.vscode-github-actions",
+      "mohd-akram.vscode-html-format",
+      "oderwat.indent-rainbow",
+      "bierner.markdown-preview-github-styles",
+      "ms-ossdata.vscode-pgsql",
+      "esbenp.prettier-vscode",
+      "shopify.ruby-lsp",
+      "castwide.solargraph",
+      "hoovercj.ruby-linter",
+      "misogi.ruby-rubocop",
+      "miguel-savignano.ruby-symbols",
+      "bradlc.vscode-tailwindcss",
+      "austenc.tailwind-docs",
+      "zarifprogrammer.tailwind-snippets",
+      "heybourn.headwind",
+      "gruntfuggly.todo-tree",
+      "redhat.vscode-yaml",
+      "vscode-icons-team.vscode-icons",
+      "davidanson.vscode-markdownlint",
+      "hridoy.rails-snippets",
+      "kaiwood.endwise",
+      "manuelpuyol.erb-linter"
+    ]
+  }
+}
+
+```
