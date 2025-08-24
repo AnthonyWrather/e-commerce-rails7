@@ -30,6 +30,7 @@ You need to build the Tailwind components before you can start the server.
 ```bash
 bin/rails tailwindcss:build
 bin/rails s
+bin/rails tailwindcss:watch
 ```
 
 Next you need to add 1 or more admin users.
