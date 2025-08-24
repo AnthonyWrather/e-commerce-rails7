@@ -129,3 +129,62 @@ rubocop --only Style/Documentation
 # To run and fix just a set of cops.
 rubocop --only Style/FrozenStringLiteralComment -A
 ```
+
+The final rubocop.yml file is
+
+```yml
+# The behavior of RuboCop can be controlled via the .rubocop.yml
+# configuration file. It makes it possible to enable/disable
+# certain cops (checks) and to alter their behavior if they accept
+# any parameters. The file can be placed either in your home
+# directory or in some project directory.
+#
+# RuboCop will start looking for the configuration file in the directory
+# where the inspected file is and continue its way up to the root directory.
+#
+# See https://docs.rubocop.org/rubocop/configuration
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+
+Style/Documentation:
+  Enabled: false
+
+Layout/LineLength:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+# Examine these changes to see what breaks.
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/ConditionalAssignment:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/SafeNavigation:
+  Enabled: false
+
+Style/SlicingWithRange:
+  Enabled: false
+
+Lint/NonLocalExitFromIterator:
+  Enabled: false
+```

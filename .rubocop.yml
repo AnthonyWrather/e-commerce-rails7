@@ -34,7 +34,7 @@ Metrics/PerceivedComplexity:
 Metrics/CyclomaticComplexity:
   Enabled: false
 
-# Examine this changes to see what breaks.
+# Examine these changes to see what breaks.
 Style/ClassAndModuleChildren:
   Enabled: false
 
