@@ -12,3 +12,43 @@
 AllCops:
   NewCops: enable
   SuggestExtensions: false
+
+Style/Documentation:
+  Enabled: false
+
+Layout/LineLength:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+# Examine this changes to see what breaks.
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/ConditionalAssignment:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/SafeNavigation:
+  Enabled: false
+
+Style/SlicingWithRange:
+  Enabled: false
+
+Lint/NonLocalExitFromIterator:
+  Enabled: false

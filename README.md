@@ -111,5 +111,21 @@ Added the VSCode extensions to autoload.
     ]
   }
 }
+```
 
+Robocop playtime...
+
+```bash
+# Run the safe only cops.
+rubocop -a
+
+# Run the safe and unsafe cops.
+# Beware there are dragons in there...
+rubocop -A
+
+# To run only a set of the cops.
+rubocop --only Style/Documentation
+
+# To run and fix just a set of cops.
+rubocop --only Style/FrozenStringLiteralComment -A
 ```

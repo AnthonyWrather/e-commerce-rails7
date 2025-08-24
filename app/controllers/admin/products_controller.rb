@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Admin::ProductsController < AdminController
   before_action :set_admin_product, only: %i[show edit update destroy]
 
