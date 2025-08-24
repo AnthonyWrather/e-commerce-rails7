@@ -21,14 +21,18 @@ default: &default
 
 development:
   <<: *default
-  adapter: sqlite3
-  database: storage/development.sqlite3
+  # url: <%= ENV["MY_APP_DATABASE_URL_DEVELOPMENT"] %>
+  host: postgres
+  database: e_commerce_rails7_development
+  username: postgres
+  password: postgres
+  # password: <%= ENV["E_COMMERCE_RAILS7_DATABASE_PASSWORD_DEVELOPMENT"] %>
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
   # When left blank, PostgreSQL will use the default role. This is
   # the same name as the operating system user running Rails.
-  #username: ecomm
+  #username: e_commerce_rails7
 
   # The password associated with the PostgreSQL role (username).
   #password:
@@ -56,7 +60,12 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: ecomm_test
+  # url: <%= ENV["MY_APP_DATABASE_URL_TEST"] %>
+  host: postgres
+  database: e_commerce_rails7_test
+  username: e_commerce_rails7
+  password: e_commerce_rails7
+  # password: <%= ENV["E_COMMERCE_RAILS7_DATABASE_PASSWORD_TEST"] %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -80,4 +89,9 @@ test:
 #
 production:
   <<: *default
-  url: <%= ENV["DATABASE_URL"] %> 
+  # url: <%= ENV["MY_APP_DATABASE_URL_PRODUCTION"] %>
+  host: postgres
+  database: e_commerce_rails7_production
+  username: e_commerce_rails7
+  password: e_commerce_rails7
+  # password: <%= ENV["E_COMMERCE_RAILS7_DATABASE_PASSWORD_PRODUCTION"] %>

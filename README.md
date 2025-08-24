@@ -45,7 +45,7 @@ Admin.create(email: "admin2@example.com", password: "12345678")
 
 You might need to install VIPS if running locally.
 
-```sh
+```bash
 brew install vips
 ```
 
@@ -60,10 +60,16 @@ Setup DevContainers with postgresql
 
 The devcontianers are setup but the app is still using sqlite.
 
-ToDo: Need to covert app to postpresql first.
+Change the app to use postgresql and pgadmin.
 
-and pgadmin.
-pgadmin is
 
-<localhost:15432>
+```bash
+rails db:system:change --to=postgresql
 
+EDITOR="code --wait" rails credentials:edit
+```
+
+
+The pgadmin web interface can be found here <localhost:15432> and needs user(postgress)/password(postgress)/host(postgres).
+
+You can also run pgadmin locally and connect via <localhost:5432>
