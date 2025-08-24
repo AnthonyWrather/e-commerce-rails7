@@ -4,7 +4,7 @@ class AdminController < ApplicationController
 
   def index
     @orders = Order.where(fulfilled: false).order(created_at: :desc).take(5)
-    @quick_stats = { 
+    @quick_stats = {
       sales: Order.where(created_at: Time.now.midnight..Time.now).count,
       revenue: Order.where(created_at: Time.now.midnight..Time.now).sum(:total)&.round(),
       avg_sale: Order.where(created_at: Time.now.midnight..Time.now).average(:total)&.round(),
@@ -12,20 +12,22 @@ class AdminController < ApplicationController
     }
     @orders_by_day = Order.where('created_at > ?', Time.now - 7.days).order(:created_at)
     @orders_by_day = @orders_by_day.group_by { |order| order.created_at.to_date }
-    @revenue_by_day = @orders_by_day.map { |day, orders| [day.strftime("%A"), orders.sum(&:total)] }
-    if @revenue_by_day.count < 7
-      days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    @revenue_by_day = @orders_by_day.map { |day, orders| [day.strftime('%A'), orders.sum(&:total)] }
+    return unless @revenue_by_day.count < 7
 
-      data_hash = @revenue_by_day.to_h
-      current_day = Date.today.strftime("%A")
-      current_day_index = days_of_week.index(current_day)
-      next_day_index = (current_day_index + 1) % days_of_week.length
+    days_of_week = %w[Monday Tuesday Wednesday Thursday Friday Saturday Sunday]
 
-      ordered_days_with_current_last = days_of_week[next_day_index..-1] + days_of_week[0...next_day_index]
+    data_hash = @revenue_by_day.to_h
+    current_day = Date.today.strftime('%A')
+    current_day_index = days_of_week.index(current_day)
+    next_day_index = (current_day_index + 1) % days_of_week.length
 
-      complete_ordered_array_with_current_last = ordered_days_with_current_last.map{ |day| [day, data_hash.fetch(day, 0)] }
+    ordered_days_with_current_last = days_of_week[next_day_index..-1] + days_of_week[0...next_day_index]
 
-      @revenue_by_day = complete_ordered_array_with_current_last 
+    complete_ordered_array_with_current_last = ordered_days_with_current_last.map do |day|
+      [day, data_hash.fetch(day, 0)]
     end
+
+    @revenue_by_day = complete_ordered_array_with_current_last
   end
 end
