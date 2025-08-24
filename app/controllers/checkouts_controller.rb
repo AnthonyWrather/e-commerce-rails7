@@ -22,7 +22,7 @@ class CheckoutsController < ApplicationController
             name: item['name'],
             metadata: { product_id: product.id, size: item['size'], product_stock_id: product_stock.id }
           },
-          currency: 'usd',
+          currency: 'gbp',
           unit_amount: item['price'].to_i
         }
       }
@@ -36,7 +36,7 @@ class CheckoutsController < ApplicationController
       success_url: 'http://localhost:3000/success',
       cancel_url: 'http://localhost:3000/cancel',
       shipping_address_collection: {
-        allowed_countries: %w[US CA]
+        allowed_countries: %w[UK]
       }
     )
 
