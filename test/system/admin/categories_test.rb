@@ -1,43 +1,47 @@
-require "application_system_test_case"
+# frozen_string_literal: true
 
-class Admin::CategoriesTest < ApplicationSystemTestCase
-  setup do
-    @admin_category = admin_categories(:one)
-  end
+require 'application_system_test_case'
 
-  test "visiting the index" do
-    visit admin_categories_url
-    assert_selector "h1", text: "Categories"
-  end
+module Admin
+  class CategoriesTest < ApplicationSystemTestCase
+    setup do
+      @admin_category = admin_categories(:one)
+    end
 
-  test "should create category" do
-    visit admin_categories_url
-    click_on "New category"
+    test 'visiting the index' do
+      visit admin_categories_url
+      assert_selector 'h1', text: 'Categories'
+    end
 
-    fill_in "Description", with: @admin_category.description
-    fill_in "Name", with: @admin_category.name
-    click_on "Create Category"
+    test 'should create category' do
+      visit admin_categories_url
+      click_on 'New category'
 
-    assert_text "Category was successfully created"
-    click_on "Back"
-  end
+      fill_in 'Description', with: @admin_category.description
+      fill_in 'Name', with: @admin_category.name
+      click_on 'Create Category'
 
-  test "should update Category" do
-    visit admin_category_url(@admin_category)
-    click_on "Edit this category", match: :first
+      assert_text 'Category was successfully created'
+      click_on 'Back'
+    end
 
-    fill_in "Description", with: @admin_category.description
-    fill_in "Name", with: @admin_category.name
-    click_on "Update Category"
+    test 'should update Category' do
+      visit admin_category_url(@admin_category)
+      click_on 'Edit this category', match: :first
 
-    assert_text "Category was successfully updated"
-    click_on "Back"
-  end
+      fill_in 'Description', with: @admin_category.description
+      fill_in 'Name', with: @admin_category.name
+      click_on 'Update Category'
 
-  test "should destroy Category" do
-    visit admin_category_url(@admin_category)
-    click_on "Destroy this category", match: :first
+      assert_text 'Category was successfully updated'
+      click_on 'Back'
+    end
 
-    assert_text "Category was successfully destroyed"
+    test 'should destroy Category' do
+      visit admin_category_url(@admin_category)
+      click_on 'Destroy this category', match: :first
+
+      assert_text 'Category was successfully destroyed'
+    end
   end
 end

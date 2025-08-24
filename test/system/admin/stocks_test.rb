@@ -1,45 +1,49 @@
-require "application_system_test_case"
+# frozen_string_literal: true
 
-class Admin::StocksTest < ApplicationSystemTestCase
-  setup do
-    @admin_stock = admin_stocks(:one)
-  end
+require 'application_system_test_case'
 
-  test "visiting the index" do
-    visit admin_stocks_url
-    assert_selector "h1", text: "Stocks"
-  end
+module Admin
+  class StocksTest < ApplicationSystemTestCase
+    setup do
+      @admin_stock = admin_stocks(:one)
+    end
 
-  test "should create stock" do
-    visit admin_stocks_url
-    click_on "New stock"
+    test 'visiting the index' do
+      visit admin_stocks_url
+      assert_selector 'h1', text: 'Stocks'
+    end
 
-    fill_in "Amount", with: @admin_stock.amount
-    fill_in "Product", with: @admin_stock.product_id
-    fill_in "Size", with: @admin_stock.size
-    click_on "Create Stock"
+    test 'should create stock' do
+      visit admin_stocks_url
+      click_on 'New stock'
 
-    assert_text "Stock was successfully created"
-    click_on "Back"
-  end
+      fill_in 'Amount', with: @admin_stock.amount
+      fill_in 'Product', with: @admin_stock.product_id
+      fill_in 'Size', with: @admin_stock.size
+      click_on 'Create Stock'
 
-  test "should update Stock" do
-    visit admin_stock_url(@admin_stock)
-    click_on "Edit this stock", match: :first
+      assert_text 'Stock was successfully created'
+      click_on 'Back'
+    end
 
-    fill_in "Amount", with: @admin_stock.amount
-    fill_in "Product", with: @admin_stock.product_id
-    fill_in "Size", with: @admin_stock.size
-    click_on "Update Stock"
+    test 'should update Stock' do
+      visit admin_stock_url(@admin_stock)
+      click_on 'Edit this stock', match: :first
 
-    assert_text "Stock was successfully updated"
-    click_on "Back"
-  end
+      fill_in 'Amount', with: @admin_stock.amount
+      fill_in 'Product', with: @admin_stock.product_id
+      fill_in 'Size', with: @admin_stock.size
+      click_on 'Update Stock'
 
-  test "should destroy Stock" do
-    visit admin_stock_url(@admin_stock)
-    click_on "Destroy this stock", match: :first
+      assert_text 'Stock was successfully updated'
+      click_on 'Back'
+    end
 
-    assert_text "Stock was successfully destroyed"
+    test 'should destroy Stock' do
+      visit admin_stock_url(@admin_stock)
+      click_on 'Destroy this stock', match: :first
+
+      assert_text 'Stock was successfully destroyed'
+    end
   end
 end
