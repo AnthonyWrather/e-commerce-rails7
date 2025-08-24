@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CheckoutsController < ApplicationController
   def create
     stripe_secret_key = Rails.application.credentials.dig(:stripe, :secret_key)
