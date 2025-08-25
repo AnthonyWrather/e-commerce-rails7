@@ -6,21 +6,45 @@
     <% end %>
   </div>
 
-  <div data-controller="products" data-products-product-value="<%= @product.to_json %>" class="flex flex-col items-start max-w-sm">
+  <div data-controller="products" data-products-product-value="<%= @product.to_json %>" data-products-stock-value="<%= @product.stocks.to_json %>" class="flex flex-col items-start max-w-sm">
     <h1 class="text-4xl font-bold uppercase"><%= @product.name %></h1>
-    <p class="mt-4 text-2xl">£<%= (@product.price/100.0).to_s %>
+    <p class="mt-4 text-2xl" id="product-price">
+      <% if @product.price %>
+        <% if @product.amount && @product.amount > 0 && @product.price > 0 %>
+          £<%= (@product.price/100.0).to_s %>
+        <% else %>
+          Out of stock.
+        <% end %>
+      <% else %>
+        <% if @product.stocks.count > 0 %>
+          Select a size.
+        <% else %>
+          Out of stock.
+        <% end %>
+      <% end %>
+    </p>
     <p class="py-8 text-md"><%= @product.description %></p>
     <div class="my-8">
-      <p class='text-lg uppercase'>Size</p>
-      <% @product.stocks.each do |stock| %>
-        <% if stock.amount > 0 %>
-          <button data-action="click->products#selectSize" value="<%= stock.size %>" class="px-4 py-2 font-semibold text-gray-800 bg-gray-200 rounded hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
-            <%= stock.size %>
-          </button>
-        <% else %>
-          <button disabled value="<%= stock.size %>" class="px-4 py-2 font-semibold text-gray-800 bg-gray-200 rounded disabled:bg-gray-400 hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
-            <%= stock.size %>
-          </button>
+      <% if @product.stocks.count > 0 %>
+        <p class='text-lg uppercase'>Size</p>
+        <% @product.stocks.each do |stock| %>
+          <% if stock.amount && stock.amount > 0 %>
+              <% if stock.price && stock.price > 0 %>
+                <button data-action="click->products#selectSize" value="<%= stock.size %>" id="button-text-<%= stock.size %>" class="px-4 py-2 font-semibold text-gray-800 bg-gray-200 rounded hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
+                  <%= stock.size %>
+                  £<%= (stock.price/100.0).to_s %>
+                </button>
+              <% else %>
+                <button disabled value="<%= stock.size %>" class="px-4 py-2 font-semibold text-gray-800 bg-gray-200 rounded disabled:bg-gray-400 hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
+                  <%= stock.size %> No price set.
+                </button>
+              <% end %>
+            </button>
+          <% else %>
+            <button disabled value="<%= stock.size %>" class="px-4 py-2 font-semibold text-gray-800 bg-gray-200 rounded disabled:bg-gray-400 hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
+              <%= stock.size %> Out of stock.
+            </button>
+          <% end %>
         <% end %>
       <% end %>
     </div>

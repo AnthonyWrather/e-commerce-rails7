@@ -37,6 +37,11 @@
   </div>
 
   <div class="my-5">
+    <%= form.label :amount %>
+    <%= form.number_field :amount, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="my-5">
     <%= form.label :category_id %>
     <%= form.collection_select :category_id, Category.order(:name), :id, :name, id: "category", class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
   </div>

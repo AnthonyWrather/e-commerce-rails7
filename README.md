@@ -189,3 +189,17 @@ Style/SlicingWithRange:
 Lint/NonLocalExitFromIterator:
   Enabled: false
 ```
+
+Changed the currency from USD to GBP
+
+Add a price to the stock record so each variant can have its own price.
+
+```bash
+bin/rails generate migration AddPriceToStock
+```
+
+Add an amount to the product record so that a single priced item can have a stock level.
+
+```bash
+bin/rails generate migration AddAmountToProduct
+```
