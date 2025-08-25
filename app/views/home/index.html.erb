@@ -9,8 +9,8 @@
   <% @main_categories.each do |category| %>
     <%= link_to category_path(category) do %>
       <div class="flex flex-col mb-4">
-        <h2 class="mb-6 text-lg font-medium text-center text-gray-800"><%= category.name %></h2>
-        <%= category.image.present? ? image_tag(category.image, class: "max-w-lg") : image_tag("http://via.placeholder.com/512") %>
+        <h2 class="mb-1 text-lg font-medium text-center text-gray-800"><%= category.name %></h2>
+        <%= category.image.present? ? image_tag(category.image, class: "max-w-lg w-64 h-64") : image_tag("http://via.placeholder.com/512") %>
       </div>
     <% end %>
   <% end %>
