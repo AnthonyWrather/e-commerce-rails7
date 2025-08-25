@@ -37,7 +37,16 @@ export default class extends Controller {
 
   selectSize(e) {
     this.sizeValue = e.target.value
-    const selectedSizeEl = document.getElementById("selected-size") 
+    const selectedSizeEl = document.getElementById("selected-size")
     selectedSizeEl.innerText = `Selected Size: ${this.sizeValue}`
+
+    const selectedButtonTextEl = document.getElementById(e.target.id)
+    const myPrice = selectedButtonTextEl.innerText.split("£")
+    const selectedPriceEl = document.getElementById("product-price")
+    if (myPrice[1]) {
+      selectedPriceEl.innerText = `£${myPrice[1]}`
+    } else {
+      selectedPriceEl.innerText = "Out of stock."
+    }
   }
 }
