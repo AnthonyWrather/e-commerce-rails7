@@ -34,10 +34,16 @@
                   Description
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Category
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
                   Price
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
                   Amount
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Active
                 </th>
               </tr>
             </thead>
@@ -53,6 +59,10 @@
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <%= p.description %>
                   </td>
+
+                  <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
+                    <%= p.category.name %>
+                  </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <% if p.price %>
                       £<%= (p.price/100.0).to_s %>
@@ -61,6 +71,13 @@
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <% if p.amount %>
                       <%= p.amount %>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
+                    <% if p.active %>
+                      Active
+                    <% else %>
+                      Hidden
                     <% end %>
                   </td>
                 </tr>
