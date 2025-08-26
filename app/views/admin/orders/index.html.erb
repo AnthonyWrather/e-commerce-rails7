@@ -43,7 +43,7 @@
                     <%= o.address %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
-                    <%= o.total %>
+                    £<%= (o.total/100.0) %>
                   </td>
                 </tr>
               <% end %>
@@ -90,7 +90,7 @@
                     <%= o.address %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
-                    <%= o.total %>
+                    £<%= (o.total/100.0) %>
                   </td>
                 </tr>
               <% end %>
