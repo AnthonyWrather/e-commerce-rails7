@@ -1,16 +1,32 @@
-<div class="py-20 text-center text-white bg-blue-600">
-  <div class="flex flex-wrap items-center justify-center mb-4">
-    <%= image_tag("SCFS-Header.jpg", class: "max-w-lg w-100 h-100 ") %>
+<div class="grid grid-cols-1 mt-1 mb-8 text-white">
+  <div>
+    <div class="flex">
+      <div class="mt-3 py-1.25 px-0.75 items-center text-center w-1/2 md:w-full">
+        <p>
+          <span class="block font-semibold text-[1.75rem] leading-9 text-blue" id="costs-students-awarded-grants-percent">
+            <%= image_tag("SCFS-Header.jpg", class: "max-w-lg w-100 h-100 ") %>
+          </span>
+        </p>
+      </div>
+      <div class="mt-3 py-1.25 px-0.75 items-left text-left w-1/2 md:w-full">
+        <p>
+          <span class="block font-semibold text-[1.75rem] leading-9 text-blue" id="costs-students-awarded-grants-percent">
+            Welcome to our store.
+          </span>
+          <span class="mt-0.5 block font-medium text-sm leading-[1.125rem]">
+            <p class="mb-2 text-xl">Supplier of fibreglass materials including roofing materials and all ancillary items and tools.</p>
+            <p class="mb-2 text-xl">Your one-stop shop for all your fibreglass needs!</p>
+            <p class="mb-2 text-xl">Small business service with national delivery.</p>
+        </span>
+      </p>
+    </div>
   </div>
-  <h1 class="mb-4 text-5xl font-bold">Welcome to Southcoast Fibreglass Supplies Ltd</h1>
-  <p class="mb-2 text-xl">Supplier of fibreglass materials including roofing materials and all ancillary items and tools.</p>
-  <p class="mb-8 text-xl">Your one-stop shop for all your fibreglass needs! Small business service with national delivery.</p>
 </div>
 
 <div class="flex flex-wrap items-center justify-center gap-10 mt-8">
   <% @main_categories.each do |category| %>
     <%= link_to category_path(category) do %>
-      <div class="flex flex-col mb-4">
+      <div class="flex flex-col mb-4 bg-blue-400 border border-gray-detailBorder">
         <h2 class="mb-1 text-lg font-medium text-center text-white"><%= category.name %></h2>
         <%= category.image.present? ? image_tag(category.image, class: "max-w-lg w-64 h-64") : image_tag("http://via.placeholder.com/512") %>
       </div>
@@ -18,7 +34,7 @@
   <% end %>
 </div>
 
-<div class="py-20 my-10 bg-blue-600">
+<div class="py-20 my-10 bg-blue-600 border border-gray-detailBorder">
   <div class="container px-6 mx-auto">
     <h2 class="mb-8 text-4xl font-bold text-center text-white">Customer Testimonials</h2>
     <div class="flex flex-wrap">
@@ -57,7 +73,7 @@
   </div>
 </div>
 
-<div class="py-5 my-10 text-center text-white bg-blue-600">
+<div class="py-5 my-10 text-center text-white bg-blue-600 border border-gray-detailBorder">
   <h2 class="mb-6 text-3xl font-bold">Stay Updated</h2>
   <p class="mb-8">Subscribe to our newsletter for the latest updates and offers.</p>
   <%= form_with url: root_path, method: :post, local: true, class: "flex justify-center" do %>

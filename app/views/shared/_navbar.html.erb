@@ -1,12 +1,7 @@
 <nav class="fixed top-0 z-10 w-full gap-10 bg-blue-600">
-  <div class="px-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
+  <div class="px-2 mx-auto border-b max-w-7xl sm:px-6 lg:px-8">
     <div class="relative flex items-center justify-between h-16">
       <div class="flex items-center justify-center flex-1 sm:items-stretch sm:justify-between">
-        <div class="items-center justify-center hidden sm:flex">
-          <div class="flex space-x-10">
-            <%= link_to 'Shop', root_path, class: "text-gray-100 hover:underline py-2 rounded-md text-md font-medium" %>
-          </div>
-        </div>
         <div class="flex items-center flex-shrink-0">
           <%= link_to root_path do %>
             <%= image_tag 'logo.png', class: 'block lg:hidden h-20 w-auto' %>
@@ -14,12 +9,20 @@
           <%= link_to root_path do %>
             <%= image_tag 'logo.png', class: 'hidden lg:block h-20 w-auto' %>
           <% end %>
+          <%= link_to 'Shop', root_path, class: "text-gray-100 hover:underline py-2 rounded-md text-md font-medium" %>
+        </div>
+        <div class="flex items-center flex-shrink-0">
+          <%= link_to contact_path do %>
+            <%= image_tag("SCFS-Logo.jpg", class: "max-w-lg w-auto h-12 ") %>
+          <% end %>
+          <%= link_to 'Southcoast Fibreglass Supplies', contact_path, class: "text-4xl font-bold text-gray-100 hover:underline py-2 rounded-md text-md font-medium " %>
         </div>
         <div class="items-center justify-center hidden sm:flex sml:ml-6">
           <div class="flex space-x-10">
             <%= link_to cart_path, class: "text-gray-100 hover:underline py-2 rounded-md text-md font-medium" do %>
               <%= icon 'fa-solid', 'shopping-cart' %>
             <% end %>
+            <%= link_to 'Cart', cart_path, class: "text-gray-100 hover:underline py-2 rounded-md text-md font-medium " %>
           </div>
         </div>
       </div>
