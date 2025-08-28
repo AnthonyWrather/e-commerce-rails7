@@ -9,15 +9,17 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-  </head>
+
+    <%= favicon_link_tag %>
+</head>
 
   <body>
     <main class="flex">
       <div class="flex w-full">
         <nav class="sticky top-0 w-64 h-screen p-4 bg-gray-600">
-          <div class="flex">
-            <%= image_tag 'logo.png', class: "w-16" %>
-            <h1 class="hidden py-2 font-bold text-white text-md md:block">Southcoast Fibreglass Supplies Admin</h1>
+          <div class="flex mb-4">
+            <%= image_tag 'SCFS-Logo.jpg', class: 'h-12 w-auto mr-2' %>
+            <h1 class="hidden py-2 font-bold text-white text-md md:block">Administration</h1>
           </div>
           <ul class="flex flex-col text-white">
             <li>
