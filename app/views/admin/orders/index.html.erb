@@ -20,6 +20,9 @@
                   Order ID
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Order Date
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
                   Customer Email
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
@@ -31,19 +34,22 @@
               </tr>
             </thead>
             <tbody>
-              <% @not_fulfilled_orders.each do |o| %>
+              <% @not_fulfilled_orders.each do |order| %>
                 <tr class="border-b bg-gray-50">
                   <td class="px-6 py-4 font-medium text-gray-800 underline whitepsace-nowrap tex-sm">
-                    <%= link_to o.id, [:admin, o], class: 'underline' %>
+                    <%= link_to order.id, [:admin, order], class: 'underline' %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
-                    <%= o.customer_email %>
+                    <%= order.created_at.strftime("%d %B %Y %H:%M") %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
-                    <%= o.address %>
+                    <%= order.customer_email %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
-                    £<%= (o.total/100.0) %>
+                    <%= order.address %>
+                  </td>
+                  <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
+                    £<%= (order.total/100.0) %>
                   </td>
                 </tr>
               <% end %>
@@ -67,6 +73,9 @@
                   Order ID
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Order Date
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
                   Customer Email
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
@@ -78,19 +87,22 @@
               </tr>
             </thead>
             <tbody>
-              <% @fulfilled_orders.each do |o| %>
+              <% @fulfilled_orders.each do |order| %>
                 <tr class="border-b bg-gray-50">
                   <td class="px-6 py-4 font-medium text-gray-800 underline whitepsace-nowrap tex-sm">
-                    <%= link_to o.id, [:admin, o], class: 'underline' %>
+                    <%= link_to order.id, [:admin, order], class: 'underline' %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
-                    <%= o.customer_email %>
+                    <%= order.created_at.strftime("%d %B %Y %H:%M") %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
-                    <%= o.address %>
+                    <%= order.customer_email %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
-                    £<%= (o.total/100.0) %>
+                    <%= order.address %>
+                  </td>
+                  <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
+                    £<%= (order.total/100.0) %>
                   </td>
                 </tr>
               <% end %>
