@@ -2,7 +2,11 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="products"
 export default class extends Controller {
-  static values = { size: String, product: Object }
+  static values = {
+    size: String,
+    product: Object,
+    messageTimeout: { default: 2.5 * 1000, type: Number }
+  }
 
   addToCart() {
     console.log("product: ", this.productValue)
@@ -33,6 +37,7 @@ export default class extends Controller {
       })
       localStorage.setItem("cart", JSON.stringify(cartArray))
     }
+    this.addMessage({ message: `${this.productValue.name} added to basket.` }, { type: 'alert' });
   }
 
   selectSize(e) {
@@ -48,5 +53,21 @@ export default class extends Controller {
     } else {
       selectedPriceEl.innerText = "Out of stock."
     }
+  }
+
+  addMessage(content, { type = "error" } = {}) {
+    const flashContainer = document.getElementById("flash");
+    if (!flashContainer) return;
+
+    const template = flashContainer.querySelector("[data-template]");
+    const node = template.content.firstElementChild.cloneNode(true);
+    node.querySelector("[data-value]").innerText = content.message;
+
+    flashContainer.append(node);
+
+    // optional - add timeout to remove after 2.5 seconds
+    window.setTimeout(() => {
+      node.remove();
+    }, this.messageTimeoutValue);
   }
 }
