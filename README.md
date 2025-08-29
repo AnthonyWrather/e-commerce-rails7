@@ -209,3 +209,5 @@ Add a price to the order_products table so we can record the line item prices.
 ```bash
 bin/rails generate migration AddPriceToOrderProducts
 ```
+
+Added Render to Slack integration so there is a notification of each deployment.
