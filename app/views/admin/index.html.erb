@@ -50,10 +50,10 @@
       <table class="min-w-full bg-gray-100" style="border-collapse: separate; border-spacing: 0;">
       <thead>
         <tr class="text-gray-800">
-          <th class="px-6 py-3 bg-gray-100 border-b-2 border-gray-200">Order ID</th>
-          <th class="px-6 py-3 bg-gray-100 border-b-2 border-gray-200">Customer</th>
-          <th class="px-6 py-3 bg-gray-100 border-b-2 border-gray-200">Date</th>
-          <th class="px-6 py-3 bg-gray-100 border-b-2 border-gray-200">Amount</th>
+          <th class="px-6 py-3 text-left bg-gray-100 border-b-2 border-gray-200">Order ID</th>
+          <th class="px-6 py-3 text-left bg-gray-100 border-b-2 border-gray-200">Order Date</th>
+          <th class="px-6 py-3 text-left bg-gray-100 border-b-2 border-gray-200">Customer</th>
+          <th class="px-6 py-3 text-left bg-gray-100 border-b-2 border-gray-200">Amount</th>
         </tr>
       </thead>
       <tbody class="text-gray-700">
@@ -63,13 +63,13 @@
               <%= link_to order.id, admin_order_path(order), class: "underline" %>
             </td>
             <td class="px-6 py-4 border-b border-gray-200">
+              <%= order.created_at.strftime("%d %B %Y %H:%M") %>
+            </td>
+            <td class="px-6 py-4 border-b border-gray-200">
               <%= order.customer_email %>
             </td>
             <td class="px-6 py-4 border-b border-gray-200">
-              <%= order.created_at.strftime("%B %d, %Y %H:%M") %>
-            </td>
-            <td class="px-6 py-4 border-b border-gray-200">
-              <%= (order.total/100.0).to_s %>
+              £<%= (order.total/100.0).to_s %>
             </td>
           </tr>
         <% end %>
