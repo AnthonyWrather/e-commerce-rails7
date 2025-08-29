@@ -211,3 +211,4 @@ bin/rails generate migration AddPriceToOrderProducts
 ```
 
 Added Render to Slack integration so there is a notification of each deployment.
+Well that's the strategy....
