@@ -203,3 +203,9 @@ Add an amount to the product record so that a single priced item can have a stoc
 ```bash
 bin/rails generate migration AddAmountToProduct
 ```
+
+Add a price to the order_products table so we can record the line item prices.
+
+```bash
+bin/rails generate migration AddPriceToOrderProducts
+```
