@@ -5,20 +5,11 @@ export default class extends Controller {
   static values = {
     size: String,
     product: Object,
-    stock: Array,
     messageTimeout: { default: 2.5 * 1000, type: Number }
   }
 
   addToCart() {
-    // If Size is set then get the Price from Stock
-    let price = 0
-    if (this.sizeValue) {
-      const stockIndex = this.stockValue.findIndex(item => item.size === this.sizeValue)
-      price = this.stockValue[stockIndex].price
-    } else {
-      price = this.productValue.price
-    }
-
+    console.log("product: ", this.productValue)
     const cart = localStorage.getItem("cart")
     if (cart) {
       const cartArray = JSON.parse(cart)
@@ -29,7 +20,7 @@ export default class extends Controller {
         cartArray.push({
           id: this.productValue.id,
           name: this.productValue.name,
-          price: price,
+          price: this.productValue.price,
           size: this.sizeValue,
           quantity: 1
         })
@@ -40,7 +31,7 @@ export default class extends Controller {
       cartArray.push({
         id: this.productValue.id,
         name: this.productValue.name,
-        price: price,
+        price: this.productValue.price,
         size: this.sizeValue,
         quantity: 1
       })
@@ -50,7 +41,6 @@ export default class extends Controller {
   }
 
   selectSize(e) {
-    // TODO: Need to do this properly.
     this.sizeValue = e.target.value
     const selectedSizeEl = document.getElementById("selected-size")
     selectedSizeEl.innerText = `Selected Size: ${this.sizeValue}`
