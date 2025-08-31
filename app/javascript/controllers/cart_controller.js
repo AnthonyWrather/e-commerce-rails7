@@ -11,23 +11,46 @@ export default class extends Controller {
     }
 
     let total = 0
+    const table_body = document.getElementById("table_body")
     for (let i=0; i < cart.length; i++) {
       const item = cart[i]
       total += item.price * item.quantity
-      const div = document.createElement("div")
-      div.classList.add("mt-2")
-      div.innerText = `Item: ${item.name} - £${item.price/100.0} - Size: ${item.size} - Quantity: ${item.quantity}`
+      const name = `${item.name}`,
+            price = `£${item.price/100.0}`,
+            size = `${item.size}`,
+            quantity = `${item.quantity}`
+      const tr = table_body.insertRow();
+
+      const td_name = tr.insertCell();
+      td_name.appendChild(document.createTextNode(name));
+      td_name.style.border = '1px solid black';
+
+      const td_price = tr.insertCell();
+      td_price.appendChild(document.createTextNode(price));
+      td_price.style.border = '1px solid black';
+
+      const td_size = tr.insertCell();
+      td_size.appendChild(document.createTextNode(size));
+      td_size.style.border = '1px solid black';
+
+      const td_quantity = tr.insertCell();
+      td_quantity.appendChild(document.createTextNode(quantity));
+      td_quantity.style.border = '1px solid black';
+
       const deleteButton = document.createElement("button")
       deleteButton.innerText = "Remove"
       console.log("item.id: ", item.id)
       deleteButton.value = JSON.stringify({id: item.id, size: item.size})
       deleteButton.classList.add("bg-gray-500", "rounded", "text-white", "px-2", "py-1", "ml-2")
       deleteButton.addEventListener("click", this.removeFromCart)
-      div.appendChild(deleteButton)
-      this.element.prepend(div)
+
+      const td_button = tr.insertCell();
+      td_button.appendChild(deleteButton);
+      td_button.style.border = '1px solid black';
     }
 
     const totalEl = document.createElement("div")
+    totalEl.classList.add("text-white")
     totalEl.innerText= `Total: £${total/100.0}`
     let totalContainer = document.getElementById("total")
     totalContainer.appendChild(totalEl)
