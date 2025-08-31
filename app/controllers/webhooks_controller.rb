@@ -25,14 +25,9 @@ class WebhooksController < ApplicationController
     case event.type
     when 'checkout.session.completed'
       session = event.data.object
-      shipping_details = session['shipping_details']
       collected_information = session['collected_information']
       puts "Session: #{session}"
-      puts "shipping_details: #{shipping_details}"
-      puts "collected_information: #{collected_information}"
-      if shipping_details
-        address = "#{shipping_details['address']['line1']} #{shipping_details['address']['city']}, #{shipping_details['address']['state']} #{shipping_details['address']['postal_code']}"
-      elsif collected_information
+      if collected_information
         address = "#{collected_information['shipping_details']['address']['line1']}, #{collected_information['shipping_details']['address']['line2']}, #{collected_information['shipping_details']['address']['city']}, #{collected_information['shipping_details']['address']['state']}, #{collected_information['shipping_details']['address']['postal_code']}, #{collected_information['shipping_details']['address']['country']}"
       else
         address = 'Address not found.'
