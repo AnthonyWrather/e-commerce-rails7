@@ -33,7 +33,7 @@ class WebhooksController < ApplicationController
         address = 'Address not found.'
       end
       order = Order.create!(customer_email: session['customer_details']['email'], total: session['amount_total'],
-                            address: address, fulfilled: false)
+                            address: address, fulfilled: false, name: collected_information['name'])
       full_session = Stripe::Checkout::Session.retrieve({
                                                           id: session.id,
                                                           expand: ['line_items']

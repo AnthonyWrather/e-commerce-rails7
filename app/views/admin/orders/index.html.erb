@@ -23,6 +23,9 @@
                   Order Date
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Name
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
                   Customer Email
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
@@ -41,6 +44,9 @@
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <%= order.created_at.strftime("%d %B %Y %H:%M") %>
+                  </td>
+                  <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
+                    <%= order.name %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <%= order.customer_email %>
@@ -76,6 +82,9 @@
                   Order Date
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Name
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
                   Customer Email
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
@@ -94,6 +103,9 @@
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <%= order.created_at.strftime("%d %B %Y %H:%M") %>
+                  </td>
+                  <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
+                    <%= order.name %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <%= order.customer_email %>
