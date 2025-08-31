@@ -23,12 +23,14 @@
           </th>
         </tr>
       </thead>
-      <tbody data-controller="cart" id="table_body" >
+      <tbody id="table_body" >
       </tbody>
     </table>
     <div class="px-4 py-4 mt-4 font-medium" id="total"></div>
-    <button class="px-4 py-2 mt-6 text-white bg-gray-500 rounded hover:bg-gray-600" data-action="click->cart#checkout">Checkout</button>
-    <button class="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600" data-action="click->cart#clear">Clear Cart</button>
+    <div data-controller="cart">
+      <button class="px-4 py-2 mt-6 text-white bg-gray-500 rounded hover:bg-gray-600" data-action="click->cart#checkout">Checkout</button>
+      <button class="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600" data-action="click->cart#clear">Clear Cart</button>
+    </div>
 </div>
 <div id="test_table" class="py-5 my-10 text-center text-white bg-blue-600">
 </div>
