@@ -26,12 +26,19 @@ class WebhooksController < ApplicationController
     when 'checkout.session.completed'
       session = event.data.object
       collected_information = session['collected_information']
+      puts '---------------------------------------------'
       puts "Session: #{session}"
+      puts '---------------------------------------------'
       if collected_information
         address = "#{collected_information['shipping_details']['address']['line1']}, #{collected_information['shipping_details']['address']['line2']}, #{collected_information['shipping_details']['address']['city']}, #{collected_information['shipping_details']['address']['state']}, #{collected_information['shipping_details']['address']['postal_code']}, #{collected_information['shipping_details']['address']['country']}"
       else
         address = 'Address not found.'
       end
+
+      puts '---------------------------------------------'
+      puts "collected_information['name']: #{collected_information['name']}"
+      puts '---------------------------------------------'
+
       order = Order.create!(customer_email: session['customer_details']['email'], total: session['amount_total'],
                             address: address, fulfilled: false, name: collected_information['name'])
       full_session = Stripe::Checkout::Session.retrieve({
@@ -47,7 +54,9 @@ class WebhooksController < ApplicationController
         Stock.find(product['metadata']['product_stock_id']).decrement!(:amount, item['quantity'])
       end
     else
+      puts '---------------------------------------------'
       puts "Unhandled event type: #{event.type}"
+      puts '---------------------------------------------'
     end
 
     render json: { message: 'success' }
