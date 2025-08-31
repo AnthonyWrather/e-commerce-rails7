@@ -210,5 +210,27 @@ Add a price to the order_products table so we can record the line item prices.
 bin/rails generate migration AddPriceToOrderProducts
 ```
 
+Add a Name to the Orders table.
+```bash
+bin/rails generate migration AddNameToOrderOrders
+```
+
 Added Render to Slack integration so there is a notification of each deployment.
 Well that's the strategy....
+
+Fixed various bugs and added various features.
+
+Adding ssh to the Render test server.
+Create the local ssh key.
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_docker
+```
+
+Upload the SSH key to render.
+
+To connect use
+
+```bash
+ssh -i ~/.ssh/id_ed25519_docker srv-d2mv4qp5pdvs739c15mg@ssh.frankfurt.render.com
+```

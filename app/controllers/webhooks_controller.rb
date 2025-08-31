@@ -25,15 +25,18 @@ class WebhooksController < ApplicationController
     case event.type
     when 'checkout.session.completed'
       session = event.data.object
-      shipping_details = session['shipping_details']
+      collected_information = session['collected_information']
+      puts '---------------------------------------------'
       puts "Session: #{session}"
-      if shipping_details
-        address = "#{shipping_details['address']['line1']} #{shipping_details['address']['city']}, #{shipping_details['address']['state']} #{shipping_details['address']['postal_code']}"
+      puts '---------------------------------------------'
+      if collected_information
+        address = "#{collected_information['shipping_details']['address']['line1']}, #{collected_information['shipping_details']['address']['line2']}, #{collected_information['shipping_details']['address']['city']}, #{collected_information['shipping_details']['address']['state']}, #{collected_information['shipping_details']['address']['postal_code']}, #{collected_information['shipping_details']['address']['country']}"
       else
-        address = ''
+        address = 'Address not found.'
       end
+
       order = Order.create!(customer_email: session['customer_details']['email'], total: session['amount_total'],
-                            address: address, fulfilled: false)
+                            address: address, fulfilled: false, name: collected_information['shipping_details']['name'])
       full_session = Stripe::Checkout::Session.retrieve({
                                                           id: session.id,
                                                           expand: ['line_items']
@@ -47,7 +50,9 @@ class WebhooksController < ApplicationController
         Stock.find(product['metadata']['product_stock_id']).decrement!(:amount, item['quantity'])
       end
     else
+      puts '---------------------------------------------'
       puts "Unhandled event type: #{event.type}"
+      puts '---------------------------------------------'
     end
 
     render json: { message: 'success' }
