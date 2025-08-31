@@ -1,9 +1,34 @@
-<div class="min-h-screen">
-  <h1>Cart Page</h1>
+<div class="text-white ">
+  <div>
+    <h1 class="px-4 py-4 text-lg">Your Shopping Cart</h1>
+  </div>
   <div id="errorContainer"></div>
-  <div data-controller="cart">
-    <div class="mt-4 font-medium" id="total"></div>
+
+    <table class="min-w-full overflow-x-scroll" id="table">
+      <thead class="bg-blue-400 border-b">
+        <tr>
+          <th scope="col" style="border: 1px solid black" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+            Item
+          </th>
+          <th scope="col" style="border: 1px solid black" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+            Price
+          </th>
+          <th scope="col" style="border: 1px solid black" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+            Size
+          </th>
+          <th scope="col" style="border: 1px solid black" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+            Quantity
+          </th>
+          <th scope="col" style="border: 1px solid black" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+          </th>
+        </tr>
+      </thead>
+      <tbody data-controller="cart" id="table_body" >
+      </tbody>
+    </table>
+    <div class="px-4 py-4 mt-4 font-medium" id="total"></div>
     <button class="px-4 py-2 mt-6 text-white bg-gray-500 rounded hover:bg-gray-600" data-action="click->cart#checkout">Checkout</button>
     <button class="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600" data-action="click->cart#clear">Clear Cart</button>
-  </div>
+</div>
+<div id="test_table" class="py-5 my-10 text-center text-white bg-blue-600">
 </div>
