@@ -92,3 +92,4 @@ gem 'aws-sdk-s3', require: false
 # gem "securerandom"
 # gem "uri"
 # gem "irb"
+gem 'breadcrumbs_on_rails'

@@ -1,4 +1,7 @@
 class ContactController < ApplicationController
+  add_breadcrumb 'Home', :root_path
+  add_breadcrumb 'Contact Us', :contact_path
+
   def index
   end
 
