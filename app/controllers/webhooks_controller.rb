@@ -33,7 +33,7 @@ class WebhooksController < ApplicationController
       if shipping_details
         address = "#{shipping_details['address']['line1']} #{shipping_details['address']['city']}, #{shipping_details['address']['state']} #{shipping_details['address']['postal_code']}"
       elsif collected_information
-        address = "#{collected_information['shipping_details']['address']['line1']} #{collected_information['shipping_details']['address']['city']}, #{collected_information['shipping_details']['address']['state']} #{collected_information['shipping_details']['address']['postal_code']}"
+        address = "#{collected_information['shipping_details']['address']['line1']}, #{collected_information['shipping_details']['address']['line2']}, #{collected_information['shipping_details']['address']['city']}, #{collected_information['shipping_details']['address']['state']}, #{collected_information['shipping_details']['address']['postal_code']}, #{collected_information['shipping_details']['address']['country']}"
       else
         address = 'Address not found.'
       end
