@@ -28,15 +28,15 @@
     <strong class="block mb-1 font-medium">Products:</strong>
     <table class="min-w-full overflow-x-scroll">
       <tr>
-        <th style="border: 1px solid black">Name</th>
-        <th style="border: 1px solid black">Size</th>
-        <th style="border: 1px solid black">Quantity</th>
+        <th bg-gray-300 style="border: 1px solid black">Name</th>
+        <th bg-gray-300 style="border: 1px solid black">Size</th>
+        <th bg-gray-300 style="border: 1px solid black">Quantity</th>
       </tr>
       <% order.order_products.each do |op| %>
         <tr>
-        <td style="border: 1px solid black"><%= op.product.name %></td>
-        <td style="border: 1px solid black"><%= op.size %></td>
-        <td style="border: 1px solid black"><%= op.quantity %></td>
+        <td bg-gray-100 style="border: 1px solid black"><%= op.product.name %></td>
+        <td bg-gray-100 style="border: 1px solid black"><%= op.size %></td>
+        <td bg-gray-100 style="border: 1px solid black"><%= op.quantity %></td>
         </tr>
       <% end %>
     </table>
