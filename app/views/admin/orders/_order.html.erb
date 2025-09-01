@@ -27,9 +27,11 @@
   <% if order.order_products.any? %>
     <strong class="block mb-1 font-medium">Products:</strong>
     <% order.order_products.each do |op| %>
+      <p>
       <%= op.product.name %>
       <%= op.size %>
       <%= op.quantity %>
+      </p>
     <% end %>
   <% end %>
 
