@@ -1,9 +1,38 @@
 
-<div class="flex justify-center gap-10 py-10 mb-4 text-white">
+<div class="flex justify-center gap-10 py-10 mb-4 text-white" data-action="cart#clear">
 
   <span class="mt-0.5 block font-medium text-xl leading-[1.125rem] text-white text-center">
-    <p class="text-2xl text-green-600">Your order was successfully placed. </p>
-    <p> Please contact us if you have any questions. </p>
+    <p class="mb-4 text-3xl text-green-600">Your order was successfully placed. </p>
+    <p class="mb-4"> Please contact us if you have any questions or if you want to change your order. </p>
+
+    <table class="min-w-full overflow-x-scroll" id="table">
+      <thead class="bg-blue-400 border-b">
+        <tr>
+          <th scope="col" style="border: 1px solid black" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+            Item
+          </th>
+          <th scope="col" style="border: 1px solid black" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+            Price
+          </th>
+          <th scope="col" style="border: 1px solid black" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+            Size
+          </th>
+          <th scope="col" style="border: 1px solid black" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+            Quantity
+          </th>
+          <th scope="col" style="border: 1px solid black" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+          </th>
+        </tr>
+      </thead>
+      <tbody id="table_body" >
+      </tbody>
+    </table>
+    <div class="px-4 py-4 mt-4 font-medium" id="total"></div>
+
+      <div data-controller="cart">
+        <button class="px-4 py-2 mt-6 text-white bg-gray-500 rounded hover:bg-gray-600" data-action="click->cart#checkout">Order Again</button>
+        <button class="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600" data-action="click->cart#clear">Clear Cart</button>
+      </div>
   </span>
 
 </div>
