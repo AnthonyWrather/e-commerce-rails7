@@ -252,7 +252,8 @@ brew install ngrok
 ngrok config add-authtoken YOUR_NGROK_TOKEN
 ```
 
-Setup your local/remote
+Setup your local to remote connection.
+This must be run on your local machine.
 
 ```bash
 ngrok http --url=loved-anchovy-on.ngrok-free.app 3000
