@@ -47,7 +47,11 @@ class WebhooksController < ApplicationController
         product_id = product['metadata']['product_id'].to_i
         OrderProduct.create!(order: order, product_id: product_id, quantity: item['quantity'],
                              size: product['metadata']['size'])
-        Stock.find(product['metadata']['product_stock_id']).decrement!(:amount, item['quantity'])
+        if (product['metadata']['size']) && (product['metadata']['size']).length.positive?
+          Stock.find(product['metadata']['product_stock_id']).decrement!(:amount, item['quantity'])
+        else
+          Product.find(product['metadata']['product_id']).decrement!(:amount, item['quantity'])
+        end
       end
     else
       puts '---------------------------------------------'
