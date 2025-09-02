@@ -14,11 +14,11 @@ class CheckoutsController < ApplicationController
         product_stock_id = product_stock.id
       end
 
-      if product_stock && product_stock.amount <= item['quantity'].to_i
+      if product_stock && product_stock.amount < item['quantity'].to_i
         render json: { error: "Not enough stock for #{product.name} in size #{item['size']}. Only #{product_stock.amount} left." },
                status: 400
         return
-      elsif !product_stock && product.amount <= item['quantity'].to_i
+      elsif !product_stock && product.amount < item['quantity'].to_i
         render json: { error: "Not enough stock for #{product.name} in size #{item['size']}. Only #{product.amount} left." },
                status: 400
         return
