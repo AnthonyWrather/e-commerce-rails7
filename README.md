@@ -234,3 +234,34 @@ To connect use
 ```bash
 ssh -i ~/.ssh/id_ed25519_docker srv-d2mv4qp5pdvs739c15mg@ssh.frankfurt.render.com
 ```
+
+## Setup the Stripe Sandpit WebHook for development and testing.
+
+Setup the Stripe sandpit for Test
+In Stripe remember to add /webhooks to the target endpoint.
+Get the secret key and webhook key for the app.
+Add them to Render as env vars.
+
+Setup the Stripe Sandpit for your local Dev Env.
+Get the secret key and webhook key for the app and add them to credentials.enc
+Install NGROK on your LOCAL system. MacOS for me, your may vary.
+Add your NGROK secret key.
+
+```bash
+brew install ngrok
+ngrok config add-authtoken YOUR_NGROK_TOKEN
+```
+
+Setup your local/remote
+
+```bash
+ngrok http --url=loved-anchovy-on.ngrok-free.app 3000
+```
+
+And add the host to config/environments/development.rb
+
+```ruby
+  config.hosts << "loved-anchovy-on.ngrok-free.app"
+```
+
+More information can be found here.[NGROK Stripe documentation.](https://ngrok.com/docs/integrations/stripe/webhooks/)
