@@ -12,6 +12,7 @@ class AdminController < ApplicationController
 
     @quick_stats = {
       sales: num_orders,
+      items: num_products,
       revenue: Order.where(created_at: Time.now.midnight..Time.now).sum(:total)&.round(),
       avg_sale: Order.where(created_at: Time.now.midnight..Time.now).average(:total)&.round(),
       per_sale: num_products.div(num_orders)
