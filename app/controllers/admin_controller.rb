@@ -6,11 +6,12 @@ class AdminController < ApplicationController
 
   def index
     @orders = Order.where(fulfilled: false).order(created_at: :desc).take(5)
+
     @quick_stats = {
-      sales: Order.where(created_at: Time.now.midnight..Time.now).count,
+      sales: num_orders,
       revenue: Order.where(created_at: Time.now.midnight..Time.now).sum(:total)&.round(),
       avg_sale: Order.where(created_at: Time.now.midnight..Time.now).average(:total)&.round(),
-      per_sale: OrderProduct.joins(:order).where(orders: { created_at: Time.now.midnight..Time.now })&.average(:quantity)
+      per_sale: num_products.div(num_orders)
     }
     @orders_by_day = Order.where('created_at > ?', Time.now - 7.days).order(:created_at)
     @orders_by_day = @orders_by_day.group_by { |order| order.created_at.to_date }
