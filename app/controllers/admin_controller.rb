@@ -8,7 +8,7 @@ class AdminController < ApplicationController
     @orders = Order.where(fulfilled: false).order(created_at: :desc).take(5)
 
     num_orders = Order.where(created_at: Time.now.midnight..Time.now).count
-    num_products = OrderProduct.joins(:order).where(orders: { created_at: Time.now.midnight..Time.now }).count
+    num_products = OrderProduct.joins(:order).where(orders: { created_at: Time.now.midnight..Time.now }).sum(:quantity)
 
     @quick_stats = {
       sales: num_orders,

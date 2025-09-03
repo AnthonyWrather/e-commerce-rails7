@@ -25,13 +25,13 @@ export default class extends Controller {
       td_name.appendChild(document.createTextNode(name));
       td_name.style.border = '1px solid black';
 
-      const td_price = tr.insertCell();
-      td_price.appendChild(document.createTextNode(price));
-      td_price.style.border = '1px solid black';
-
       const td_size = tr.insertCell();
       td_size.appendChild(document.createTextNode(size));
       td_size.style.border = '1px solid black';
+
+      const td_price = tr.insertCell();
+      td_price.appendChild(document.createTextNode(price));
+      td_price.style.border = '1px solid black';
 
       const td_quantity = tr.insertCell();
       td_quantity.appendChild(document.createTextNode(quantity));
