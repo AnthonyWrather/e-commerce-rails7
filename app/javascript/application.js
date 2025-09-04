@@ -3,12 +3,20 @@ import "@hotwired/turbo-rails"
 import "controllers"
 
 document.addEventListener("turbo:load", (event) => {
-  let googleId = document.querySelector("meta[name='google-analytics-id']").content
+  // let googleId = document.querySelector("meta[name='google-analytics-id']").content
+  let googleId = "G-481BNJ1GVB"
   if(googleId) {
+    console.log('Got Google ID')
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
+    gtag('config', googleId);
+  } else {
+    console.log('No Google ID')
+    let googleId = "G-481BNJ1GVB"
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
     gtag('config', googleId);
   }
 })
