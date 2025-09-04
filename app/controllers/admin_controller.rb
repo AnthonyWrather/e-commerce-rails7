@@ -9,13 +9,17 @@ class AdminController < ApplicationController
 
     num_orders = Order.where(created_at: Time.now.midnight..Time.now).count
     num_products = OrderProduct.joins(:order).where(orders: { created_at: Time.now.midnight..Time.now }).sum(:quantity)
+    avg_items = 0
+    if num_orders.positive? && num_products.positive?
+      avg_items = num_products.div(num_orders)
+    end
 
     @quick_stats = {
       sales: num_orders,
       items: num_products,
       revenue: Order.where(created_at: Time.now.midnight..Time.now).sum(:total)&.round(),
       avg_sale: Order.where(created_at: Time.now.midnight..Time.now).average(:total)&.round(),
-      per_sale: num_products.div(num_orders)
+      per_sale: avg_items
     }
     @orders_by_day = Order.where('created_at > ?', Time.now - 7.days).order(:created_at)
     @orders_by_day = @orders_by_day.group_by { |order| order.created_at.to_date }
