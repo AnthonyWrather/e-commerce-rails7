@@ -47,7 +47,13 @@ class CheckoutsController < ApplicationController
       cancel_url: "#{request.protocol}#{request.host_with_port}/cancel",
       shipping_address_collection: {
         allowed_countries: %w[GB]
-      }
+      },
+      currency: 'GBP',
+      payment_method_types: ['card'],
+      phone_number_collection: {
+        enabled: true
+      },
+      billing_address_collection: 'required'
     )
 
     render json: { url: session.url }

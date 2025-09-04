@@ -1,46 +1,140 @@
 <div id="<%= dom_id order %>">
-  <p class="my-5">
-    <strong class="block mb-1 font-medium">Name:</strong>
-    <%= order.name %>
-  </p>
 
-  <p class="my-5">
-    <strong class="block mb-1 font-medium">Customer email:</strong>
-    <%= order.customer_email %>
-  </p>
+  <table class="min-w-full overflow-x-scroll">
+    <tr>
+      <th>
+        <p class="text-2xl font-bold">Invoice Details</p>
+      </th>
+    </tr>
 
-  <p class="my-5">
-    <strong class="block mb-1 font-medium">Fulfilled:</strong>
-    <%= order.fulfilled %>
-  </p>
+    <tr class="min-w-full overflow-x-scroll">
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium ">Shipping Name:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= order.name %>
+        </p>
+      </td>
+    </tr>
 
-  <p class="my-5">
-    <strong class="block mb-1 font-medium">Total:</strong>
-    £<%= (order.total/100.0) %>
-  </p>
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Shipping Address:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= order.address %>
+        </p>
+      </td>
+    </tr>
 
-  <p class="my-5">
-    <strong class="block mb-1 font-medium">Address:</strong>
-    <%= order.address %>
-  </p>
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Phone Number:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= order.phone %>
+        </p>
+      </td>
+    </tr>
 
-  <% if order.order_products.any? %>
-    <strong class="block mb-1 font-medium">Products:</strong>
-    <table class="min-w-full overflow-x-scroll">
-      <tr >
-        <th class="bg-gray-300" style="border: 1px solid black">Name</th>
-        <th class="bg-gray-300" style="border: 1px solid black">Size</th>
-        <th class="bg-gray-300" style="border: 1px solid black">Quantity</th>
-      </tr>
-      <% order.order_products.each do |op| %>
-        <tr>
-        <td class="bg-gray-100" style="border: 1px solid black"><%= op.product.name %></td>
-        <td class="bg-gray-100" style="border: 1px solid black"><%= op.size %></td>
-        <td class="bg-gray-100" style="border: 1px solid black"><%= op.quantity %></td>
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Customer email:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+        <%= order.customer_email %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Billing Name:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= order.billing_name %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Billing Address:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= order.billing_address %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300 " style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Fulfilled:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <% if order.fulfilled %>
+            Yes
+          <% else %>
+            No
+          <% end %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Total:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+        £<%= (order.total/100.0) %>
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <div class="py-4">
+    <% if order.order_products.any? %>
+      <p class="py-1 text-2xl font-bold">Products</p>
+      <table class="min-w-full overflow-x-scroll">
+        <tr >
+          <th class="bg-gray-300" style="border: 1px solid black">Name</th>
+          <th class="bg-gray-300" style="border: 1px solid black">Size</th>
+          <th class="bg-gray-300" style="border: 1px solid black">Quantity</th>
         </tr>
-      <% end %>
-    </table>
-  <% end %>
+        <% order.order_products.each do |op| %>
+          <tr>
+          <td class="bg-gray-100" style="border: 1px solid black"><%= op.product.name %></td>
+          <td class="bg-gray-100" style="border: 1px solid black"><%= op.size %></td>
+          <td class="bg-gray-100" style="border: 1px solid black"><%= op.quantity %></td>
+          </tr>
+        <% end %>
+      </table>
+    <% end %>
+  </div>
 
   <% if action_name != "show" %>
     <%= link_to "Show this order", [:admin, order], class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
