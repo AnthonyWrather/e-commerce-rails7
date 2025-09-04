@@ -26,6 +26,7 @@ class WebhooksController < ApplicationController
     when 'checkout.session.completed'
       session = event.data.object
       collected_information = session['collected_information']
+      customer_details = session['customer_details']
       puts '---------------------------------------------'
       puts "Session: #{session}"
       puts '---------------------------------------------'
@@ -35,8 +36,13 @@ class WebhooksController < ApplicationController
         address = 'Address not found.'
       end
 
+      phone = session['customer_details']['phone']
+      billing_address = "#{customer_details['address']['line1']}, #{customer_details['address']['line2']}, #{customer_details['address']['city']}, #{customer_details['address']['state']}, #{customer_details['address']['postal_code']}, #{customer_details['address']['country']}"
+      billing_name = session['customer_details']['name']
+
       order = Order.create!(customer_email: session['customer_details']['email'], total: session['amount_total'],
-                            address: address, fulfilled: false, name: collected_information['shipping_details']['name'])
+                            address: address, fulfilled: false, name: collected_information['shipping_details']['name'],
+                            phone: phone, billing_name: billing_name, billing_address: billing_address)
       full_session = Stripe::Checkout::Session.retrieve({
                                                           id: session.id,
                                                           expand: ['line_items']
