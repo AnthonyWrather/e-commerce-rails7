@@ -37,6 +37,9 @@
                   Category
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Size
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
                   Price
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
@@ -53,24 +56,42 @@
                   <td class="px-6 py-4 font-medium text-gray-800 underline whitepsace-nowrap tex-sm">
                     <%= p.images.any? ? image_tag(p.images.first.variant(:thumb)) : image_tag("https://via.placeholder.com/50") %>
                   </td>
-                  <td class="px-6 py-4 font-medium text-gray-800 underline whitepsace-nowrap tex-sm">
+                  <td class="px-6 py-4 font-medium text-gray-800 underline tex-sm">
                     <%= link_to p.name, edit_admin_product_path(p) %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <%= p.description %>
                   </td>
-
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <%= p.category.name %>
+                  </td>
+                  <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
+                    <% @admin_stocks.where(product_id: p.id).each do |s|  %>
+                      <div class="text-nowrap"><%= s.size %></div>
+                    <% end %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <% if p.price %>
                       £<%= (p.price/100.0).to_s %>
                     <% end %>
+                    <% @admin_stocks.where(product_id: p.id).each do |s|  %>
+                      <% if s.price %>
+                        <p>£<%= (s.price/100.0).to_s %></p>
+                      <% else %>
+                        <p>£0.00</p>
+                      <% end %>
+                    <% end %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <% if p.amount %>
                       <%= p.amount %>
+                    <% end %>
+                    <% @admin_stocks.where(product_id: p.id).each do |s|  %>
+                      <% if s.amount %>
+                        <p><%= s.amount %></p>
+                      <% else %>
+                        <p>0</p>
+                      <% end %>
                     <% end %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
