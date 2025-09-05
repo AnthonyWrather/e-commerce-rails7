@@ -9,10 +9,10 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-    <%# <% if Rails.env.production? %>
+    <% if Rails.env.production? %>
       <%= javascript_include_tag "https://www.googletagmanager.com/gtag/js?id=G-481BNJ1GVB" %>
-      <meta name="google-analytics-id" id="G-481BNJ1GVB" >
-    <%# <% end %>
+      <meta name="google-analytics-id" content="G-481BNJ1GVB" >
+    <% end %>
 
     <%= favicon_link_tag %>
   </head>
