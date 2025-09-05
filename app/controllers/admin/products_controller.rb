@@ -10,6 +10,7 @@ class Admin::ProductsController < AdminController
     else
       @pagy, @admin_products = pagy(Product.all)
     end
+    @admin_stocks = Stock.all
   end
 
   # GET /admin/products/1 or /admin/products/1.json
