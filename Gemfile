@@ -71,6 +71,8 @@ group :development do
 
   gem 'foreman'
   gem 'htmlbeautifier'
+  gem 'ruby-lsp'
+  gem 'ruby-lsp-rails'
   gem 'solargraph'
 end
 
