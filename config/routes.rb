@@ -37,5 +37,7 @@ Rails.application.routes.draw do
   get 'cancel' => 'checkouts#cancel'
   post 'webhooks' => 'webhooks#stripe'
 
-  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
+  # TODO: Restrict access to LetterOpenerWeb in Production once Test env is configured.
+  # mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
+  mount LetterOpenerWeb::Engine, at: '/letter_opener'
 end
