@@ -81,4 +81,23 @@ export default class extends Controller {
       node.remove();
     }, this.messageTimeoutValue);
   }
+
+  formatCurrency(price) {
+    // TODO: I think this is better done with events.
+    const unit = "£";
+    const separator = ".";
+    const delimiter = ",";
+
+    // Convert price to a float value and format to two decimal places
+    let number = (price / 100.0).toFixed(2);
+
+    // Split the number into integer and decimal parts
+    let [integerPart, decimalPart] = number.split(".");
+
+    // Add thousands delimiter
+    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
+
+    // Combine integer part and decimal part with separator
+    return `${unit}${integerPart}${separator}${decimalPart}`;
+  }
 }
