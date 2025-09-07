@@ -69,12 +69,17 @@ group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
 
+  gem 'erb_lint'
   gem 'foreman'
   gem 'htmlbeautifier'
   gem 'ruby-lsp'
   gem 'ruby-lsp-rails'
   gem 'solargraph'
 end
+
+# TODO: These will need moving into the Dev and Test only groups when the Render deploy is set to Test
+gem 'letter_opener'
+gem 'letter_opener_web', '~> 3.0'
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]

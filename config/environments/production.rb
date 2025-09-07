@@ -96,4 +96,11 @@ Rails.application.configure do
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  config.action_mailer.delivery_method = :letter_opener_web
+  #  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.perform_deliveries = true
+  # LetterOpenerWeb.configure do |config|
+  #   config.letters_location = Rails.root.join('your', 'new', 'path')
+  # end
 end

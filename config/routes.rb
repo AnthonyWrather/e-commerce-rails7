@@ -36,4 +36,6 @@ Rails.application.routes.draw do
   get 'success' => 'checkouts#success'
   get 'cancel' => 'checkouts#cancel'
   post 'webhooks' => 'webhooks#stripe'
+
+  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 end

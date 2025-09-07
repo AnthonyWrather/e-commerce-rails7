@@ -252,8 +252,8 @@ brew install ngrok
 ngrok config add-authtoken YOUR_NGROK_TOKEN
 ```
 
-Setup your local to remote connection.
-This must be run on your local machine.
+Setup your local to remote connection.\
+This must be run on your local machine.\
 Your URL will be different..... yea honest lol
 
 ```bash
@@ -273,3 +273,13 @@ Add foreman to the gems to run in both the Rails server monitoring the Ruby code
 ```bash
 bin/dev
 ```
+
+Install and configure letter_opener gem for local email testing.\
+(https://github.com/ryanb/letter_opener)\
+(https://github.com/fgrehm/letter_opener_web)
+
+And it can be accessed on the localhost\
+(https://loved-anchovy-on.ngrok-free.app/letter_opener)
+
+Or in the Test machine\
+(https://e-commerce-rails7.onrender.com/letter_opener)
