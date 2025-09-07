@@ -254,6 +254,7 @@ ngrok config add-authtoken YOUR_NGROK_TOKEN
 
 Setup your local to remote connection.
 This must be run on your local machine.
+Your URL will be different..... yea honest lol
 
 ```bash
 ngrok http --url=loved-anchovy-on.ngrok-free.app 3000
@@ -266,3 +267,9 @@ And add the host to config/environments/development.rb
 ```
 
 More information can be found here.[NGROK Stripe documentation.](https://ngrok.com/docs/integrations/stripe/webhooks/)
+
+Add foreman to the gems to run in both the Rails server monitoring the Ruby code and tailwind looking after the Javascript and assets dev mode.
+
+```bash
+bin/dev
+```
