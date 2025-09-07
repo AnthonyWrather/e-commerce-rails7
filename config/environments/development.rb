@@ -78,5 +78,12 @@ Rails.application.configure do
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
 
-  config.hosts << "loved-anchovy-on.ngrok-free.app"
+  config.hosts << 'loved-anchovy-on.ngrok-free.app'
+
+  config.action_mailer.delivery_method = :letter_opener_web
+  #  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.perform_deliveries = true
+  # LetterOpenerWeb.configure do |config|
+  #   config.letters_location = Rails.root.join('your', 'new', 'path')
+  # end
 end
