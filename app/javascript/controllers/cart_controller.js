@@ -16,7 +16,7 @@ export default class extends Controller {
       const item = cart[i]
       total += item.price * item.quantity
       const name = `${item.name}`,
-            price = `£${item.price/100.0}`,
+            price = `${this.formatCurrency(item.price)}`,
             size = `${item.size}`,
             quantity = `${item.quantity}`
       const tr = table_body.insertRow();
@@ -51,7 +51,7 @@ export default class extends Controller {
 
     const totalEl = document.createElement("div")
     totalEl.classList.add("text-white")
-    totalEl.innerText= `Total: £${total/100.0}`
+    totalEl.innerText= `Total: ${this.formatCurrency(total)}`
     let totalContainer = document.getElementById("total")
     totalContainer.appendChild(totalEl)
   }
@@ -105,5 +105,23 @@ export default class extends Controller {
       })
   }
 
+  formatCurrency(price) {
+    // TODO: I think this is better done with events.
+    const unit = "£";
+    const separator = ".";
+    const delimiter = ",";
+
+    // Convert price to a float value and format to two decimal places
+    let number = (price / 100.0).toFixed(2);
+
+    // Split the number into integer and decimal parts
+    let [integerPart, decimalPart] = number.split(".");
+
+    // Add thousands delimiter
+    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
+
+    // Combine integer part and decimal part with separator
+    return `${unit}${integerPart}${separator}${decimalPart}`;
+  }
 }
 

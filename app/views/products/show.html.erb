@@ -18,7 +18,7 @@
     <p class="mt-4 text-2xl" id="product-price">
       <% if @product.price %>
         <% if @product.amount && @product.amount > 0 && @product.price > 0 %>
-          £<%= (@product.price/100.0).to_s %>
+          <%= formatted_price(@product.price) %>
         <% else %>
           Out of stock.
         <% end %>
@@ -39,7 +39,7 @@
               <% if stock.price && stock.price > 0 %>
                 <button data-action="click->products#selectSize" value="<%= stock.size %>" id="button-text-<%= stock.size %>" class="px-4 py-2 font-semibold text-gray-800 bg-gray-200 rounded hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
                   <%= stock.size %>
-                  £<%= (stock.price/100.0).to_s %>
+                  <%= formatted_price(stock.price) %>
                 </button>
               <% else %>
                 <button disabled value="<%= stock.size %>" class="px-4 py-2 font-semibold text-gray-800 bg-gray-200 rounded disabled:bg-gray-400 hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
