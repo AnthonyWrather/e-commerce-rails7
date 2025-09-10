@@ -4,11 +4,11 @@
     <div class="flex flex-wrap">
       <div class="w-full px-2 mb-4 md:w-1/2">
         <div class="bg-blue-600 rounded shadow ">
-          <%= image_tag("SCFS-Header.jpg", class: "max-w-lg") %>
+          <%= image_tag("SCFS-Header.jpg", class: "object-scale-down") %>
         </div>
       </div>
       <div class="items-center justify-center w-full px-2 mb-4 md:w-1/2">
-        <div class="px-4 py-4 text-center bg-blue-400 rounded shadow">
+        <div class="px-4 py-4 text-center text-white bg-blue-400 rounded shadow">
           <p class="mb-2 text-l">Supplier of fibreglass materials including roofing materials and all ancillary items and tools.</p>
           <p class="mb-2 text-l">Your one-stop shop for all your fibreglass needs!</p>
           <p class="mb-2 text-l">Small business service with national delivery.</p>
@@ -20,10 +20,10 @@
   </div>
 </div>
 
-<div class="flex flex-wrap items-center justify-center gap-10 mt-8">
+<div class="flex flex-wrap items-center justify-center gap-10 mt-8 border border-gray-detailBorder">
   <% @main_categories.each do |category| %>
     <%= link_to category_path(category) do %>
-      <div class="flex flex-col mb-4 bg-blue-400 border border-gray-detailBorder">
+      <div class="flex flex-col mt-4 mb-4 bg-blue-400 border border-gray-detailBorder">
         <h2 class="mb-1 text-lg font-medium text-center text-white"><%= category.name %></h2>
         <%= category.image.present? ? image_tag(category.image, class: "max-w-lg w-64 h-64") : image_tag("http://via.placeholder.com/512") %>
       </div>
