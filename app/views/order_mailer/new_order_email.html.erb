@@ -1,0 +1,171 @@
+<h1>Order Number <%= @order.id %> has been received.</h1>
+
+<div class="flex mt-4 overflow-x-scroll flex-min-w-full flex-max-w-full">
+  <p>
+    Hello <%= @order.name %> <br>
+    We have received your order with ID <%= @order.id %>.
+  </p>
+</div>
+
+<div class="flex mt-4 overflow-x-scroll flex-min-w-full flex-max-w-full">
+  <table class="min-w-full overflow-x-scroll">
+    <tr>
+      <th>
+        <p class="text-2xl font-bold">Invoice Details</p>
+      </th>
+    </tr>
+
+    <tr class="min-w-full overflow-x-scroll">
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium ">Shipping Name:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= @order.name %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Shipping Address:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= @order.address %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Phone Number:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= @order.phone %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Customer email:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+        <%= @order.customer_email %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Billing Name:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= @order.billing_name %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Billing Address:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= @order.billing_address %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Total:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+        £<%= (@order.total/100.0) %>
+        </p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div class="flex mt-4 overflow-x-scroll flex-min-w-full flex-max-w-full">
+  <% if @order.order_products.any? %>
+    <table class="min-w-full overflow-x-scroll">
+      <tr>
+        <th>
+          <p class="text-2xl font-bold">Products</p>
+        </th>
+      </tr>
+      <tr >
+        <th class="bg-gray-300" style="border: 1px solid black">Name</th>
+        <th class="bg-gray-300" style="border: 1px solid black">Size</th>
+        <th class="bg-gray-300" style="border: 1px solid black">Quantity</th>
+      </tr>
+      <% @order.order_products.each do |op| %>
+        <tr>
+        <td class="bg-gray-100" style="border: 1px solid black"><%= op.product.name %></td>
+        <td class="bg-gray-100" style="border: 1px solid black"><%= op.size %></td>
+        <td class="bg-gray-100" style="border: 1px solid black"><%= op.quantity %></td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
+</div>
+
+<div class="flex mt-4 overflow-x-scroll flex-min-w-full flex-max-w-full">
+  <p>
+    We will notify you when your order has been shipped. <br>
+    Thank you for shopping with us.
+  </p>
+</div>
+
+<!-- Contact information -->
+<div class="flex mt-4 overflow-x-scroll flex-min-w-full flex-max-w-full">
+  <div>
+    <h3 class="text-sm font-semibold tracking-wider text-gray-200 uppercase">
+      Contact
+    </h3>
+    <ul class="mt-4 space-y-4">
+      <li>
+        <p class="text-base leading-6 text-white">
+          Southcoast Fibreglass Supplies Ltd <br>
+          Unit C Site 6 Fort Fareham, <br>
+          Fort Fareham Industrial Site, <br>
+          Fareham, <br>
+          Hampshire, <br>
+          United Kingdom, <br>
+          PO14 1AH <br>
+        </p>
+      </li>
+      <li>
+        <p class="text-base leading-6 text-white">
+        Email: Scfsltd.sales@gmail.com
+        </p>
+      </li>
+      <li>
+        <p class="text-base leading-6 text-white">
+        Phone: 01329 234848
+        </p>
+      </li>
+    </ul>
+  </div>

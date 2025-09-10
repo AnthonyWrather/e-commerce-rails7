@@ -283,3 +283,7 @@ And it can be accessed on the localhost\
 
 Or in the Test machine\
 (https://e-commerce-rails7.onrender.com/letter_opener)
+
+```bash
+bin/rails g mailer OrderMailer new_order_email
+```
