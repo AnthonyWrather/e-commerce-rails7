@@ -1,3 +1,36 @@
-Order#new_order_email
+Order Number <%= @order.id %> has been received.
 
-<%= @greeting %>, find me in app/views/order_mailer/new_order_email.text.erb
+Hello <%= @order.name %>
+We have received your order with ID <%= @order.id %>.
+
+Invoice Details
+Shipping Name: <%= @order.name %>
+Shipping Address: <%= @order.address %>
+Phone Number: <%= @order.phone %>
+Customer email: <%= @order.customer_email %>
+Billing Name: <%= @order.billing_name %>
+Billing Address: <%= @order.billing_address %>
+Total: £<%= (@order.total/100.0) %>
+
+<% if @order.order_products.any? %>
+  <% @order.order_products.each do |op| %>
+  Name: <%= op.product.name %> Size: <%= op.size %> Quantity: <%= op.quantity %>
+  <% end %>
+<% end %>
+
+We will notify you when your order has been shipped. <br>
+Thank you for shopping with us.
+
+Southcoast Fibreglass Supplies Ltd <br>
+Unit C Site 6 Fort Fareham, <br>
+Fort Fareham Industrial Site, <br>
+Fareham, <br>
+Hampshire, <br>
+United Kingdom, <br>
+PO14 1AH <br>
+Email: Scfsltd.sales@gmail.com
+Phone: 01329 234848
+
+Company Registration Number: 02563492
+VAT Number: GB 765 346 017
+Registered in England and Wales
