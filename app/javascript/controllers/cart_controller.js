@@ -2,6 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="cart"
 export default class extends Controller {
+  static values = {
+    messageTimeout: { default: 3.5 * 1000, type: Number }
+  }
+
   initialize() {
 
     console.log("cart controller initialized")
@@ -96,13 +100,27 @@ export default class extends Controller {
           })
         } else {
           response.json().then(body => {
-            const errorEl = document.createElement("div")
-            errorEl.innerText = `There was an error processing your order. ${body.error}`
-            let errorContainer = document.getElementById("errorContainer")
-            errorContainer.appendChild(errorEl)
+            this.addMessage({ message: `There was an error processing your order. ${body.error}` }, { type: 'alert' });
           })
         }
       })
+  }
+
+  addMessage(content, { type = "error" } = {}) {
+    console.log("addMessage")
+    const flashContainer = document.getElementById("flash");
+    if (!flashContainer) return;
+
+    const template = flashContainer.querySelector("[data-template]");
+    const node = template.content.firstElementChild.cloneNode(true);
+    node.querySelector("[data-value]").innerText = content.message;
+
+    flashContainer.append(node);
+
+    // optional - add timeout to remove after 3.5 seconds
+    window.setTimeout(() => {
+      node.remove();
+    }, this.messageTimeoutValue);
   }
 
   formatCurrency(price) {
