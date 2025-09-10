@@ -59,6 +59,7 @@ class WebhooksController < ApplicationController
           Product.find(product['metadata']['product_id']).decrement!(:amount, item['quantity'])
         end
       end
+      OrderMailer.new_order_email(order).deliver_now
     else
       puts '---------------------------------------------'
       puts "Unhandled event type: #{event.type}"
