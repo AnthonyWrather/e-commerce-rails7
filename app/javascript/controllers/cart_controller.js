@@ -41,7 +41,7 @@ export default class extends Controller {
       deleteButton.innerText = "Remove"
       console.log("item.id: ", item.id)
       deleteButton.value = JSON.stringify({id: item.id, size: item.size})
-      deleteButton.classList.add("bg-gray-500", "rounded", "text-white", "px-2", "py-1", "ml-2")
+      deleteButton.classList.add("bg-red-500", "hover:bg-red-600", "rounded", "text-white", "px-2", "py-1", "ml-2")
       deleteButton.addEventListener("click", this.removeFromCart)
 
       const td_button = tr.insertCell();

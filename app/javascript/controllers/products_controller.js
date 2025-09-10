@@ -64,6 +64,10 @@ export default class extends Controller {
     } else {
       selectedPriceEl.innerText = "Out of stock."
     }
+
+    const addToCartButton = document.getElementById("add-to-cart-button")
+    addToCartButton.disabled = false
+    addToCartButton.classList.remove("invisible")
   }
 
   addMessage(content, { type = "error" } = {}) {
