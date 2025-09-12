@@ -90,9 +90,9 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     address: 'smtp.mailersend.net',
     port: 587,
-    domain: 'cariana.tech',
-    user_name: 'MS_usNowD@cariana.tech',
-    password: 'mssp.LkzBcei.3yxj6lj7x9xldo2r.mvgEjBb',
+    domain: Rails.application.credentials.mailersend.domain,
+    user_name: Rails.application.credentials.mailersend.username,
+    password: Rails.application.credentials.mailersend.password,
     authentication: 'plain',
     enable_starttls: true
   }
