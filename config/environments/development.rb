@@ -41,7 +41,7 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
 
   config.action_mailer.perform_caching = false
 
@@ -80,10 +80,20 @@ Rails.application.configure do
 
   config.hosts << 'loved-anchovy-on.ngrok-free.app'
 
-  config.action_mailer.delivery_method = :letter_opener_web
+  # config.action_mailer.delivery_method = :letter_opener_web
   #  config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true
   # LetterOpenerWeb.configure do |config|
   #   config.letters_location = Rails.root.join('your', 'new', 'path')
   # end
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: 'smtp.mailersend.net',
+    port: 587,
+    domain: 'cariana.tech',
+    user_name: 'MS_usNowD@cariana.tech',
+    password: 'mssp.LkzBcei.3yxj6lj7x9xldo2r.mvgEjBb',
+    authentication: 'plain',
+    enable_starttls: true
+  }
 end

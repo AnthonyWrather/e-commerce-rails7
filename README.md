@@ -287,3 +287,14 @@ Or in the Test machine\
 ```bash
 bin/rails g mailer OrderMailer new_order_email
 ```
+
+To send an email directly from the Rails console.
+
+```ruby
+ActionMailer::Base.mail(
+  from: "test@example.co",
+  to: "test@anthonywrather.me.uk",
+  subject: "Test Subject",
+  body: "Test email body."
+).deliver_now
+```
