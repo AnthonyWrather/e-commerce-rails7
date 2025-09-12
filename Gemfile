@@ -101,3 +101,4 @@ gem 'aws-sdk-s3', require: false
 # gem "uri"
 # gem "irb"
 gem 'breadcrumbs_on_rails'
+gem 'shipengine_sdk'
