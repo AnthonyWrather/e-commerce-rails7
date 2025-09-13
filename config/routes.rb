@@ -2,6 +2,7 @@
 
 Rails.application.routes.draw do
   namespace :admin do
+    resources :reports
     resources :orders
     resources :products do
       resources :stocks
