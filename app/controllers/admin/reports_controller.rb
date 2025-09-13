@@ -1,0 +1,51 @@
+# frozen_string_literal: true
+
+class Admin::ReportsController < AdminController
+  def index
+    # Monthly Revenue Chart Data
+    num_orders_monthly = Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).count
+    num_products_monthly = OrderProduct.joins(:order).where(orders: { created_at: Time.now.beginning_of_month..Time.now.end_of_month }).sum(:quantity)
+    avg_items_monthly = 0
+    if num_orders_monthly.positive? && num_products_monthly.positive?
+      avg_items_monthly = num_products_monthly.div(num_orders_monthly)
+    end
+
+    @monthly_stats = {
+      sales: num_orders_monthly,
+      items: num_products_monthly,
+      revenue: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).sum(:total)&.round(),
+      avg_sale: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).average(:total)&.round(),
+      per_sale: avg_items_monthly
+    }
+
+    @monthly_orders_by_day = Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).order(:created_at)
+    @monthly_orders_by_day = @monthly_orders_by_day.group_by { |order| order.created_at.to_date }
+    @monthly_revenue_by_day = @monthly_orders_by_day.map { |day, orders| [day.strftime('%e %A'), orders.sum(&:total)] }
+    @days_of_month = (1..Time.days_in_month(Date.today.month, Date.today.year)).to_a
+    @monthly_revenue_by_day = @monthly_revenue_by_day.to_h
+    @revenue_by_month = @days_of_month.map { |day| [day, @monthly_revenue_by_day.fetch(Date.new(Date.today.year, Date.today.month, day).strftime('%e %A'), 0)] }
+
+    # Previous Month
+    num_orders_prev_month = Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).count
+    num_products_prev_month = OrderProduct.joins(:order).where(orders: { created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month }).sum(:quantity)
+    avg_items_prev_month = 0
+    if num_orders_prev_month.positive? && num_products_prev_month.positive?
+      avg_items_prev_month = num_products_prev_month.div(num_orders_prev_month)
+    end
+
+    @prev_month_stats = {
+      sales: num_orders_prev_month,
+      items: num_products_prev_month,
+      revenue: Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).sum(:total)&.round(),
+      avg_sale: Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).average(:total)&.round(),
+      per_sale: avg_items_prev_month
+    }
+
+    @prev_month_orders_by_day = Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).order(:created_at)
+    @prev_month_orders_by_day = @prev_month_orders_by_day.group_by { |order| order.created_at.to_date }
+    @prev_month_revenue_by_day = @prev_month_orders_by_day.map { |day, orders| [day.strftime('%e %A'), orders.sum(&:total)] }
+    @days_of_month = (1..Time.days_in_month(1.month.ago.month, 1.month.ago.year)).to_a
+    @prev_month_revenue_by_day = @prev_month_revenue_by_day.to_h
+    @revenue_by_prev_month = @days_of_month.map { |day| [day, @prev_month_revenue_by_day.fetch(Date.new(1.month.ago.year, 1.month.ago.month, day).strftime('%e %A'), 0)] }
+  end
+end

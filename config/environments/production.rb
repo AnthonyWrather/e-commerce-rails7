@@ -107,9 +107,9 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     address: 'smtp.mailersend.net',
     port: 587,
-    domain: ENV['MAILERSEND_DOMAIN'],
-    user_name: ENV['MAILERSEND_USERNAME'],
-    password: ENV['MAILERSEND_PASSWORD'],
+    domain: ENV.fetch('MAILERSEND_DOMAIN', nil),
+    user_name: ENV.fetch('MAILERSEND_USERNAME', nil),
+    password: ENV.fetch('MAILERSEND_PASSWORD', nil),
     authentication: 'plain',
     enable_starttls: true
   }
