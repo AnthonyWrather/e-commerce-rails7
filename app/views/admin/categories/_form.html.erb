@@ -22,6 +22,9 @@
   </div>
 
   <div class="my-5">
+    <% if admin_category.image %>
+      <%= image_tag admin_category.image, class: "w-20 h-20 object-cover rounded-md" %>
+    <% end %>
     <%= form.label :image %>
     <%= form.file_field :image, rows: 4, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
   </div>
