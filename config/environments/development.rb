@@ -79,6 +79,8 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   config.hosts << 'loved-anchovy-on.ngrok-free.app'
+  config.hosts << '148.252.147.162'
+  config.web_console.permissions = '148.252.145.211'
 
   # config.action_mailer.delivery_method = :letter_opener_web
   #  config.action_mailer.delivery_method = :letter_opener
