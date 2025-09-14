@@ -72,11 +72,11 @@
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <% if p.price %>
-                      £<%= (p.price/100.0).to_s %>
+                      <%= formatted_price(p.price) %>
                     <% end %>
                     <% @admin_stocks.where(product_id: p.id).each do |s|  %>
                       <% if s.price %>
-                        <p>£<%= (s.price/100.0).to_s %></p>
+                        <p><%= formatted_price(s.price) %></p>
                       <% else %>
                         <p>£0.00</p>
                       <% end %>
