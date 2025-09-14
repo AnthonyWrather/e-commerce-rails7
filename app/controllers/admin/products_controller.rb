@@ -45,10 +45,17 @@ class Admin::ProductsController < AdminController
     if @admin_product.update(admin_product_params.reject { |k| k['images'] })
       if admin_product_params['images']
         admin_product_params['images'].each do |image|
+          next if image.blank?
+
+          if @admin_product.images.attached? && @admin_product.images.find { |img| img.filename == image.original_filename }
+            # Image with the same filename already exists, so delete and attach it.
+            @admin_product.images.delete(@admin_product.images.find { |img| img.filename == image.original_filename })
+          end
+          # Add the new image.
           @admin_product.images.attach(image)
         end
       end
-      redirect_to admin_products_path, notice: 'Product updated successfully'
+      redirect_to edit_admin_product_path(@admin_product), notice: 'Product updated successfully'
     else
       render :edit, status: :unprocessable_entity
     end

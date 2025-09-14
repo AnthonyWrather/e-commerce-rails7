@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     resources :orders
     resources :products do
       resources :stocks
+      resources :images, only: [:destroy]
     end
     resources :categories
   end

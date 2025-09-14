@@ -298,3 +298,15 @@ ActionMailer::Base.mail(
   body: "Test email body."
 ).deliver_now
 ```
+
+Generate the Reports screens.
+
+```ruby
+rails generate controller admin::reports index
+```
+
+Generate the Product Image Delete action.
+
+```ruby
+rails generate controller admin::images destroy
+```
