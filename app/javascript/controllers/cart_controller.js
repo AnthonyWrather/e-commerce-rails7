@@ -36,10 +36,23 @@ export default class extends Controller {
       const td_price = tr.insertCell();
       td_price.appendChild(document.createTextNode(price));
       td_price.style.border = '1px solid black';
+      td_price.style.textAlign = 'right';
+
+      const td_price_exvat = tr.insertCell();
+      td_price_exvat.appendChild(document.createTextNode(this.formatCurrency(item.price / 1.2)));
+      td_price_exvat.style.border = '1px solid black';
+      td_price_exvat.style.textAlign = 'right';
+      td_price_exvat.style.color = 'black';
 
       const td_quantity = tr.insertCell();
       td_quantity.appendChild(document.createTextNode(quantity));
       td_quantity.style.border = '1px solid black';
+      td_quantity.style.textAlign = 'right';
+
+      const td_price_total = tr.insertCell();
+      td_price_total.appendChild(document.createTextNode(this.formatCurrency(item.price * item.quantity)));
+      td_price_total.style.border = '1px solid black';
+      td_price_total.style.textAlign = 'right';
 
       const deleteButton = document.createElement("button")
       deleteButton.innerText = "Remove"
@@ -55,9 +68,14 @@ export default class extends Controller {
 
     const totalEl = document.createElement("div")
     totalEl.classList.add("text-white")
-    totalEl.innerText= `Total: ${this.formatCurrency(total)}`
+    totalEl.innerText= `Invoice Total (Inc VAT): ${this.formatCurrency(total)}`
     let totalContainer = document.getElementById("total")
     totalContainer.appendChild(totalEl)
+
+    const totalExvatEl = document.createElement("div")
+    totalExvatEl.classList.add("text-white")
+    totalExvatEl.innerText= `Invoice Total (Ex VAT): ${this.formatCurrency(total / 1.2)}`
+    totalContainer.appendChild(totalExvatEl)
   }
 
   clear() {
