@@ -101,7 +101,7 @@
       </td>
       <td style="border: 1px solid black">
         <p>
-        £<%= (@order.total/100.0).round(2) %>
+        <%= number_to_currency(((@order.total/100.0)), :unit => "£", :separator => ".", :delimiter => ",") %>
         </p>
       </td>
     </tr>
@@ -114,7 +114,7 @@
       </td>
       <td style="border: 1px solid black">
         <p>
-        £<%= (@order.total/100.0 / 1.2).round(2) %>
+        <%= number_to_currency(((@order.total/100.0/1.2)), :unit => "£", :separator => ".", :delimiter => ",") %>
         </p>
       </td>
     </tr>
@@ -141,10 +141,10 @@
         <tr>
         <td class="bg-gray-100" style="border: 1px solid black"><%= op.product.name %></td>
         <td class="bg-gray-100" style="border: 1px solid black"><%= op.size %></td>
-        <td class="bg-gray-100" style="border: 1px solid black"><%= (op.price.to_i).round(2) %></td>
-        <td class="bg-gray-100" style="border: 1px solid black"><%= (op.price.to_i / 1.2).round(2) %></td>
+        <td class="bg-gray-100" style="border: 1px solid black"><%= number_to_currency((op.price/100.0), :unit => "£", :separator => ".", :delimiter => ",") %></td>
+        <td class="bg-gray-100" style="border: 1px solid black"><%= number_to_currency((op.price/100.0/1.2), :unit => "£", :separator => ".", :delimiter => ",") %></td>
         <td class="bg-gray-100" style="border: 1px solid black"><%= op.quantity %></td>
-        <td class="bg-gray-100" style="border: 1px solid black"><%= (op.price.to_i * op.quantity).round(2) %></td>
+        <td class="bg-gray-100" style="border: 1px solid black"><%= number_to_currency(((op.price/100.0)*op.quantity), :unit => "£", :separator => ".", :delimiter => ",") %></td>
         </tr>
       <% end %>
     </table>

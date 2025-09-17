@@ -10,16 +10,17 @@ Phone Number: <%= @order.phone %>
 Customer email: <%= @order.customer_email %>
 Billing Name: <%= @order.billing_name %>
 Billing Address: <%= @order.billing_address %>
-Total: £<%= (@order.total/100.0).round(2) %>
+Total (Inc VAT): <%= number_to_currency(((@order.total/100.0)), :unit => "£", :separator => ".", :delimiter => ",") %>
+Total (Ex VAT) : <%= number_to_currency(((@order.total/100.0/1.2)), :unit => "£", :separator => ".", :delimiter => ",") %>
 
 <% if @order.order_products.any? %>
   <% @order.order_products.each do |op| %>
     Name: <%= op.product.name %>
     Size: <%= op.size %>
-    Price (Inc VAT): £<%= (op.price.to_i/100.0).round(2) %>
-    Price (Ex VAT): £<%= (op.price.to_i/1.2/100.0).round(2) %>
+    Price (Inc VAT): <%= number_to_currency((op.price/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+    Price (Ex VAT): <%= number_to_currency((op.price/1.2/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
     Quantity: <%= op.quantity %>
-    Item Total (Inc VAT): £<%= (op.price.to_i * op.quantity/100.0).round(2) %>
+    Item Total (Inc VAT): <%= number_to_currency(((op.price*op.quantity/100.0)), :unit => "£", :separator => ".", :delimiter => ",") %>
   <% end %>
 <% end %>
 
