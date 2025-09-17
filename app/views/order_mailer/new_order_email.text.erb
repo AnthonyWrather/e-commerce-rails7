@@ -12,6 +12,7 @@ Billing Name: <%= @order.billing_name %>
 Billing Address: <%= @order.billing_address %>
 Total (Inc VAT): <%= number_to_currency(((@order.total/100.0)), :unit => "£", :separator => ".", :delimiter => ",") %>
 Total (Ex VAT) : <%= number_to_currency(((@order.total/100.0/1.2)), :unit => "£", :separator => ".", :delimiter => ",") %>
+Total VAT @20% : <%= number_to_currency(((@order.total - (@order.total/1.2))/100), :unit => "£", :separator => ".", :delimiter => ",") %>
 
 <% if @order.order_products.any? %>
   <% @order.order_products.each do |op| %>
