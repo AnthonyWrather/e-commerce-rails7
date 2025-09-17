@@ -61,6 +61,8 @@ export default class extends Controller {
     const selectedPriceEl = document.getElementById("product-price")
     if (myPrice[1]) {
       selectedPriceEl.innerText = `£${myPrice[1]}`
+      const selectedPriceExVatEl = document.getElementById("product-price-exvat")
+      selectedPriceExVatEl.innerText = `Ex VAT £${(myPrice[1] / 1.2).toFixed(2)}`
     } else {
       selectedPriceEl.innerText = "Out of stock."
     }
