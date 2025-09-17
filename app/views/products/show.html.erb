@@ -30,7 +30,12 @@
         <% end %>
       <% end %>
     </p>
-    <p class="py-8 text-white text-md"><%= @product.description %></p>
+    <p class="text-sm text-white" id="product-price-exvat">Ex VAT:
+      <% if @product.price %>
+        <%= formatted_price((@product.price/1.2)) %>
+      <% end %>
+    </p>
+    <p class="py-8 text-2xl text-white"><%= @product.description %></p>
     <div class="my-8">
       <% if @product.stocks.count > 0 %>
         <p class='text-lg text-white uppercase'>Size</p>
