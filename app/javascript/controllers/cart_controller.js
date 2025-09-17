@@ -76,6 +76,11 @@ export default class extends Controller {
     totalExvatEl.classList.add("text-white")
     totalExvatEl.innerText= `Invoice Total (Ex VAT): ${this.formatCurrency(total / 1.2)}`
     totalContainer.appendChild(totalExvatEl)
+
+    const totalVatEl = document.createElement("div")
+    totalVatEl.classList.add("text-white")
+    totalVatEl.innerText= `Total VAT @20%: ${this.formatCurrency(total - total/1.2)}`
+    totalContainer.appendChild(totalVatEl)
   }
 
   clear() {
