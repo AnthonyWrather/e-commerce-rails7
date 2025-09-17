@@ -10,11 +10,16 @@ Phone Number: <%= @order.phone %>
 Customer email: <%= @order.customer_email %>
 Billing Name: <%= @order.billing_name %>
 Billing Address: <%= @order.billing_address %>
-Total: £<%= (@order.total/100.0) %>
+Total: £<%= (@order.total/100.0).round(2) %>
 
 <% if @order.order_products.any? %>
   <% @order.order_products.each do |op| %>
-  Name: <%= op.product.name %> Size: <%= op.size %> Quantity: <%= op.quantity %>
+    Name: <%= op.product.name %>
+    Size: <%= op.size %>
+    Price (Inc VAT): £<%= (op.price.to_i/100.0).round(2) %>
+    Price (Ex VAT): £<%= (op.price.to_i/1.2/100.0).round(2) %>
+    Quantity: <%= op.quantity %>
+    Item Total (Inc VAT): £<%= (op.price.to_i * op.quantity/100.0).round(2) %>
   <% end %>
 <% end %>
 
