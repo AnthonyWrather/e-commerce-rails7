@@ -8,10 +8,12 @@ class CheckoutsController < ApplicationController
     line_items = cart.map do |item|
       product = Product.find(item['id'])
       product_stock_id = product.id
+      price = product.price
 
       product_stock = product.stocks.find { |ps| ps.size == item['size'] }
       if product_stock
         product_stock_id = product_stock.id
+        price = product_stock.price
       end
 
       if product_stock && product_stock.amount < item['quantity'].to_i
@@ -30,7 +32,7 @@ class CheckoutsController < ApplicationController
           product_data: {
             name: item['name'],
             # metadata: { product_id: product.id, size: item['size'], product_stock_id: product_stock.id }
-            metadata: { product_id: product.id, size: item['size'], product_stock_id: product_stock_id }
+            metadata: { product_id: product.id, size: item['size'], product_stock_id: product_stock_id, product_price: price }
           },
           currency: 'gbp',
           unit_amount: item['price'].to_i
