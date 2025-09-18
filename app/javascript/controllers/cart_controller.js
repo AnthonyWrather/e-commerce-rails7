@@ -39,7 +39,7 @@ export default class extends Controller {
       td_price.style.textAlign = 'right';
 
       const td_price_exvat = tr.insertCell();
-      td_price_exvat.appendChild(document.createTextNode(this.formatCurrency(item.price / 1.2)));
+      td_price_exvat.appendChild(document.createTextNode(this.formatCurrency(item.price*0.8)));
       td_price_exvat.style.border = '1px solid black';
       td_price_exvat.style.textAlign = 'right';
       td_price_exvat.style.color = 'black';
@@ -74,12 +74,12 @@ export default class extends Controller {
 
     const totalExvatEl = document.createElement("div")
     totalExvatEl.classList.add("text-white")
-    totalExvatEl.innerText= `Invoice Total (Ex VAT): ${this.formatCurrency(total / 1.2)}`
+    totalExvatEl.innerText= `Invoice Total (Ex VAT): ${this.formatCurrency(total*0.8)}`
     totalContainer.appendChild(totalExvatEl)
 
     const totalVatEl = document.createElement("div")
     totalVatEl.classList.add("text-white")
-    totalVatEl.innerText= `Total VAT @20%: ${this.formatCurrency(total - total/1.2)}`
+    totalVatEl.innerText= `Total VAT @20%: ${this.formatCurrency(total*0.2)}`
     totalContainer.appendChild(totalVatEl)
   }
 
