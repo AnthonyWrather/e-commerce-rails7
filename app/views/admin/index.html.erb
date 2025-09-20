@@ -20,7 +20,7 @@
       <div class="px-2 py-4">
         <div class="mb-2 text-xl font-bold text-white">Net Revenue</div>
         <p class="text-base text-white">
-          <%= formatted_price(@monthly_stats[:revenue] ? (@monthly_stats[:revenue]*0.8) : 0) %>
+          <%= formatted_price(@monthly_stats[:revenue] ? (@monthly_stats[:revenue]/1.2) : 0) %>
         </p>
       </div>
     </div>
@@ -34,7 +34,7 @@
       <div class="px-2 py-4">
         <div class="mb-2 text-xl font-bold text-white">VAT</div>
         <p class="text-base text-white">
-          <%= formatted_price(@monthly_stats[:revenue] ? (@monthly_stats[:revenue]*0.2) : 0) %>
+          <%= formatted_price(@monthly_stats[:revenue] ? (@monthly_stats[:revenue]-(@monthly_stats[:revenue]/1.2)) : 0) %>
         </p>
       </div>
     </div>
