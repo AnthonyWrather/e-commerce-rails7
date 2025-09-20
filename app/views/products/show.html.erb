@@ -32,7 +32,7 @@
     </p>
     <p class="text-sm text-white" id="product-price-exvat">Ex VAT:
       <% if @product.price %>
-        <%= formatted_price((@product.price*0.8)) %>
+        <%= formatted_price((@product.price/1.2)) %>
       <% end %>
     </p>
     <p class="py-8 text-2xl text-white"><%= @product.description %></p>

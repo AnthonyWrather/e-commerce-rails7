@@ -11,15 +11,15 @@ Customer email: <%= @order.customer_email %>
 Billing Name: <%= @order.billing_name %>
 Billing Address: <%= @order.billing_address %>
 Total (Inc VAT): <%= number_to_currency((@order.total/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
-Total (Ex VAT) : <%= number_to_currency(((@order.total*0.8)/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
-Total VAT @20% : <%= number_to_currency(((@order.total*0.2)/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+Total (Ex VAT) : <%= number_to_currency(((@order.total/1.2)/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+Total VAT @20% : <%= number_to_currency(((@order.total-(@order.total/1.2))/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
 
 <% if @order.order_products.any? %>
   <% @order.order_products.each do |op| %>
     Name: <%= op.product.name %>
     Size: <%= op.size %>
     Price (Inc VAT): <%= number_to_currency((op.price/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
-    Price (Ex VAT): <%= number_to_currency(((op.price*0.8)/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+    Price (Ex VAT): <%= number_to_currency(((op.price/1.2)/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
     Quantity: <%= op.quantity %>
     Item Total (Inc VAT): <%= number_to_currency(((op.price*op.quantity/100.0)), :unit => "£", :separator => ".", :delimiter => ",") %>
   <% end %>
