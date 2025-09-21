@@ -37,6 +37,8 @@ Rails.application.routes.draw do
   post 'checkout' => 'checkouts#create'
   get 'success' => 'checkouts#success'
   get 'cancel' => 'checkouts#cancel'
+  get 'quantities' => 'quantities#index'
+
   post 'webhooks' => 'webhooks#stripe'
 
   # TODO: Restrict access to LetterOpenerWeb in Production once Test env is configured.
