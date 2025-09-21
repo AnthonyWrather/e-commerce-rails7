@@ -1,0 +1,636 @@
+<div>
+  <%= turbo_frame_tag "quantities" do %>
+    <div data-controller="quantities">
+      <p data-quantities-target="output">Hello, Stimulus!</p>
+      <button data-action="click->quantities#greet" class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Greet</button>
+    </div>
+
+    <h1 class="text-2xl font-bold text-red-600">Under Construction</h1>
+    <h2 class="text-2xl font-bold">Everything on this page needs checking! (Some are definitely wrong.)</h2>
+    <div class="container flex px-6 py-4 mx-auto border border-white rounded">
+      <div class="flex-col px-2 mt-4 text-white">
+        <h2 class="text-2xl font-bold">Resin to Fibreglass Ratios</h2>
+        <table class="table min-w-full-fixed">
+          <thead class="bg-blue-400">
+            <tr>
+              <th class="px-4 py-2 bg-blue-400 border border-t-2 border-white">Material (Kevlar/Carbon Fibre?)</th>
+              <th class="px-4 py-2 border border-t-2 border-white">Resin Per Sq Meter</th>
+              <th class="px-4 py-2 border border-t-2 border-white">Thickness</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">300g (1oz) Chop Strand Mat</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">650g</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">0.5mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">450g (1oz) Chop Strand Mat</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">1.0 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">0.75mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">600g (2oz) Chop Strand Mat</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">1.4 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">1.0mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">900g (1oz) Chop Strand Mat</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">2.0 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">1.5mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">125g Plain weave Glass cloth</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">150g</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">0.25mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">200g Plain weave Glass cloth</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">250g</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">0.5mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">300g Woven Roving</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">300g</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">0.25mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">600g Woven Roving</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">600g</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">0.5mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">800g Woven Roving</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">800g</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">0.75mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">600/300 Combination Matt</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">1.2 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">0.75mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">800/450 Combination Matt</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">1.7 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">1.0mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">600g Biaxial Glassfibre</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">700g</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">0.5mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">800g Biaxial Glassfibre</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">900g</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">0.75mm</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 bg-blue-400 border border-t-2 border-white">Gel Coat</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">600g</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">0.5mm</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex-col px-2 mt-4 text-white">
+        <h2 class="text-2xl font-bold">Catalyst Ratios</h2>
+        <table class="table min-w-full-fixed">
+          <tbody>
+              <tr class="bg-blue-400">
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">Temperature</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">5&deg;C to 13&deg;C</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">13&deg;C to 16&deg;C</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">16&deg;C to 20&deg;C</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">20&deg;C to 25&deg;C</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">% Catalyst to Resin</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">4%</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">3%</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">2%</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">1%</td>
+              </tr>
+
+              <tr>
+                <td class="bg-blue-400 border border-t-2 border-white">Catalyst Amounts for<br> Common Resin Quantities</td>
+                <td colspan="4" class="px-4 py-2 text-center bg-blue-400 border border-t-2 border-white">(Using the above % Catalyst to Resin)</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">100g</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">4ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">3ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">2ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">1ml</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">500g</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">20ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">15ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">10ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">5ml</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">1.0 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">40ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">30ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">20ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">10ml</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">1.5 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">60ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">45ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">30ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">15ml</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">2.0 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">80ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">60ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">40ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">20ml</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">2.5 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">100ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">75ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">50ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">25ml</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">3.0 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">120ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">90ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">60ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">30ml</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">3.5 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">140ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">105ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">70ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">35ml</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">4.0 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">160ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">120ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">80ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">40ml</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">4.5 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">180ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">135ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">90ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">45ml</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-bold bg-blue-400 border border-t-2 border-white">5.0 kg</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">200ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">150ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">100ml</td>
+                <td class="px-4 py-2 text-center border border-t-2 border-white">50ml</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="container flex px-6 py-4 mx-auto mt-8 border border-white rounded">
+      <div class="flex-col px-2 text-white">
+        <form action="/quantities" method="get" class="p-4 bg-blue-600 border border-white rounded">
+          <p class="text-green-600">Working Maybe?</p>
+          <h2 class="text-2xl font-bold">Calculate Required Material</h2>
+          <p class="mb-4">Please enter the dimensions and material type to calculate the required quantities.</p>
+          <div class="mb-4">
+            <label for="length" class="block mb-2 font-bold text-white">Length (m):</label>
+            <input type="number" id="length" name="length" step="0.01" class="w-full px-3 py-2 text-black border rounded" required>
+          </div>
+          <div class="mb-4">
+            <label for="width" class="block mb-2 font-bold text-white">Width (m):</label>
+            <input type="number" id="width" name="width" step="0.01" class="w-full px-3 py-2 text-black border rounded" required>
+          </div>
+          <div class="mb-4">
+            <label for="material" class="block mb-2 font-bold text-white">Material Type:</label>
+            <select id="material" name="material" class="w-full px-3 py-2 text-black border rounded" required>
+              <option value="" disabled selected>Select Material</option>
+              <option value="300g_chop_strand_mat">300g Chop Strand Mat</option>
+              <option value="450g_chop_strand_mat">450g Chop Strand Mat</option>
+              <option value="600g_chop_strand_mat">600g Chop Strand Mat</option>
+              <option value="900g_chop_strand_mat">900g Chop Strand Mat</option>
+              <option value="125g_plain_weave_cloth">125g Plain Weave Cloth</option>
+              <option value="200g_plain_weave_cloth">200g Plain Weave Cloth</option>
+              <option value="300g_woven_roving">300g Woven Roving</option>
+              <option value="600g_woven_roving">600g Woven Roving</option>
+              <option value="800g_woven_roving">800g Woven Roving</option>
+              <option value="600_300_combination_matt">600/300 Combination Matt</option>
+              <option value="800_450_combination_matt">800/450 Combination Matt</option>
+              <option value="600g_biaxial_glassfibre">600g Biaxial Glassfibre</option>
+              <option value="800g_biaxial_glassfibre">800g Biaxial Glassfibre</option>
+              <option value="gel_coat">Gel Coat</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="layers" class="block mb-2 font-bold text-white">Number of Layers:</label>
+            <select id="layers" name="layers" class="w-full px-3 py-2 text-black border rounded" required>
+              <option value="" disabled selected>Select Number of Layers</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="catalyst" class="block mb-2 font-bold text-white">Catalyst Ratio:</label>
+            <select id="catalyst" name="catalyst" class="w-full px-3 py-2 text-black border rounded" required>
+              <option value="" disabled selected>Select Catalyst</option>
+              <option value="1">1%</option>
+              <option value="2">2%</option>
+              <option value="3">3%</option>
+              <option value="4">4%</option>
+            </select>
+          </div>
+          <button type="submit" class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Calculate</button>
+
+          <table class="container mt-4 border border-white rounded">
+            <thead class="text-left bg-blue-400 border border-white">
+              <tr>
+                <th class="px-2">Results</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white">Area</p>
+                </td>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white"><%= @area %> m²</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white">Num Layers</p>
+                </td>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white"><%= @layers %></p>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Min Mat Req (m): <%= @mat %> m + 15%</p>
+                  </div>
+                </td>
+                <td>
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @mat_total %> m</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Min Mat Req (kg): <%= @mat_kg %> kg + 15%</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @mat_total_kg %> kg</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Min Resin Req: <%= @resin %> kg + 15%</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @resin_total %> kg</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Catalyst Required @ <%= @catalyst %>%</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @catalyst_ml %> ml</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Total Material Weight</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @total_weight %> kg</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
+
+      <div class="flex-col px-2 text-white">
+        <form action="/quantities" method="get" class="p-4 bg-blue-600 border border-white rounded">
+          <p class="text-red-600">Not Working Yet</p>
+          <h2 class="text-2xl font-bold">Calculate Required Material</h2>
+          <p class="mb-4">Please enter the area and material type to calculate the required quantities.</p>
+          <div class="mb-4">
+            <label for="area" class="block mb-2 font-bold text-white">Area (m²):</label>
+            <input type="number" id="area" name="area" step="0.01" class="w-full px-3 py-2 text-black border rounded" required>
+          </div>
+          <div class="mb-4">
+            <label for="material" class="block mb-2 font-bold text-white">Material Type:</label>
+            <select id="material" name="material" class="w-full px-3 py-2 text-black border rounded" required>
+              <option value="" disabled selected>Select Material</option>
+              <option value="300g_chop_strand_mat">300g Chop Strand Mat</option>
+              <option value="450g_chop_strand_mat">450g Chop Strand Mat</option>
+              <option value="600g_chop_strand_mat">600g Chop Strand Mat</option>
+              <option value="900g_chop_strand_mat">900g Chop Strand Mat</option>
+              <option value="125g_plain_weave_cloth">125g Plain Weave Cloth</option>
+              <option value="200g_plain_weave_cloth">200g Plain Weave Cloth</option>
+              <option value="300g_woven_roving">300g Woven Roving</option>
+              <option value="600g_woven_roving">600g Woven Roving</option>
+              <option value="800g_woven_roving">800g Woven Roving</option>
+              <option value="600_300_combination_matt">600/300 Combination Matt</option>
+              <option value="800_450_combination_matt">800/450 Combination Matt</option>
+              <option value="600g_biaxial_matt">600g Biaxial Matt</option>
+              <option value="800g_biaxial_matt">800g Biaxial Matt</option>
+              <option value="gel_coat">Gel Coat</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="layers" class="block mb-2 font-bold text-white">Number of Layers:</label>
+            <select id="layers" name="layers" class="w-full px-3 py-2 text-black border rounded" required>
+              <option value="" disabled selected>Select Number of Layers</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="catalyst" class="block mb-2 font-bold text-white">Catalyst Ratio:</label>
+            <select id="catalyst" name="catalyst" class="w-full px-3 py-2 text-black border rounded" required>
+              <option value="" disabled selected>Select Catalyst</option>
+              <option value="1">1%</option>
+              <option value="2">2%</option>
+              <option value="3">3%</option>
+              <option value="4">4%</option>
+            </select>
+          </div>
+          <button type="submit" class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Calculate</button>
+
+          <table class="container mt-4 border border-white rounded">
+            <thead class="text-left bg-blue-400 border border-white">
+              <tr>
+                <th class="px-2">Results</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white">Area</p>
+                </td>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white"><%= @area %> m²</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white">Num Layers</p>
+                </td>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white"><%= @layers %></p>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Min Mat Req (m): <%= @mat %> m + 15%</p>
+                  </div>
+                </td>
+                <td>
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @mat_total %> m</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Min Mat Req (kg): <%= @mat_kg %> kg + 15%</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @mat_total_kg %> kg</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Min Resin Req: <%= @resin %> kg + 15%</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @resin_total %> kg</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Catalyst Required @ <%= @catalyst %>%</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @catalyst_ml %> ml</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Total Material Weight</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @total_weight %> kg</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
+
+      <div class="flex-col px-2 text-white">
+        <form action="/quantities" method="get" class="p-4 bg-blue-600 border border-white rounded">
+          <p class="text-red-600">Not Working Yet</p>
+          <h2 class="text-2xl font-bold">Calculate Required Material</h2>
+          <p class="mb-4">Please enter the dimensions and material type to calculate the required quantities.</p>
+          <div class="mb-4">
+            <label for="length" class="block mb-2 font-bold text-white">Length (m):</label>
+            <input type="number" id="length" name="length" step="0.01" class="w-full px-3 py-2 text-black border rounded" required>
+          </div>
+          <div class="mb-4">
+            <label for="width" class="block mb-2 font-bold text-white">Width (m):</label>
+            <input type="number" id="width" name="width" step="0.01" class="w-full px-3 py-2 text-black border rounded" required>
+          </div>
+          <div class="mb-4">
+            <label for="depth" class="block mb-2 font-bold text-white">Depth (cm):</label>
+            <input type="number" id="depth" name="depth" step="0.01" class="w-full px-3 py-2 text-black border rounded" required>
+          </div>
+          <div class="mb-4">
+            <label for="material" class="block mb-2 font-bold text-white">Material Type:</label>
+            <select id="material" name="material" class="w-full px-3 py-2 text-black border rounded" required>
+              <option value="" disabled selected>Select Material</option>
+              <option value="300g_chop_strand_mat">300g Chop Strand Mat</option>
+              <option value="450g_chop_strand_mat">450g Chop Strand Mat</option>
+              <option value="600g_chop_strand_mat">600g Chop Strand Mat</option>
+              <option value="900g_chop_strand_mat">900g Chop Strand Mat</option>
+              <option value="125g_plain_weave_cloth">125g Plain Weave Cloth</option>
+              <option value="200g_plain_weave_cloth">200g Plain Weave Cloth</option>
+              <option value="300g_woven_roving">300g Woven Roving</option>
+              <option value="600g_woven_roving">600g Woven Roving</option>
+              <option value="800g_woven_roving">800g Woven Roving</option>
+              <option value="600_300_combination_matt">600/300 Combination Matt</option>
+              <option value="800_450_combination_matt">800/450 Combination Matt</option>
+              <option value="600g_biaxial_glassfibre">600g Biaxial Glassfibre</option>
+              <option value="800g_biaxial_glassfibre">800g Biaxial Glassfibre</option>
+              <option value="gel_coat">Gel Coat</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="layers" class="block mb-2 font-bold text-white">Number of Layers:</label>
+            <select id="layers" name="layers" class="w-full px-3 py-2 text-black border rounded" required>
+              <option value="" disabled selected>Select Number of Layers</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="catalyst" class="block mb-2 font-bold text-white">Catalyst Ratio:</label>
+            <select id="catalyst" name="catalyst" class="w-full px-3 py-2 text-black border rounded" required>
+              <option value="" disabled selected>Select Catalyst</option>
+              <option value="1">1%</option>
+              <option value="2">2%</option>
+              <option value="3">3%</option>
+              <option value="4">4%</option>
+            </select>
+          </div>
+          <button type="submit" class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Calculate</button>
+
+          <table class="container mt-4 border border-white rounded">
+            <thead class="text-left bg-blue-400 border border-white">
+              <tr>
+                <th class="px-2">Results</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white">Area</p>
+                </td>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white"><%= @area %> m²</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white">Num Layers</p>
+                </td>
+                <td class="border border-white">
+                  <p class="px-2 font-bold text-white"><%= @layers %></p>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Min Mat Req (m): <%= @mat %> m + 15%</p>
+                  </div>
+                </td>
+                <td>
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @mat_total %> m</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Min Mat Req (kg): <%= @mat_kg %> kg + 15%</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @mat_total_kg %> kg</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Min Resin Req: <%= @resin %> kg + 15%</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @resin_total %> kg</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Catalyst Required @ <%= @catalyst %>%</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @catalyst_ml %> ml</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white">Total Material Weight</p>
+                  </div>
+                </td>
+                <td class="border border-white">
+                  <div class="flex">
+                    <p class="px-2 font-bold text-white"><%= @total_weight %> kg</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
+
+    </div>
+  <% end %>
+</div>

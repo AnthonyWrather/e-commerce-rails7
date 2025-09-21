@@ -134,9 +134,9 @@ rubocop --only Style/FrozenStringLiteralComment -A
 The final rubocop.yml file is
 
 ```yml
-# The behavior of RuboCop can be controlled via the .rubocop.yml
+# The behaviour of RuboCop can be controlled via the .rubocop.yml
 # configuration file. It makes it possible to enable/disable
-# certain cops (checks) and to alter their behavior if they accept
+# certain cops (checks) and to alter their behaviour if they accept
 # any parameters. The file can be placed either in your home
 # directory or in some project directory.
 #
@@ -310,3 +310,26 @@ Generate the Product Image Delete action.
 ```ruby
 rails generate controller admin::images destroy
 ```
+
+```ruby
+rails generate controller quantities index
+rails generate stimulus quantities
+```
+
+## Mat Calculation
+
+* Area = Width x Length
+* Total Area = A1 + A2....
+
+Required Weight of Mat
+
+* Select g/m2 of cloth + Roll Width
+* Total Weight (kg) = Total Area (m2) \* Mat Weight (g/m2) \* Number of Layers
+
+Required Length of Mat
+
+* Required Length (m) = (Total Area (m2) \* Number of Layers) / Roll Width (m)
+
+Add 10% to 15% to the Mat for wastage, overlap and feathering.
+
+* Total Length (m) = Required Length (m) \* 1.15
