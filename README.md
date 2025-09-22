@@ -211,6 +211,7 @@ bin/rails generate migration AddPriceToOrderProducts
 ```
 
 Add a Name to the Orders table.
+
 ```bash
 bin/rails generate migration AddNameToOrderOrders
 ```
@@ -235,12 +236,12 @@ To connect use
 ssh -i ~/.ssh/id_ed25519_docker srv-d2mv4qp5pdvs739c15mg@ssh.frankfurt.render.com
 ```
 
-## Setup the Stripe Sandpit WebHook for development and testing.
+## Setup the Stripe Sandpit WebHook for development and testing
 
 Setup the Stripe sandpit for Test
 In Stripe remember to add /webhooks to the target endpoint.
 Get the secret key and webhook key for the app.
-Add them to Render as env vars.
+Add them to Render as env variables.
 
 Setup the Stripe Sandpit for your local Dev Env.
 Get the secret key and webhook key for the app and add them to credentials.enc
@@ -275,14 +276,14 @@ bin/dev
 ```
 
 Install and configure letter_opener gem for local email testing.\
-(https://github.com/ryanb/letter_opener)\
-(https://github.com/fgrehm/letter_opener_web)
+<https://github.com/ryanb/letter_opener>\
+<https://github.com/fgrehm/letter_opener_web>
 
 And it can be accessed on the localhost\
-(https://loved-anchovy-on.ngrok-free.app/letter_opener)
+<https://loved-anchovy-on.ngrok-free.app/letter_opener>
 
 Or in the Test machine\
-(https://e-commerce-rails7.onrender.com/letter_opener)
+<https://e-commerce-rails7.onrender.com/letter_opener>
 
 ```bash
 bin/rails g mailer OrderMailer new_order_email

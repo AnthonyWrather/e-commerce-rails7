@@ -42,17 +42,37 @@
     </div>
 
     <%= form.label :images %>
-    <%= form.file_field :images, multiple: true, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.file_field :images, multiple: true, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2" %>
   </div>
 
   <div class="my-5">
-    <%= form.label :price %>
-    <%= form.number_field :price, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.label :price %><p class="text-xs text-gray-500">in pence</p>
+    <%= form.number_field :price, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2" %>
   </div>
 
   <div class="my-5">
     <%= form.label :amount %>
-    <%= form.number_field :amount, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.number_field :amount, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-50pc" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :weight %><p class="text-xs text-gray-500">in grams</p>
+    <%= form.number_field :weight, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-50pc" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :length %><p class="text-xs text-gray-500">in cm</p>
+    <%= form.number_field :length, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-50pc" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :height %><p class="text-xs text-gray-500">in cm</p>
+    <%= form.number_field :height, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-50pc" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :width %><p class="text-xs text-gray-500">in cm</p>
+    <%= form.number_field :width, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-50pc" %>
   </div>
 
   <div class="my-5">
@@ -67,7 +87,7 @@
 
   <% unless admin_product.new_record? %>
     <div class="my-5">
-      <%= link_to "Product Stock", admin_product_stocks_path(admin_product), class: "underline" %>
+      <%= link_to "Edit Product Size/Price/Stock", admin_product_stocks_path(admin_product), class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
     </div>
   <% end %>
 
