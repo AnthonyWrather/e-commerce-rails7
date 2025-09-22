@@ -46,7 +46,7 @@ class CheckoutsController < ApplicationController
       mode: 'payment',
       line_items: line_items,
       success_url: "#{request.protocol}#{request.host_with_port}/success",
-      cancel_url: "#{request.protocol}#{request.host_with_port}/cancel",
+      cancel_url: "#{request.protocol}#{request.host_with_port}/cart",
       shipping_address_collection: {
         allowed_countries: %w[GB]
       },
