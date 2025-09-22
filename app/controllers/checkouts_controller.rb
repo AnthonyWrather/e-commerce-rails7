@@ -31,7 +31,6 @@ class CheckoutsController < ApplicationController
         price_data: {
           product_data: {
             name: item['name'],
-            # metadata: { product_id: product.id, size: item['size'], product_stock_id: product_stock.id }
             metadata: { product_id: product.id, size: item['size'], product_stock_id: product_stock_id, product_price: price }
           },
           currency: 'gbp',
@@ -55,7 +54,52 @@ class CheckoutsController < ApplicationController
       phone_number_collection: {
         enabled: true
       },
-      billing_address_collection: 'required'
+      billing_address_collection: 'required',
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            display_name: 'Collection',
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 0,
+              currency: 'gbp'
+            },
+            delivery_estimate: {
+              minimum: { unit: 'business_day', value: 1 },
+              maximum: { unit: 'business_day', value: 1 },
+            }
+          }
+        },
+        {
+          shipping_rate_data: {
+            display_name: '3 to 5 Days Shipping',
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 2500,
+              currency: 'gbp'
+            },
+            delivery_estimate: {
+              minimum: { unit: 'business_day', value: 3 },
+              maximum: { unit: 'business_day', value: 5 },
+            }
+          }
+        },
+        {
+          shipping_rate_data: {
+            display_name: 'Overnight Shipping (Order Before 11:00am)',
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 5000,
+              currency: 'gbp'
+            },
+            delivery_estimate: {
+              minimum: { unit: 'business_day', value: 1 },
+              maximum: { unit: 'business_day', value: 1 },
+            }
+          }
+        }
+
+      ]
     )
 
     render json: { url: session.url }
