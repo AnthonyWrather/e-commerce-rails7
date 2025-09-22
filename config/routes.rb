@@ -10,6 +10,13 @@ Rails.application.routes.draw do
     end
     resources :categories
   end
+
+  # namespace :quantities do
+  #   resources :mould_rectangle, only: [:index]
+  #   resources :area, only: [:index]
+  #   resources :dimensions, only: [:index]
+  # end
+
   devise_for :admins
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -38,6 +45,9 @@ Rails.application.routes.draw do
   get 'success' => 'checkouts#success'
   get 'cancel' => 'checkouts#cancel'
   get 'quantities' => 'quantities#index'
+  get 'quantities/area' => 'quantities/area#index'
+  get 'quantities/dimensions' => 'quantities/dimensions#index'
+  get 'quantities/mould_rectangle' => 'quantities/mould_rectangle#index'
 
   post 'webhooks' => 'webhooks#stripe'
 

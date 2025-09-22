@@ -2,9 +2,9 @@
 
 require 'test_helper'
 
-class QuantitiesControllerTest < ActionDispatch::IntegrationTest
+class Quantities::DimensionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get index' do
-    get quantities_index_url
+    get quantities_dimensions_index_url
     assert_response :success
   end
 end

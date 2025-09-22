@@ -1,4 +1,9 @@
+# frozen_string_literal: true
+
 class QuantitiesController < ApplicationController
+  add_breadcrumb 'Home', :root_path
+  add_breadcrumb 'Quantity Calculator', :quantities_path
+
   def index
     @area = (params[:length].to_f * params[:width].to_f).round(2)
     @layers = params[:layers].to_i
@@ -7,7 +12,7 @@ class QuantitiesController < ApplicationController
     @mat_total = (@mat * 1.15).round(2)
 
     # Need to set the Mat Weight and Type values.
-    @mat_type = "600g CSM"
+    @mat_type = '600g CSM'
     @mat_weight = 0.6
     @mat_resin = 1.5
 
