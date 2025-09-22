@@ -334,3 +334,19 @@ Required Length of Mat
 Add 10% to 15% to the Mat for wastage, overlap and feathering.
 
 * Total Length (m) = Required Length (m) \* 1.15
+
+## Enable file sharing with the local docker pgadmin container
+
+pgadmin saves it export files to
+
+```bash
+/var/lib/pgadmin/storage/admin_pgadmin.com
+```
+
+So this needs to be mounted from the local dev system.
+
+Edit the docker-compose.yml
+
+```docker
+      - ../storage/pgadmin/backups:/var/lib/pgadmin/storage/admin_pgadmin.com/backups
+```
