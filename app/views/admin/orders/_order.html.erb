@@ -10,6 +10,32 @@
     <tr class="min-w-full overflow-x-scroll">
       <td class="bg-gray-300" style="border: 1px solid black">
         <p>
+          <strong class="block mb-1 font-medium ">Order ID:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= order.id %>
+        </p>
+      </td>
+    </tr>
+
+    <tr class="min-w-full overflow-x-scroll">
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium ">Order Date:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= order.created_at.strftime("%a %d %B %Y %H:%M") %>
+        </p>
+      </td>
+    </tr>
+
+    <tr class="min-w-full overflow-x-scroll">
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
           <strong class="block mb-1 font-medium ">Shipping Name:</strong>
         </p>
       </td>
@@ -86,6 +112,84 @@
     </tr>
 
     <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Stripe Payment ID:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= order.payment_id %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Payment Status:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+          <%= order.payment_status.to_s.humanize %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Sub Total:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+        <%= formatted_price(order.total) %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Shipping Type:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+        <%= order.shipping_description %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Shipping:</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+        <%= formatted_price(order.shipping_cost) %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Total (Inc Shipping and VAT):</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+        <%= formatted_price(order.total + order.shipping_cost) %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
       <td class="bg-gray-300 " style="border: 1px solid black">
         <p>
           <strong class="block mb-1 font-medium">Fulfilled:</strong>
@@ -101,26 +205,13 @@
         </p>
       </td>
     </tr>
-
-    <tr>
-      <td class="bg-gray-300" style="border: 1px solid black">
-        <p>
-          <strong class="block mb-1 font-medium">Total:</strong>
-        </p>
-      </td>
-      <td style="border: 1px solid black">
-        <p>
-        <%= formatted_price(order.total) %>
-        </p>
-      </td>
-    </tr>
   </table>
 
   <div class="py-4">
     <% if order.order_products.any? %>
       <p class="py-1 text-2xl font-bold">Products</p>
       <table class="min-w-full overflow-x-scroll">
-        <tr >
+        <tr>
           <th class="bg-gray-300" style="border: 1px solid black">Name</th>
           <th class="bg-gray-300" style="border: 1px solid black">Size</th>
           <th class="bg-gray-300" style="border: 1px solid black">Quantity</th>
