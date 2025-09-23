@@ -4,15 +4,17 @@ Hello <%= @order.name %>
 We have received your order with ID <%= @order.id %>.
 
 Invoice Details
-Shipping Name: <%= @order.name %>
-Shipping Address: <%= @order.address %>
-Phone Number: <%= @order.phone %>
-Customer email: <%= @order.customer_email %>
-Billing Name: <%= @order.billing_name %>
-Billing Address: <%= @order.billing_address %>
-Total (Inc VAT): <%= number_to_currency((@order.total/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
-Total (Ex VAT) : <%= number_to_currency(((@order.total/1.2)/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
-Total VAT @20% : <%= number_to_currency(((@order.total-(@order.total/1.2))/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+Shipping Name       : <%= @order.name %>
+Shipping Address    : <%= @order.address %>
+Phone Number        : <%= @order.phone %>
+Customer email      : <%= @order.customer_email %>
+Billing Name        : <%= @order.billing_name %>
+Billing Address     : <%= @order.billing_address %>
+Sub Total (Inc VAT) : <%= number_to_currency((@order.total/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+Shipping (Inc VAT)  : <%= number_to_currency((@order.shipping_cost/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+Total (Inc VAT)     : <%= number_to_currency(((@order.total + @order.shipping_cost)/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+Total (Ex VAT)      : <%= number_to_currency((((@order.total + @order.shipping_cost)/1.2)/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+Total VAT @20%      : <%= number_to_currency((((@order.total + @order.shipping_cost)-((@order.total + @order.shipping_cost)/1.2))/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
 
 <% if @order.order_products.any? %>
   <% @order.order_products.each do |op| %>

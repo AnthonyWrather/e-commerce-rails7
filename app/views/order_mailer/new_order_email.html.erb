@@ -96,7 +96,7 @@
     <tr>
       <td class="bg-gray-300" style="border: 1px solid black">
         <p>
-          <strong class="block mb-1 font-medium">Total (Inc VAT):</strong>
+          <strong class="block mb-1 font-medium">Sub Total (Inc VAT):</strong>
         </p>
       </td>
       <td style="border: 1px solid black">
@@ -109,12 +109,38 @@
     <tr>
       <td class="bg-gray-300" style="border: 1px solid black">
         <p>
+          <strong class="block mb-1 font-medium">Shipping (Inc VAT):</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+        <%= number_to_currency(((@order.shipping_cost/100.0)), :unit => "£", :separator => ".", :delimiter => ",") %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
+          <strong class="block mb-1 font-medium">Total (Inc VAT):</strong>
+        </p>
+      </td>
+      <td style="border: 1px solid black">
+        <p>
+        <%= number_to_currency(((@order.total + @order.shipping_cost)/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="bg-gray-300" style="border: 1px solid black">
+        <p>
           <strong class="block mb-1 font-medium">Total (Exc VAT):</strong>
         </p>
       </td>
       <td style="border: 1px solid black">
         <p>
-        <%= number_to_currency(((@order.total/1.2)/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+        <%= number_to_currency((((@order.total + @order.shipping_cost)/1.2)/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
         </p>
       </td>
     </tr>
@@ -127,7 +153,7 @@
       </td>
       <td style="border: 1px solid black">
         <p>
-        <%= number_to_currency(((@order.total-(@order.total/1.2))/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
+        <%= number_to_currency((((@order.total + @order.shipping_cost)-((@order.total + @order.shipping_cost)/1.2))/100.0), :unit => "£", :separator => ".", :delimiter => ",") %>
         </p>
       </td>
     </tr>

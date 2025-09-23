@@ -66,13 +66,13 @@ class CheckoutsController < ApplicationController
             },
             delivery_estimate: {
               minimum: { unit: 'business_day', value: 1 },
-              maximum: { unit: 'business_day', value: 1 },
+              maximum: { unit: 'business_day', value: 1 }
             }
           }
         },
         {
           shipping_rate_data: {
-            display_name: '3 to 5 Days Shipping',
+            display_name: '3 to 5 Business Days Shipping',
             type: 'fixed_amount',
             fixed_amount: {
               amount: 2500,
@@ -80,13 +80,13 @@ class CheckoutsController < ApplicationController
             },
             delivery_estimate: {
               minimum: { unit: 'business_day', value: 3 },
-              maximum: { unit: 'business_day', value: 5 },
+              maximum: { unit: 'business_day', value: 5 }
             }
           }
         },
         {
           shipping_rate_data: {
-            display_name: 'Overnight Shipping (Order Before 11:00am)',
+            display_name: 'Overnight Shipping (Order Before 11:00am Mon-Thu)',
             type: 'fixed_amount',
             fixed_amount: {
               amount: 5000,
@@ -94,7 +94,7 @@ class CheckoutsController < ApplicationController
             },
             delivery_estimate: {
               minimum: { unit: 'business_day', value: 1 },
-              maximum: { unit: 'business_day', value: 1 },
+              maximum: { unit: 'business_day', value: 1 }
             }
           }
         }

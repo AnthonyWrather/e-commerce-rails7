@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_22_122955) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_23_193239) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -84,6 +84,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_22_122955) do
     t.string "phone"
     t.string "billing_name"
     t.string "billing_address"
+    t.string "payment_status"
+    t.string "payment_id"
+    t.integer "shipping_cost"
+    t.string "shipping_id"
+    t.string "shipping_description"
   end
 
   create_table "products", force: :cascade do |t|
@@ -102,6 +107,21 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_22_122955) do
     t.index ["category_id"], name: "index_products_on_category_id"
   end
 
+  create_table "products_backup", id: :bigint, default: -> { "nextval('products_id_seq'::regclass)" }, force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.integer "price"
+    t.integer "category_id", null: false
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "amount"
+    t.integer "weight"
+    t.integer "length"
+    t.integer "width"
+    t.integer "height"
+  end
+
   create_table "stocks", force: :cascade do |t|
     t.string "size"
     t.integer "amount"
@@ -114,6 +134,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_22_122955) do
     t.integer "width"
     t.integer "height"
     t.index ["product_id"], name: "index_stocks_on_product_id"
+  end
+
+  create_table "stocks_backup", id: :bigint, default: -> { "nextval('stocks_id_seq'::regclass)" }, force: :cascade do |t|
+    t.string "size"
+    t.integer "amount"
+    t.integer "product_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "price"
+    t.integer "weight"
+    t.integer "length"
+    t.integer "width"
+    t.integer "height"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

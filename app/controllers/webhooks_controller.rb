@@ -39,19 +39,42 @@ class WebhooksController < ApplicationController
       phone = session['customer_details']['phone']
       billing_address = "#{customer_details['address']['line1']}, #{customer_details['address']['line2']}, #{customer_details['address']['city']}, #{customer_details['address']['state']}, #{customer_details['address']['postal_code']}, #{customer_details['address']['country']}"
       billing_name = session['customer_details']['name']
+      payment_status = session['payment_status']
+      payment_id = session['payment_intent']
+      shipping_cost = session['shipping_cost']['amount_total']
+      shipping_id = session['shipping_cost']['shipping_rate']
+      shipping_description = 'Collection'
+
+      if shipping_id
+        shipping_rate = Stripe::ShippingRate.retrieve(shipping_id)
+        # puts '---------------------------------------------'
+        # puts "shipping_rate: #{shipping_rate}"
+        # puts '---------------------------------------------'
+        shipping_description = shipping_rate['display_name'] if shipping_rate && shipping_rate['display_name']
+      end
 
       order = Order.create!(customer_email: session['customer_details']['email'], total: session['amount_total'],
                             address: address, fulfilled: false, name: collected_information['shipping_details']['name'],
-                            phone: phone, billing_name: billing_name, billing_address: billing_address)
+                            phone: phone, billing_name: billing_name, billing_address: billing_address,
+                            payment_status: payment_status, payment_id: payment_id, shipping_cost: shipping_cost,
+                            shipping_id: shipping_id, shipping_description: shipping_description)
+
       full_session = Stripe::Checkout::Session.retrieve({
                                                           id: session.id,
                                                           expand: ['line_items']
                                                         })
+
+      # puts '---------------------------------------------'
+      # puts "full_session: #{full_session}"
+      # puts '---------------------------------------------'
+
       line_items = full_session.line_items
       line_items['data'].each do |item|
         product = Stripe::Product.retrieve(item['price']['product'])
         product_id = product['metadata']['product_id'].to_i
-        puts("product: #{product}")
+        # puts '---------------------------------------------'
+        # puts("product: #{product}")
+        # puts '---------------------------------------------'
         OrderProduct.create!(order: order, product_id: product_id, quantity: item['quantity'],
                              size: product['metadata']['size'], price: product['metadata']['product_price'].to_i)
         if (product['metadata']['size']) && (product['metadata']['size']).length.positive?

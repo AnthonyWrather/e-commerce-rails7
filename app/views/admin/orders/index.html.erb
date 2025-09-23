@@ -10,9 +10,9 @@
 
   <h2>Unfulfilled Orders</h2>
   <div class="flex flex-col w-full">
-    <div class="overlow-x-auto sm:mx-0.5 lg:mx-0.5">
+    <div class="overflow-x-auto sm:mx-0.5 lg:mx-0.5">
       <div class="inline-block min-w-full py-2">
-        <div class="overlow-x-auto">
+        <div class="overflow-x-auto">
           <table class="min-w-full overflow-x-scroll">
             <thead class="bg-white border-b">
               <tr>
@@ -21,6 +21,9 @@
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
                   Order Date
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Shipping Type
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
                   Name
@@ -43,7 +46,10 @@
                     <%= link_to order.id, [:admin, order], class: 'underline' %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
-                    <%= order.created_at.strftime("%d %B %Y %H:%M") %>
+                    <%= order.created_at.strftime("%a %d %B %Y %H:%M") %>
+                  </td>
+                  <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
+                    <%= order.shipping_description %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
                     <%= order.name %>
@@ -69,9 +75,9 @@
 
   <h2>Fulfilled Orders</h2>
   <div class="flex flex-col w-full">
-    <div class="overlow-x-auto sm:mx-0.5 lg:mx-0.5">
+    <div class="overflow-x-auto sm:mx-0.5 lg:mx-0.5">
       <div class="inline-block min-w-full py-2">
-        <div class="overlow-x-auto">
+        <div class="overflow-x-auto">
           <table class="min-w-full overflow-x-scroll">
             <thead class="bg-white border-b">
               <tr>
