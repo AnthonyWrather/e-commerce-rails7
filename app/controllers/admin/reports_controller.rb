@@ -15,6 +15,7 @@ class Admin::ReportsController < AdminController
       items: num_products_monthly,
       revenue: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).sum(:total)&.round(),
       avg_sale: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).average(:total)&.round(),
+      shipping: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).where.not(shipping_cost: nil).sum(:shipping_cost)&.round(),
       per_sale: avg_items_monthly
     }
 
@@ -38,6 +39,7 @@ class Admin::ReportsController < AdminController
       items: num_products_prev_month,
       revenue: Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).sum(:total)&.round(),
       avg_sale: Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).average(:total)&.round(),
+      shipping: Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).where.not(shipping_cost: nil).sum(:shipping_cost)&.round(),
       per_sale: avg_items_prev_month
     }
 
