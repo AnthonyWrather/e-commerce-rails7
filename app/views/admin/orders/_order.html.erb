@@ -184,7 +184,11 @@
       </td>
       <td style="border: 1px solid black">
         <p>
-        <%= formatted_price(order.total + order.shipping_cost) %>
+          <% if order.shipping_cost.present? %>
+            <%= formatted_price(order.total + order.shipping_cost) %>
+          <% else %>
+            <%= formatted_price(order.total) %>
+          <% end %>
         </p>
       </td>
     </tr>
