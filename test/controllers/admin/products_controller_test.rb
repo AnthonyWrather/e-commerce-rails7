@@ -22,8 +22,8 @@ module Admin
     test 'should create admin_product' do
       assert_difference('Product.count') do
         post admin_products_url,
-             params: { admin_product: { active: @admin_product.active, category_id: @admin_product.category_id,
-                                        description: @admin_product.description, name: @admin_product.name, price: @admin_product.price } }
+             params: { product: { active: @admin_product.active, category_id: @admin_product.category_id,
+                                  description: @admin_product.description, name: @admin_product.name, price: @admin_product.price } }
       end
 
       assert_redirected_to admin_product_url(Product.last)
@@ -41,9 +41,9 @@ module Admin
 
     test 'should update admin_product' do
       patch admin_product_url(@admin_product),
-            params: { admin_product: { active: @admin_product.active, category_id: @admin_product.category_id,
-                                       description: @admin_product.description, name: @admin_product.name, price: @admin_product.price } }
-      assert_redirected_to admin_product_url(@admin_product)
+            params: { product: { active: @admin_product.active, category_id: @admin_product.category_id,
+                                 description: @admin_product.description, name: @admin_product.name, price: @admin_product.price } }
+      assert_redirected_to edit_admin_product_url(@admin_product)
     end
 
     test 'should destroy admin_product' do

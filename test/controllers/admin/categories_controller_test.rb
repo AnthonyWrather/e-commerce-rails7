@@ -22,7 +22,7 @@ module Admin
     test 'should create admin_category' do
       assert_difference('Category.count') do
         post admin_categories_url,
-             params: { admin_category: { description: @admin_category.description, name: @admin_category.name } }
+             params: { category: { description: @admin_category.description, name: @admin_category.name } }
       end
 
       assert_redirected_to admin_category_url(Category.last)
@@ -40,7 +40,7 @@ module Admin
 
     test 'should update admin_category' do
       patch admin_category_url(@admin_category),
-            params: { admin_category: { description: @admin_category.description, name: @admin_category.name } }
+            params: { category: { description: @admin_category.description, name: @admin_category.name } }
       assert_redirected_to admin_category_url(@admin_category)
     end
 
