@@ -22,8 +22,8 @@ module Admin
     test 'should create admin_order' do
       assert_difference('Order.count') do
         post admin_orders_url,
-             params: { admin_order: { address: @admin_order.address, customer_email: @admin_order.customer_email,
-                                      fulfilled: @admin_order.fulfilled, total: @admin_order.total } }
+             params: { order: { address: @admin_order.address, customer_email: @admin_order.customer_email,
+                                fulfilled: @admin_order.fulfilled, total: @admin_order.total } }
       end
 
       assert_redirected_to admin_order_url(Order.last)
@@ -41,8 +41,8 @@ module Admin
 
     test 'should update admin_order' do
       patch admin_order_url(@admin_order),
-            params: { admin_order: { address: @admin_order.address, customer_email: @admin_order.customer_email,
-                                     fulfilled: @admin_order.fulfilled, total: @admin_order.total } }
+            params: { order: { address: @admin_order.address, customer_email: @admin_order.customer_email,
+                               fulfilled: @admin_order.fulfilled, total: @admin_order.total } }
       assert_redirected_to admin_order_url(@admin_order)
     end
 

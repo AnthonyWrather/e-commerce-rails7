@@ -23,11 +23,11 @@ module Admin
     test 'should create admin_stock' do
       assert_difference('Stock.count') do
         post admin_product_stocks_url(@product),
-             params: { admin_stock: { amount: @admin_stock.amount, product_id: @admin_stock.product_id,
-                                      size: @admin_stock.size } }
+             params: { stock: { amount: @admin_stock.amount, product_id: @admin_stock.product_id,
+                                size: @admin_stock.size } }
       end
 
-      assert_redirected_to admin_product_stocks_url(@product)
+      assert_redirected_to admin_product_stock_url(@product, Stock.last)
     end
 
     test 'should show admin_stock' do
@@ -42,9 +42,9 @@ module Admin
 
     test 'should update admin_stock' do
       patch admin_product_stock_url(@product, @admin_stock),
-            params: { admin_stock: { amount: @admin_stock.amount, product_id: @admin_stock.product_id,
-                                     size: @admin_stock.size } }
-      assert_redirected_to admin_product_stocks_url(@product)
+            params: { stock: { amount: @admin_stock.amount, product_id: @admin_stock.product_id,
+                               size: @admin_stock.size } }
+      assert_redirected_to admin_product_stock_url(@product, @admin_stock)
     end
 
     test 'should destroy admin_stock' do
