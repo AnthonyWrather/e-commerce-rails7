@@ -1,0 +1,1157 @@
+# Copilot Instructions for E-Commerce Rails 7
+
+## Project Overview
+Rails 7 e-commerce application for selling composite materials with variant pricing (stock sizes). Uses Stripe for payments, Active Storage for images, and Devise for admin authentication. Deployed on Render with PostgreSQL.
+
+## Architecture & Data Flow
+
+### Core Models
+
+**Product** (`app/models/product.rb`)
+- `belongs_to :category`
+- `has_many :stocks` (size variants)
+- `has_many :order_products`
+- `has_many_attached :images` with variants:
+  - `:thumb` - 50x50px
+  - `:medium` - 250x250px
+- Fields: `name`, `description`, `price` (pence), `amount` (stock level), `active` (boolean), `weight`, `length`, `width`, `height`
+- No validations defined (relies on database constraints)
+
+**Stock** (`app/models/stock.rb`)
+- `belongs_to :product`
+- Fields: `size`, `amount`, `price` (pence), `weight`, `length`, `width`, `height`
+- Represents size variants with individual pricing (e.g., "Small £10", "Large £15")
+- No validations defined
+
+**Category** (`app/models/category.rb`)
+- `has_many :products, dependent: :destroy`
+- `has_one_attached :image` with `:thumb` variant (50x50px)
+- Fields: `name`, `description`
+- Cascade deletes products when category deleted
+
+**Order** (`app/models/order.rb`)
+- `has_many :order_products`
+- Fields: `customer_email`, `fulfilled` (boolean), `total` (pence), `address`, `name`, `phone`, `billing_name`, `billing_address`, `payment_status`, `payment_id`, `shipping_cost`, `shipping_id`, `shipping_description`
+- Created exclusively via Stripe webhook (`WebhooksController#stripe`)
+- No direct user creation
+
+**OrderProduct** (`app/models/order_product.rb`)
+- `belongs_to :product`
+- `belongs_to :order`
+- Fields: `product_id`, `order_id`, `size`, `quantity`, `price`
+- **Critical**: `price` captures the price at time of purchase (not a calculated field)
+- Foreign keys to both `products` and `orders` tables
+
+**Admin** (`app/models/admin.rb`)
+- Devise authentication model
+- Modules: `:database_authenticatable`, `:registerable`, `:recoverable`, `:rememberable`, `:validatable`
+- Fields: `email`, `encrypted_password`, `reset_password_token`, `reset_password_sent_at`, `remember_created_at`
+- **Known conflict**: Class name conflicts with `Admin::` module namespace in controllers
+
+**ProductStock** (`app/models/product_stock.rb`)
+- `belongs_to :product`
+- Legacy model - appears unused (use `Stock` instead)
+
+### Pricing Logic
+Products can have two pricing models:
+1. **Single price**: Product has `amount` and `price` fields directly
+2. **Variant pricing**: Product has Stocks with individual `price` and `amount` per size
+
+See `CheckoutsController#create` lines 13-23 for the logic that determines which price to use.
+
+### Model Patterns & Conventions
+
+**No Validations**:
+- Models have minimal/no validations defined
+- Relies on database constraints and NOT NULL columns
+- Controllers handle validation errors via `save`/`update` return values
+
+**No Scopes or Custom Methods**:
+- Models are intentionally simple (no scopes, class methods, or instance methods)
+- Business logic lives in controllers (see `AdminController#index` for aggregation examples)
+- No concerns defined (concerns directory exists but is empty)
+
+**Active Storage Integration**:
+- Images stored via Active Storage (requires VIPS)
+- Multiple attachments on Product (`has_many_attached :images`)
+- Single attachment on Category (`has_one_attached :image`)
+- Variants defined inline in model (`:thumb`, `:medium`)
+
+**Admin Controller Naming Convention**:
+- Controllers use `@admin_product`, `@admin_category` instance variables
+- But reference base models: `Product.find`, not `Admin::Product`
+- This creates namespace confusion in tests (Admin model vs Admin:: module)
+
+**Pagy Pagination**:
+- Admin controllers use Pagy gem for pagination
+- Pattern: `@pagy, @admin_products = pagy(Product.all)`
+
+**Image Handling (Update Pattern)**:
+- Products controller has custom logic to prevent duplicate filenames
+- Deletes existing image with same filename before attaching new one
+- See `Admin::ProductsController#update` lines 47-59
+
+### Stripe Integration Flow
+1. **Checkout** (`CheckoutsController#create`): Creates Stripe session with product metadata (product_id, size, product_stock_id, product_price)
+2. **Webhook** (`WebhooksController#stripe`): On `checkout.session.completed`, creates Order and OrderProducts, decrements stock, sends email
+3. Stock is decremented in the webhook handler, not at checkout creation
+4. Currency is **GBP** (changed from USD) - see line 35 in `CheckoutsController`
+
+## Environment & Secrets
+
+Use **Rails credentials** for secrets (not env vars in development):
+```bash
+EDITOR="code --wait" rails credentials:edit
+```
+
+Required credentials:
+- `stripe.secret_key` - Stripe API key
+- `stripe.webhook_key` - Stripe webhook signing secret
+
+Fallback to ENV vars: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_KEY`
+
+## DevContainer Setup
+
+### Container Architecture
+Multi-service Docker Compose setup with 3 containers:
+1. **app**: Rails application (Ruby 3.2.2)
+2. **postgres**: PostgreSQL database
+3. **pgadmin**: pgAdmin web interface for database management
+
+### Network Configuration
+- App container shares network with postgres (`network_mode: service:postgres`)
+- Forwarded ports: 3000 (Rails), 5432 (PostgreSQL), 15432 (pgAdmin), 587, 2525
+- pgAdmin accessible at `localhost:15432` (admin@pgadmin.com / password)
+
+### Database Users
+Created via `.devcontainer/create-db-user.sql`:
+- `postgres` (superuser) - password: `postgres`
+- `vscode` - with CREATEDB privilege
+- `e_commerce_rails7` - password: `e_commerce_rails7`, with CREATEDB privilege
+
+### Volume Mounts
+- **Workspace**: `../..:/workspaces:cached` (mounts parent directories)
+- **PostgreSQL data**: Persistent volume `postgres-data`
+- **pgAdmin**: Persistent volume + backup mount to `storage/pgadmin/backups`
+
+### Pre-installed VS Code Extensions
+Comprehensive extension pack auto-installed in devcontainer:
+- **Ruby**: ruby-lsp, solargraph, rubocop, endwise
+- **Rails**: rails-snippets, erb-beautify, erb-linter
+- **Tailwind**: vscode-tailwindcss, tailwind-docs, tailwind-snippets, headwind
+- **Database**: ms-ossdata.vscode-pgsql
+- **DevOps**: vscode-containers, docker-compose, vscode-github-actions
+- **Utilities**: code-spell-checker, todo-tree, indent-rainbow, prettier, vscode-icons
+
+### Docker Entrypoint
+`bin/docker-entrypoint` auto-runs `db:prepare` when starting Rails server, ensuring database exists and migrations are current.
+
+### Environment Variables (DevContainer)
+Set in docker-compose.yml:
+- `DATABASE_HOST=postgres`
+- `DATABASE_USERNAME=postgres`
+- `DATABASE_PASSWORD=postgres`
+- `DATABASE_NAME=e_commerce_rails7_development`
+
+## Development Workflow
+
+### Initial Setup
+```bash
+bin/rails db:migrate
+bin/rails tailwindcss:build
+bin/dev  # Runs both Rails server and Tailwind watcher (see Procfile.dev)
+```
+
+### Create Admin Users
+```bash
+bin/rails c
+Admin.create(email: "admin@example.com", password: "12345678")
+```
+
+### Email Testing
+Uses `letter_opener_web` for email preview (currently enabled in production - TODO to restrict):
+- Local: `http://localhost:3000/letter_opener`
+- See `OrderMailer.new_order_email` triggered on order completion
+
+### Ngrok for Stripe Webhooks (Local)
+```bash
+ngrok http --url=YOUR-SUBDOMAIN.ngrok-free.app 3000
+```
+Add host to `config/environments/development.rb`:
+```ruby
+config.hosts << "YOUR-SUBDOMAIN.ngrok-free.app"
+```
+
+## Code Conventions
+
+### Frozen String Literals
+All Ruby files start with `# frozen_string_literal: true` (enforced by RuboCop)
+
+### RuboCop
+- Run safe fixes: `rubocop -a`
+- Run safe + unsafe: `rubocop -A` (use caution)
+- Many cops disabled (see `.rubocop.yml`): Documentation, LineLength, all Metrics, ClassAndModuleChildren
+
+### Admin Namespace
+Admin controllers inherit from `AdminController` which:
+- Uses `layout 'admin'` for separate admin UI
+- Requires `authenticate_admin!` before all actions
+- See `app/controllers/admin/` for examples
+
+### Routing Pattern
+- Admin namespace uses resourceful routes: `namespace :admin do resources :products`
+- Devise for admins only: `devise_for :admins`
+- Custom routes for cart/checkout: `get 'cart'`, `post 'checkout'`, etc.
+
+## Database
+
+### Development vs Production
+- **Development**: PostgreSQL via DevContainer (`host: postgres`, user/pass: `postgres`)
+- **Production**: PostgreSQL via `DATABASE_URL` env var (Render)
+
+### Migrations of Note
+- `AddPriceToStock` - variant pricing
+- `AddAmountToProduct` - single-item stock level
+- `AddPriceToOrderProducts` - capture price at purchase time
+- `AddNameToOrderOrders` - shipping name separate from billing
+
+### Schema Backup Tables
+`products_backup` and `stocks_backup` exist in schema - likely from data migration work
+
+## Testing & Quality
+
+### Test Framework
+Uses **Minitest** (Rails default, not RSpec) with Capybara for system tests.
+
+**Test Structure**:
+- `test/models/` - Model unit tests (mostly placeholder stubs)
+- `test/controllers/` - Controller integration tests
+- `test/controllers/admin/` - Admin namespace controller tests
+- `test/system/admin/` - Capybara browser tests for admin UI
+- `test/fixtures/` - YAML test data (minimal fixtures defined)
+- `test/mailers/` - Mailer tests
+
+**Running Tests**:
+```bash
+bin/rails test              # Run all unit/integration tests
+bin/rails test:system       # Run Capybara system tests
+bin/rails test:all          # Run everything
+```
+
+**Test Patterns**:
+- Controller tests use `ActionDispatch::IntegrationTest`
+- System tests use Selenium with Chrome (1400x1400 screen size)
+- Tests run in parallel (`parallelize(workers: :number_of_processors)`)
+- Admin controller tests reference `Admin::` namespaced models (e.g., `Admin::Product.count`)
+- Fixtures loaded for all tests via `fixtures :all`
+
+**Known Issue**:
+Tests currently failing due to namespace conflict - `Admin` model (Devise user) conflicts with `Admin::` module for controllers. This is a TypeError in test suite.
+
+**No Authentication in Tests**:
+Admin controller tests don't use `sign_in` - authentication bypassed or not properly configured in test environment.
+
+### RuboCop
+Project uses `rubocop-rspec` gem but implements **Minitest**, not RSpec (likely leftover dependency).
+
+### Image Processing
+Requires **VIPS** for Active Storage variants (thumb, medium):
+```bash
+brew install vips  # macOS
+```
+
+## Deployment (Render)
+
+Build command: `./bin/render-build.sh`
+- Runs `bundle install`, `assets:precompile`, `assets:clean`, `db:migrate`
+
+Start command: `bundle exec puma -C config/puma.rb`
+
+Environment variables:
+- `DATABASE_URL` (from Render PostgreSQL)
+- `RAILS_MASTER_KEY` (sync manually)
+- `WEB_CONCURRENCY=2`
+
+## Notable Custom Features
+
+### Quantities Calculator
+Custom controllers under `app/controllers/quantities/` for composite material calculations with complex business logic.
+
+**Material Types** (14 options):
+- Chop Strand: 300g, 450g, 600g
+- Plain Weave: 285g, 400g
+- Woven Roving: 450g, 600g, 800g, 900g
+- Combination Mat: 450g, 600g, 900g
+- Biaxial: 400g, 800g
+- Gel Coat
+
+**Core Constants**:
+- `@material_width` = 0.95m (standard roll width)
+- `@ratio` = 1.6:1 (resin to glass ratio)
+- Wastage factor: 15% (multiply by 1.15)
+
+**Calculator Types**:
+
+1. **Area Calculator** (`quantities/area_controller.rb`):
+   - Input: Area (m²), layers, material type, catalyst percentage
+   - Formulas:
+     ```ruby
+     @mat = ((@area * @layers) / @material_width).round(2)  # Linear meters needed
+     @mat_total = (@mat * 1.15).round(2)  # With 15% wastage
+
+     @material_weight = @material.to_i / 1000.0  # Convert g/m² to kg
+     @mat_kg = ((@area * @layers) * @material_weight).round(2)
+     @mat_total_kg = (@mat_kg * 1.15).round(2)
+
+     @resin = ((@area * @layers) * @ratio).round(2)  # Litres of resin
+     @resin_total = (@resin * 1.15).round(2)
+
+     @catalyst_ml = (((@resin_total / 10) * @catalyst) * 100).round(2)
+
+     @total_weight = (@mat_total_kg + @resin_total + (@catalyst_ml / 1000)).round(2)
+     ```
+
+2. **Dimensions Calculator** (`quantities/dimensions_controller.rb`):
+   - Input: Length, width, depth (not currently used), layers, material, catalyst
+   - First calculates area: `@area = ((@length * @width) + (2 * (@length * @depth)) + (2 * (@width * @depth)))`
+   - Then uses same formulas as Area Calculator
+
+3. **Mould Rectangle Calculator** (`quantities/mould_rectangle_controller.rb`):
+   - Input: Length, width, depth (all used), layers, material, catalyst
+   - Calculates surface area of rectangular mould (all 6 faces)
+   - Same calculation logic as Dimensions Calculator
+
+**Key Patterns**:
+- All calculations performed in controller `index` action (no model layer)
+- Results displayed in Turbo Frame tables with blue-themed styling
+- Form submits via GET (params in URL, bookmarkable results)
+- No persistence - pure calculation engine
+- Breadcrumbs show hierarchy: Home → Quantity Calculator → Specific Calculator
+
+### Breadcrumbs
+Uses `breadcrumbs_on_rails` gem - see `CartsController` for example:
+```ruby
+add_breadcrumb 'Home', :root_path
+add_breadcrumb 'Shopping Cart'
+```
+
+### Stock Management
+Admin can manage product stocks via nested routes:
+```ruby
+namespace :admin do
+  resources :products do
+    resources :stocks
+  end
+end
+```
+
+## Frontend Architecture
+
+### View Layers
+Two distinct layouts:
+- **application.html.erb**: Public-facing shop with navbar/footer partials, blue theme
+- **admin.html.erb**: Admin interface with sticky sidebar nav, gray theme
+
+### JavaScript Stack
+- **Hotwire**: Turbo + Stimulus (no webpack/node build process)
+- **Import Maps**: ESM modules via `config/importmap.rb`
+- **Chart.js**: Dashboard visualizations (pinned from jspm.io CDN)
+
+### Stimulus Controllers
+- **cart_controller.js**: LocalStorage cart management, checkout flow, VAT calculations
+- **products_controller.js**: Size selection, dynamic pricing, add to cart with flash messages
+- **dashboard_controller.js**: Chart.js integration for revenue visualization
+- **quantities_controller.js**: Custom material calculations
+
+### Stimulus Controller Details
+
+#### cart_controller.js
+**Purpose**: Complete cart lifecycle - render, modify, checkout
+**Static Values**: `messageTimeout` (default: 3500ms)
+**Actions**:
+- `initialize()` - Auto-runs on connect, reads localStorage, builds table DOM, calculates VAT totals
+- `checkout()` - POST to `/checkout` endpoint with CSRF token, redirects to Stripe
+- `clear()` - Removes cart from localStorage, reloads page
+- `removeFromCart(event)` - Removes specific item by id+size, reloads page
+- `addMessage(content, options)` - Template-based flash messages (3.5s timeout)
+- `formatCurrency(price)` - Divides by 100, formats as £X,XXX.XX
+
+**Key Patterns**:
+- Inline styles on table cells (border, textAlign) - no Tailwind on dynamic elements
+- VAT calculation: Ex VAT = price/1.2 (20% UK VAT)
+- Duplicate in `success.html.erb` - cart renders same way after order
+- Page reload strategy (not Turbo updates)
+
+#### products_controller.js
+**Purpose**: Product page size selection and add-to-cart
+**Static Values**:
+- `size` (String) - Currently selected size
+- `product` (Object) - Full product JSON from Rails
+- `stock` (Array) - All stock variants from Rails
+- `messageTimeout` (default: 2500ms)
+
+**Actions**:
+- `addToCart()` - Adds/increments item in localStorage, shows success message
+- `selectSize(e)` - Updates UI price, enables "Add to Cart" button
+- `addMessage()` - Template-based flash (2.5s timeout)
+- `formatCurrency()` - Same as cart controller
+
+**Key Patterns**:
+- Button value contains size, button ID is `button-text-{size}`
+- Price extraction via string split on "£" character
+- Finds stock by size, falls back to product.price if no variants
+- Button disabled state + invisible class until size selected
+- Quantity increment logic: finds existing cart item by id+size
+
+#### dashboard_controller.js
+**Purpose**: Chart.js line charts for admin revenue visualization
+**Static Values**:
+- `revenue` (Array) - Array of `[label, value_in_pence]` tuples
+- `elementid` (String) - Canvas element ID to render into
+
+**Actions**:
+- `initialize()` - Creates Chart.js instance on connect
+
+**Key Patterns**:
+- Divides revenue by 100 for display (pence → pounds)
+- Disables legend display
+- Custom grid styling (dashed y-axis, hidden x-axis)
+- Used in both `admin/index` and `admin/reports/index`
+- Multiple charts per page (different elementid values)
+
+#### quantities_controller.js
+**Purpose**: Placeholder for material calculations
+**Current State**: Stub implementation (greet method unused)
+**Note**: Actual calculations might be in Turbo Frames or server-side
+
+### Key Patterns
+
+#### Stimulus Values API
+Pass Rails data to controllers via `data-*-value` attributes:
+```erb
+data-products-product-value="<%= @product.to_json %>"
+data-products-stock-value="<%= @product.stocks.to_json %>"
+data-dashboard-revenue-value="<%= @revenue_by_month.to_json %>"
+data-dashboard-elementId-value="revenueChartMonthly"
+```
+
+#### Action Syntax
+Controllers use click events primarily:
+```erb
+data-action="click->cart#checkout"
+data-action="click->products#selectSize"
+```
+
+#### No Targets Used
+Controllers don't use Stimulus targets - rely on `document.getElementById()` instead:
+```javascript
+const table_body = document.getElementById("table_body")
+const selectedSizeEl = document.getElementById("selected-size")
+```
+
+#### LocalStorage Cart
+Cart lives entirely in browser localStorage (JSON array):
+```javascript
+{id: 1, name: "Product", price: 1000, size: "Large", quantity: 2}
+```
+**Cart Structure**:
+- `id` - Product ID (integer)
+- `name` - Product name (string)
+- `price` - Price in pence (integer)
+- `size` - Selected size variant (string, can be empty)
+- `quantity` - Item count (integer)
+
+**Cart Operations**:
+- Added via `products#addToCart` Stimulus action
+- Rendered in `cart#initialize` controller (builds table DOM)
+- Modified via `cart#removeFromCart` (splice by index)
+- Cleared via `cart#clear` or auto-cleared on success page load
+- Sent to backend on checkout (`POST /checkout` with CSRF token)
+
+**Important**: Cart is ephemeral - no persistence, no user accounts, cleared on success
+
+#### Price Display
+- Prices stored in **pence** (integers) in database
+- Formatted in views: `formatted_price(price)` helper (£ with 2 decimals)
+- JavaScript: `formatCurrency(price)` method in controllers divides by 100
+- **VAT inclusive** pricing (Ex VAT = price/1.2)
+
+#### Flash Messages
+Custom template-based flash system using Stimulus:
+```javascript
+this.addMessage({ message: "Item added" }, { type: 'alert' });
+```
+See `products/show.html.erb` for `<template data-template>` pattern
+
+#### Font Awesome Icons
+Uses `font-awesome-sass` gem with helper:
+```erb
+<%= icon('fa-solid', 'shopping-cart', class: 'mr-2') %>
+```
+
+### Turbo Frames
+Limited use - mainly for quantities calculators:
+```erb
+<%= turbo_frame_tag "area" do %>
+```
+
+### View Helpers
+
+**formatted_price(price)** (`app/helpers/application_helper.rb`)
+- Primary price formatting helper used throughout views
+- Converts pence to pounds: `price / 100.0`
+- Returns '£0.00' for nil or zero values
+- Uses Rails `number_to_currency` with £ symbol
+
+**icon(style, name, options)** (Font Awesome)
+- Renders Font Awesome icons via `font-awesome-sass` gem
+- Pattern: `icon('fa-solid', 'shopping-cart', class: 'mr-2')`
+- Used extensively in admin navigation sidebar
+
+**Pagy Pagination**
+- `pagy(collection)` in controllers returns `[@pagy, @records]`
+- `pagy_nav(@pagy)` in views renders pagination UI
+- Conditional rendering: `pagy_nav(@pagy) if @pagy.pages > 1`
+- Used in all admin index pages
+
+**Breadcrumbs** (`breadcrumbs_on_rails` gem)
+- `add_breadcrumb 'Label', :path` in controller actions
+- `render_breadcrumbs separator: ' / '` in navbar
+- Pattern: Always start with Home, then build hierarchy
+- Examples: Home → Category → Product
+
+## Email System
+
+### Mailers
+
+**OrderMailer** (`app/mailers/order_mailer.rb`)
+- `new_order_email(order)` - Sent after successful Stripe payment
+- Triggered in `WebhooksController#stripe` after order creation
+- Sends to `order.customer_email`
+
+**Email Template** (`app/views/order_mailer/new_order_email.html.erb`)
+- Full invoice with shipping/billing details
+- Product line items with VAT breakdown
+- VAT calculations: Ex VAT = total/1.2, VAT = total - (total/1.2)
+- Company contact information and VAT number
+
+**Delivery Configuration**:
+- **Development**: `letter_opener_web` (browser preview at `/letter_opener`)
+- **Production**: SMTP via MailerSend
+  - Domain, username, password from ENV vars
+  - Port 587, STARTTLS enabled
+- Default from: `scfs@cariana.tech` (TODO: change to real email)
+
+## Configuration & Build
+
+### Tailwind CSS (`config/tailwind.config.js`)
+- **Content paths**: Views, helpers, JavaScript
+- **Plugins**: forms, aspect-ratio, typography, container-queries
+- **Font**: Inter var as default sans-serif
+- **Custom config**: Extends default theme, no custom colors defined
+- **Build commands**:
+  - `bin/rails tailwindcss:build` - One-time build
+  - `bin/rails tailwindcss:watch` - Watch mode
+  - `bin/dev` - Runs Rails + Tailwind together (Procfile.dev)
+
+### Import Maps (`config/importmap.rb`)
+- **No Node.js/webpack** - Uses browser-native ESM
+- **Pinned packages**:
+  - Hotwire (Turbo, Stimulus) from local CDN
+  - Chart.js from jspm.io CDN
+  - All Stimulus controllers auto-loaded from `app/javascript/controllers`
+- **Preloading**: Application, Turbo, Stimulus preloaded for performance
+
+### Active Storage
+- **Development**: Local disk (`storage/`)
+- **Production**: Amazon S3
+  - Region: eu-central-1
+  - Bucket: e-commerce-rails7-aws-s3-bucket
+  - Credentials from Rails credentials (aws:access_key_id, aws:secret_access_key)
+- **Test**: Temporary disk (`tmp/storage`)
+
+### Action Cable (WebSockets)
+- **Development**: Redis at localhost:6379/1
+- **Production**: Redis from `REDIS_URL` ENV var
+- **Channel prefix**: ecomm_production
+- Currently minimal usage (infrastructure present but unused)
+
+### Puma Web Server
+- **Threads**: 5 (configurable via `RAILS_MAX_THREADS`)
+- **Workers (Production)**: Auto-scaled to physical CPU count via `WEB_CONCURRENCY`
+- **Worker timeout**: 3600s in development
+- **Port**: 3000 (configurable via `PORT`)
+- **Preload app**: Enabled for memory efficiency
+
+## Security & Authentication
+
+### Devise (Admin Only)
+- Single model: `Admin` with email/password authentication
+- Modules: database_authenticatable, registerable, recoverable, rememberable, validatable
+- Routes: `devise_for :admins`
+- **No public user accounts** - customers checkout as guests
+- Mailer sender: `please-change-me-at-config-initializers-devise@example.com` (TODO)
+
+### CSRF Protection
+- Automatic via Rails
+- Stimulus controllers fetch token: `document.querySelector("[name='csrf-token']").content`
+- Included in checkout POST: `"X-CSRF-Token": csrfToken`
+
+### Production Security
+- **Force SSL**: Enabled (`config.force_ssl = true`)
+- **Static files**: Served when `RAILS_SERVE_STATIC_FILES` or `RENDER` ENV present
+- **Secrets**: Rails credentials (not ENV vars) in development
+- **Master key**: Required in production via `RAILS_MASTER_KEY`
+
+### Tailwind CSS
+- Built via `bin/rails tailwindcss:build` or watch mode
+- Config: `config/tailwind.config.js`
+- Custom color scheme: blue-600 primary, gray admin interface
+
+### Google Analytics
+Conditional loading in production only (meta tag approach):
+```erb
+<% if Rails.env.production? %>
+  <meta name="google-analytics-id" content="G-481BNJ1GVB">
+<% end %>
+```
+Event listener on `turbo:load` reads meta tag and initializes gtag.
+
+## Common Gotchas
+
+1. **Letter Opener in Production**: Currently mounted in production (line 59 routes.rb) - TODO to restrict
+2. **Currency**: Changed from USD to GBP - ensure Stripe dashboard matches
+3. **Stock Decrement Timing**: Happens in webhook, not checkout creation
+4. **Timezone**: Set to 'London' in `config/application.rb`
+5. **Credentials**: Use `rails credentials:edit` not `.env` files for secrets
+6. **Price Storage**: Always in pence (multiply user input by 100 before saving)
+7. **Cart State**: Cart cleared on success page load - stored in localStorage only
+
+## Form Patterns & Conventions
+
+### Admin Form Structure
+All admin forms follow consistent patterns using `form_with`:
+
+**Error Handling**:
+```erb
+<% if admin_product.errors.any? %>
+  <div id="error_explanation" class="px-3 py-2 mt-3 font-medium text-red-500 rounded-lg bg-red-50">
+    <h2><%= pluralize(admin_product.errors.count, "error") %> prohibited this admin_product from being saved:</h2>
+    <ul>
+      <% admin_product.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+```
+
+**Input Helper Text**:
+Forms use inline `<p>` tags with `.text-xs.text-gray-500` to clarify units:
+```erb
+<%= form.label :price %><p class="text-xs text-gray-500">in pence</p>
+<%= form.label :weight %><p class="text-xs text-gray-500">in grams</p>
+<%= form.label :length %><p class="text-xs text-gray-500">in cm</p>
+```
+
+**Image Upload with Preview**:
+Products form shows existing images with delete buttons:
+```erb
+<% if admin_product.images.any? %>
+  <% admin_product.images.each do |image| %>
+    <div class="flex border border-gray-200">
+      <div class="relative z-0 w-40 h-40 bg-gray-400">
+        <%= image_tag image, class: "w-30 h-30 object-cover rounded-md" %>
+        <%= link_to "X", admin_product_image_path(admin_product, image),
+                    data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+                    class: "absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5" %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+<%= form.file_field :images, multiple: true, class: "..." %>
+```
+
+**Nested Resource Links**:
+Forms for parent resources link to nested children:
+```erb
+<% unless admin_product.new_record? %>
+  <%= link_to "Edit Product Size/Price/Stock", admin_product_stocks_path(admin_product), class: "..." %>
+<% end %>
+```
+
+**Form Styling**:
+Consistent Tailwind classes across all forms:
+- Inputs: `block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full`
+- Submit buttons: `rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer`
+- Labels: Auto-styled by Tailwind forms plugin
+
+## Admin Dashboard & Reports
+
+### Dashboard Statistics (`AdminController#index`)
+Calculates 6 key metrics for current month:
+
+**Aggregation Patterns**:
+```ruby
+@monthly_stats = {
+  sales: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).count,
+  items: OrderProduct.joins(:order).where(orders: { created_at: ... }).sum(:quantity),
+  revenue: Order.where(...).sum(:total)&.round(),
+  avg_sale: Order.where(...).average(:total)&.round(),
+  shipping: Order.where(...).where.not(shipping_cost: nil).sum(:shipping_cost)&.round(),
+  per_sale: avg_items_monthly  # Calculated: num_products / num_orders
+}
+```
+
+**Daily Revenue Breakdown**:
+```ruby
+@monthly_orders_by_day = Order.where(...).group_by { |order| order.created_at.to_date }
+@monthly_revenue_by_day = @monthly_orders_by_day.map { |day, orders|
+  [day.strftime('%e %A'), orders.sum(&:total)]
+}
+# Fill missing days with 0 revenue
+@days_of_month = (1..Time.days_in_month(Date.today.month, Date.today.year)).to_a
+@revenue_by_month = @days_of_month.map { |day|
+  [day, @monthly_revenue_by_day.fetch(Date.new(...).strftime('%e %A'), 0)]
+}
+```
+
+**Pattern Notes**:
+- Uses `sum`, `count`, `average` directly on Active Record relations
+- Safe navigation: `&.round()` prevents nil errors
+- Conditional division check before calculating averages
+- Manual group_by with Ruby enumerable (not SQL GROUP BY)
+- Fills calendar gaps with 0 values for complete charts
+
+### Reports Dashboard (`Admin::ReportsController`)
+- Displays current month and previous month revenue charts side-by-side
+- Same aggregation patterns as AdminController
+- Multiple Chart.js instances per page (different `elementId` values)
+- Stats cards show: Gross Revenue, Net Revenue (÷1.2), Shipping, VAT, Sales count, Items count, Average Sale, Average Items/Sale
+
+**VAT Calculations** (20% UK VAT):
+```erb
+Net Revenue: <%= formatted_price(@monthly_stats[:revenue] / 1.2) %>
+VAT: <%= formatted_price(@monthly_stats[:revenue] - (@monthly_stats[:revenue] / 1.2)) %>
+```
+
+**Chart.js Integration**:
+```erb
+<div data-controller="dashboard"
+     data-dashboard-revenue-value="<%= @revenue_by_month.to_json %>"
+     data-dashboard-elementId-value="revenueChartMonthly">
+  <canvas id="revenueChartMonthly"></canvas>
+</div>
+```
+
+## Production Deployment Details
+
+### Multi-Stage Dockerfile
+Optimized production build with 3 stages:
+
+**Base Stage**:
+- Ruby 3.2.2-slim image
+- Sets production environment variables
+- Bundle deployment mode, excludes development gems
+- Working directory: `/rails`
+
+**Build Stage** (throw-away):
+- Installs build dependencies: build-essential, git, libpq-dev, libvips, pkg-config
+- Runs `bundle install` and cleans cache
+- Precompiles bootsnap for faster boot times (gemfile + app/lib code)
+- **Asset precompilation trick**: Uses `SECRET_KEY_BASE_DUMMY=1` to bypass master key requirement
+- Build artifacts discarded after copying to final stage
+
+**Final Stage**:
+- Minimal runtime dependencies: curl, libvips, postgresql-client
+- Copies compiled gems and app from build stage
+- Creates non-root `rails` user for security
+- Changes ownership of writable directories: db, log, storage, tmp
+- Runs as `USER rails:rails` (not root)
+- Entrypoint runs `bin/docker-entrypoint` (auto-runs db:prepare)
+- Exposes port 3000, default CMD: `./bin/rails server`
+
+**Key Security Patterns**:
+- Multi-stage reduces final image size (discards build tools)
+- Non-root user execution
+- Minimal installed packages (attack surface reduction)
+- Secret key not required at build time (uses dummy value)
+
+### Render Build Script (`bin/render-build.sh`)
+```bash
+bundle install
+bundle exec rails assets:precompile
+bundle exec rails assets:clean
+bundle exec rails db:migrate
+```
+
+**Environment Variables (Production)**:
+- `RAILS_MASTER_KEY` - Required for credentials decryption
+- `DATABASE_URL` - Render PostgreSQL connection string
+- `WEB_CONCURRENCY=2` - Puma worker count
+- `RAILS_SERVE_STATIC_FILES` or `RENDER` - Enables static file serving
+
+## Controller Patterns & Filters
+
+### ApplicationController
+Base controller for all controllers, minimal configuration:
+```ruby
+class ApplicationController < ActionController::Base
+  include Pagy::Backend
+end
+```
+- Includes Pagy for pagination globally
+- No authentication required by default (public-facing)
+- No custom before_action filters
+
+### Admin Namespace Controllers
+All admin controllers inherit from `AdminController` which:
+- Uses `layout 'admin'` for separate admin UI
+- Requires `authenticate_admin!` before all actions (Devise)
+- Sets instance variables with `@admin_` prefix (e.g., `@admin_product`)
+
+**Standard before_action Pattern**:
+```ruby
+before_action :set_admin_product, only: %i[show edit update destroy]
+
+private
+  def set_admin_product
+    @admin_product = Product.find(params[:id])
+  end
+```
+
+Applied to:
+- `Admin::ProductsController` - `set_admin_product`
+- `Admin::CategoriesController` - `set_admin_category`
+- `Admin::OrdersController` - `set_admin_order`
+- `Admin::StocksController` - `set_admin_stock`
+
+### Public Controllers (No Authentication)
+- `HomeController` - Landing page
+- `CategoriesController` - Category browsing with filtering
+- `ProductsController` - Product details
+- `CartsController` - Shopping cart display
+- `CheckoutsController` - Stripe checkout initiation
+- `WebhooksController` - Stripe webhook handler
+- `ContactController` - Contact form (no mailer, just flash message)
+- `Quantities::*Controller` - Calculator tools
+
+## Search & Filtering
+
+### Category Filtering (`CategoriesController#show`)
+Simple price range filtering using query parameters:
+
+```ruby
+@products = @category.products
+@products = @products.where(active: true)
+@products = @products.where('price <= ?', params[:max]) if params[:max].present?
+@products = @products.where('price >= ?', params[:min]) if params[:min].present?
+```
+
+**Filter Form Pattern**:
+```erb
+<%= form_with url: category_path(@category), method: :get do |form| %>
+  <%= form.number_field :min, placeholder: "Min Price" %>
+  <%= form.number_field :max, placeholder: "Max Price" %>
+  <%= form.submit "Filter" %>
+<% end %>
+```
+
+**Key Patterns**:
+- No scopes defined - uses inline `where` clauses
+- Always filters to `active: true` products
+- Price in pence (user must enter pence values)
+- GET method preserves filter in URL (bookmarkable)
+- Separate "Clear" button reloads page without params
+
+### Admin Product Search
+Currently not implemented (no search functionality in admin interface)
+
+## Contact Form & Newsletter
+
+### Contact Form (`ContactController`)
+**Status**: Stub implementation - no actual email sent
+```ruby
+def create
+  @first_name = params[:contact_form][:first_name]
+  @last_name = params[:contact_form][:last_name]
+  @email = params[:contact_form][:email]
+  @message = params[:contact_form][:message]
+
+  flash[:success] = 'Your message has been sent successfully.'
+  redirect_to :contact
+end
+```
+
+**Missing Features**:
+- No ContactMailer (should send email to admin)
+- No spam protection (no reCAPTCHA)
+- No validation (accepts empty submissions)
+- Form data captured but not persisted or sent
+
+### Newsletter Subscription
+**Status**: Not implemented
+```erb
+<%= form_with url: root_path, method: :post do %>
+  <%= email_field_tag :email, nil, placeholder: "Enter your email" %>
+  <%= submit_tag "Subscribe" %>
+<% end %>
+```
+- Form exists in `home/index.html.erb` and `contact/index.html.erb`
+- No route handler (POSTs to root_path which doesn't accept POST)
+- No newsletter service integration
+- TODO: Implement with Mailchimp/SendGrid or save to database
+
+## Turbo & Hotwire Usage
+
+### Limited Turbo Adoption
+Project uses Hotwire stack but minimal Turbo features:
+
+**Turbo Frames** (only in quantities calculators):
+```erb
+<%= turbo_frame_tag "area" do %>
+  <!-- Calculator form and results -->
+<% end %>
+```
+
+**Turbo Methods** (for delete actions):
+```erb
+data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }
+```
+
+**No Turbo Streams**:
+- No real-time updates
+- No inline editing without page reload
+- Cart uses full page reloads (localStorage → reload pattern)
+
+**Turbo Drive Enabled**:
+- Default Rails 7 behavior (SPA-like navigation)
+- Stylesheets use `data-turbo-track: "reload"`
+
+**Opportunities**:
+- Cart could use Turbo Frames for inline updates
+- Admin tables could use Turbo Streams for real-time order updates
+- Product filtering could use Turbo Frames to avoid full page reload
+
+## Configuration & Initializers
+
+### Key Initializers
+
+**Assets** (`config/initializers/assets.rb`):
+- Default Rails asset configuration
+- Version: 1.0
+- No custom precompile paths (uses defaults)
+
+**Devise** (`config/initializers/devise.rb`):
+- Mailer sender: `please-change-me-at-config-initializers-devise@example.com` (TODO: update)
+- Default authentication: `:database_authenticatable`
+- ORM: Active Record
+- Standard Devise defaults (mostly unchanged)
+
+**Filter Parameters** (`config/initializers/filter_parameter_logging.rb`):
+- Filters sensitive data from logs: `passw`, `secret`, `token`, `_key`, `crypt`, `salt`, `certificate`, `otp`, `ssn`
+- Important: Stripe keys logged unless explicitly filtered
+
+**Content Security Policy** (`config/initializers/content_security_policy.rb`):
+- Not configured (commented out)
+- No CSP headers sent
+- Potential security improvement opportunity
+
+**Permissions Policy** (`config/initializers/permissions_policy.rb`):
+- Not configured (commented out)
+- No permissions policy headers
+
+### Development Environment Specifics
+
+**Allowed Hosts**:
+```ruby
+config.hosts << 'loved-anchovy-on.ngrok-free.app'
+config.hosts << '54.187.216.72'
+```
+
+**Cache Store**:
+- With caching: `:memory_store`
+- Without caching: `:null_store`
+- Toggle: `rails dev:cache` creates/removes `tmp/caching-dev.txt`
+
+**Email in Development**:
+- Currently uses SMTP (MailerSend) even in development
+- Letter Opener Web commented out (line 85-86)
+- Recommendation: Uncomment letter_opener_web for local testing
+
+## Data Seeding & Sample Data
+
+### Seeds File
+**Status**: Empty stub
+```ruby
+# This file should ensure the existence of records required to run the application
+# No seed data defined
+```
+
+**Missing Seed Data**:
+- No sample categories
+- No sample products
+- No admin users
+- Developers must manually create data
+
+**Recommendation**: Add seed data for:
+```ruby
+# Create admin user
+Admin.find_or_create_by!(email: "admin@example.com") do |admin|
+  admin.password = "password123"
+end
+
+# Create categories
+["Chop Strand Mat", "Woven Roving", "Tools"].each do |name|
+  Category.find_or_create_by!(name: name) do |category|
+    category.description = "Sample category"
+  end
+end
+```
+
+## Background Jobs & Active Job
+
+### Current Status
+- **Active Job configured** but not actively used
+- `ApplicationJob` exists (standard Rails stub)
+- No custom job classes defined
+- No background job processor configured (no Sidekiq/DelayedJob/etc.)
+
+**Potential Use Cases** (not implemented):
+- Order confirmation email sending (currently synchronous)
+- Image processing for uploaded product images
+- Stock level alerts when low
+- Report generation for admin
+
+**Configuration**:
+- Development: Inline execution (blocks request)
+- Production: Inline execution (no async adapter)
+- Opportunity: Add Sidekiq for production
+
+## Action Cable & WebSockets
+
+### Current Status
+- **Action Cable configured** but unused
+- Redis configured for production (`REDIS_URL`)
+- No channels defined (only `ApplicationCable::Channel` and `ApplicationCable::Connection` stubs)
+- No real-time features
+
+**Potential Use Cases** (not implemented):
+- Real-time order notifications for admin
+- Live stock level updates
+- Chat support widget
+- Live visitor count
+
+**Configuration**:
+- Development: Redis at `redis://localhost:6379/1`
+- Production: Redis from ENV `REDIS_URL`
+- Channel prefix: `ecomm_production`
+
+## Image Handling & Active Storage
+
+### Custom Image Management Logic
+
+**Duplicate Filename Prevention** (`Admin::ProductsController#update`):
+```ruby
+if params[:admin_product][:images].present?
+  params[:admin_product][:images].each do |image|
+    @admin_product.images.each do |existing_image|
+      if existing_image.filename == image.original_filename
+        existing_image.purge
+      end
+    end
+  end
+end
+```
+- Checks for existing image with same filename
+- Purges old image before attaching new one
+- Prevents duplicates in Active Storage blobs
+
+**Image Variants**:
+```ruby
+# Product model
+has_many_attached :images
+# Variants: :thumb (50x50), :medium (250x250)
+
+# Category model
+has_one_attached :image
+# Variants: :thumb (50x50)
+```
+
+**Display Pattern**:
+```erb
+<%= product.images.first ? image_tag(product.images.first.variant(:medium)) :
+                           image_tag("http://via.placeholder.com/250") %>
+```
+
+**Delete Pattern** (with confirmation):
+```erb
+<%= link_to "X", admin_product_image_path(admin_product, image),
+            data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
+```
+
+## Performance & Optimization
+
+### Current State
+- **No caching implemented** (development uses `:null_store` by default)
+- **No eager loading** - potential N+1 queries
+- **No database indexes** beyond default Rails indexes
+- **No CDN** for assets (served from Render)
+- **Asset precompilation** at deploy time (not at runtime)
+
+### Known N+1 Opportunities
+```ruby
+# CategoriesController#show
+@products.each do |product|
+  product.images.first  # N+1 query for images
+end
+
+# AdminController#index
+@orders.each do |order|
+  order.order_products  # Potential N+1
+end
+```
+
+**Recommended Fixes**:
+```ruby
+@products = @category.products.with_attached_images
+@orders = Order.includes(:order_products).where(...)
+```
+
+### No Fragment Caching
+Views don't use Russian Doll caching:
+```erb
+<!-- Opportunity: Cache product cards -->
+<% cache product do %>
+  <%= render product %>
+<% end %>
+```
+
+## Security Considerations
+
+### Current Security Measures
+✅ **Implemented**:
+- HTTPS enforced in production (`config.force_ssl = true`)
+- CSRF protection enabled (default Rails)
+- Parameter filtering for sensitive data
+- Devise for admin authentication
+- Non-root Docker user in production
+- Database credentials via environment variables
+
+⚠️ **Missing/Weak**:
+- No Content Security Policy headers
+- No rate limiting on contact form
+- No admin 2FA/MFA
+- Letter Opener Web exposed in production (routes.rb line 59)
+- Devise mailer sender not updated (placeholder email)
+- No IP whitelisting for admin area
+- No audit logging for admin actions
+- Contact form accepts spam (no reCAPTCHA)
+
+### Recommended Improvements
+1. Add `rack-attack` gem for rate limiting
+2. Implement CSP headers via initializer
+3. Add admin action logging (PaperTrail gem)
+4. Restrict Letter Opener to development only
+5. Add 2FA for admin users (devise-two-factor gem)
+6. Validate Stripe webhook signatures (already implemented in WebhooksController)
