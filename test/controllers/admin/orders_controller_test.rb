@@ -5,7 +5,7 @@ require 'test_helper'
 module Admin
   class OrdersControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @admin_order = admin_orders(:one)
+      @admin_order = orders(:one)
     end
 
     test 'should get index' do
@@ -46,7 +46,7 @@ module Admin
     end
 
     test 'should destroy admin_order' do
-      assert_difference('Admin::Order.count', -1) do
+      assert_difference('Order.count', -1) do
         delete admin_order_url(@admin_order)
       end
 
