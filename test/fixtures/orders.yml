@@ -1,13 +1,27 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  customer_email: MyString
+order_one:
+  customer_email: "customer1@example.com"
   fulfilled: false
-  total: 1
-  address: MyString
+  total: 15000
+  address: "123 Test Street, Test City, TC1 2AB"
+  name: "John Smith"
+  phone: "01234567890"
+  billing_name: "John Smith"
+  billing_address: "123 Test Street, Test City, TC1 2AB"
+  payment_status: "paid"
+  payment_id: "pi_test_123456"
+  shipping_cost: 500
 
-two:
-  customer_email: MyString
-  fulfilled: false
-  total: 1
-  address: MyString
+order_two:
+  customer_email: "customer2@example.com"
+  fulfilled: true
+  total: 20000
+  address: "456 Demo Road, Demo Town, DT3 4CD"
+  name: "Jane Doe"
+  phone: "09876543210"
+  billing_name: "Jane Doe"
+  billing_address: "456 Demo Road, Demo Town, DT3 4CD"
+  payment_status: "paid"
+  payment_id: "pi_test_789012"
+  shipping_cost: 750

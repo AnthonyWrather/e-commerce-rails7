@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  description: MyText
+category_one:
+  name: "Chop Strand Mat"
+  description: "High-quality chopped strand mat for fiberglass layup"
 
-two:
-  name: MyString
-  description: MyText
+category_two:
+  name: "Woven Roving"
+  description: "Woven roving materials for structural reinforcement"

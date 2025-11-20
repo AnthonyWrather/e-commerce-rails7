@@ -1,11 +1,21 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  size: MyString
-  amount: 1
-  product: one
+stock_one:
+  size: "1m x 10m Roll"
+  amount: 25
+  price: 14000
+  product: product_one
+  weight: 3000
+  length: 1000
+  width: 100
+  height: 10
 
-two:
-  size: MyString
-  amount: 1
-  product: two
+stock_two:
+  size: "1m x 5m Roll"
+  amount: 40
+  price: 9500
+  product: product_two
+  weight: 2250
+  length: 500
+  width: 100
+  height: 8

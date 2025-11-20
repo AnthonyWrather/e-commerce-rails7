@@ -1,15 +1,25 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  description: MyText
-  price: 1
-  category: one
-  active: false
+product_one:
+  name: "300g Chopped Strand Mat"
+  description: "300g per square meter chopped strand mat, 1m wide"
+  price: 1500
+  category: category_one
+  active: true
+  amount: 100
+  weight: 300
+  length: 100
+  width: 100
+  height: 5
 
-two:
-  name: MyString
-  description: MyText
-  price: 1
-  category: two
-  active: false
+product_two:
+  name: "450g Woven Roving"
+  description: "450g per square meter woven roving fabric"
+  price: 2000
+  category: category_two
+  active: true
+  amount: 50
+  weight: 450
+  length: 100
+  width: 100
+  height: 3
