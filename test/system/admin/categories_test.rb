@@ -5,7 +5,7 @@ require 'application_system_test_case'
 module Admin
   class CategoriesTest < ApplicationSystemTestCase
     setup do
-      @admin_category = admin_categories(:one)
+      @admin_category = categories(:category_one)
     end
 
     test 'visiting the index' do

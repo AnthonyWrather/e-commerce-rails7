@@ -25,3 +25,16 @@ order_two:
   payment_status: "paid"
   payment_id: "pi_test_789012"
   shipping_cost: 750
+
+order_three:
+  customer_email: "customer3@example.com"
+  fulfilled: false
+  total: 10000
+  address: "789 Sample Lane, Sample City, SC5 6EF"
+  name: "Bob Johnson"
+  phone: "01122334455"
+  billing_name: "Bob Johnson"
+  billing_address: "789 Sample Lane, Sample City, SC5 6EF"
+  payment_status: "paid"
+  payment_id: "pi_test_345678"
+  shipping_cost: 350

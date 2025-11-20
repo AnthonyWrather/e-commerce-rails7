@@ -5,7 +5,8 @@ require 'test_helper'
 module Admin
   class CategoriesControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @admin_category = categories(:one)
+      @admin_category = categories(:category_one)
+      sign_in admin_users(:admin_user_one)
     end
 
     test 'should get index' do
@@ -44,8 +45,9 @@ module Admin
     end
 
     test 'should destroy admin_category' do
+      category_to_delete = categories(:category_three)
       assert_difference('Category.count', -1) do
-        delete admin_category_url(@admin_category)
+        delete admin_category_url(category_to_delete)
       end
 
       assert_redirected_to admin_categories_url

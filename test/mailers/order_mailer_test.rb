@@ -4,10 +4,11 @@ require 'test_helper'
 
 class OrderMailerTest < ActionMailer::TestCase
   test 'new_order_email' do
-    mail = OrderMailer.new_order_email
-    assert_equal 'New order email', mail.subject
-    assert_equal ['to@example.org'], mail.to
-    assert_equal ['from@example.com'], mail.from
-    assert_match 'Hi', mail.body.encoded
+    order = orders(:order_one)
+    mail = OrderMailer.new_order_email(order)
+    assert_equal 'Your Order Confirmation', mail.subject
+    assert_equal [order.customer_email], mail.to
+    assert_equal ['scfs@cariana.tech'], mail.from
+    assert_match order.name, mail.body.encoded
   end
 end

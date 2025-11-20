@@ -5,7 +5,7 @@ require 'application_system_test_case'
 module Admin
   class ProductsTest < ApplicationSystemTestCase
     setup do
-      @admin_product = admin_products(:one)
+      @admin_product = products(:product_one)
     end
 
     test 'visiting the index' do

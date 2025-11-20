@@ -22,7 +22,7 @@
   </div>
 
   <div class="my-5">
-    <% if admin_category.image %>
+    <% if admin_category.image.attached? %>
       <%= image_tag admin_category.image, class: "w-20 h-20 object-cover rounded-md" %>
     <% end %>
     <%= form.label :image %>
