@@ -7,3 +7,7 @@ category_one:
 category_two:
   name: "Woven Roving"
   description: "Woven roving materials for structural reinforcement"
+
+category_three:
+  name: "Test Category"
+  description: "Category for destroy testing without dependencies"

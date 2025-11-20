@@ -23,3 +23,15 @@ product_two:
   length: 100
   width: 100
   height: 3
+
+product_three:
+  name: "600g Chopped Strand Mat"
+  description: "600g per square meter chopped strand mat for testing"
+  price: 2500
+  category: category_one
+  active: true
+  amount: 75
+  weight: 600
+  length: 100
+  width: 100
+  height: 6

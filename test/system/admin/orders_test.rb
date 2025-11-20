@@ -5,7 +5,7 @@ require 'application_system_test_case'
 module Admin
   class OrdersTest < ApplicationSystemTestCase
     setup do
-      @admin_order = admin_orders(:one)
+      @admin_order = orders(:order_one)
     end
 
     test 'visiting the index' do

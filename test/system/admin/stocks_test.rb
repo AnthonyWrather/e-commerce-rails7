@@ -5,7 +5,7 @@ require 'application_system_test_case'
 module Admin
   class StocksTest < ApplicationSystemTestCase
     setup do
-      @admin_stock = admin_stocks(:one)
+      @admin_stock = stocks(:stock_one)
     end
 
     test 'visiting the index' do

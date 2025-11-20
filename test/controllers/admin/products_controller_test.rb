@@ -5,7 +5,8 @@ require 'test_helper'
 module Admin
   class ProductsControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @admin_product = products(:one)
+      @admin_product = products(:product_one)
+      sign_in admin_users(:admin_user_one)
     end
 
     test 'should get index' do
@@ -46,8 +47,9 @@ module Admin
     end
 
     test 'should destroy admin_product' do
+      product_to_delete = products(:product_three)
       assert_difference('Product.count', -1) do
-        delete admin_product_url(@admin_product)
+        delete admin_product_url(product_to_delete)
       end
 
       assert_redirected_to admin_products_url

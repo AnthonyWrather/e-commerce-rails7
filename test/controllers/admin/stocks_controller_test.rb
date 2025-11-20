@@ -5,52 +5,54 @@ require 'test_helper'
 module Admin
   class StocksControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @admin_stock = stocks(:one)
+      @admin_stock = stocks(:stock_one)
+      @product = products(:product_one)
+      sign_in admin_users(:admin_user_one)
     end
 
     test 'should get index' do
-      get admin_stocks_url
+      get admin_product_stocks_url(@product)
       assert_response :success
     end
 
     test 'should get new' do
-      get new_admin_stock_url
+      get new_admin_product_stock_url(@product)
       assert_response :success
     end
 
     test 'should create admin_stock' do
       assert_difference('Stock.count') do
-        post admin_stocks_url,
+        post admin_product_stocks_url(@product),
              params: { admin_stock: { amount: @admin_stock.amount, product_id: @admin_stock.product_id,
                                       size: @admin_stock.size } }
       end
 
-      assert_redirected_to admin_stock_url(Stock.last)
+      assert_redirected_to admin_product_stocks_url(@product)
     end
 
     test 'should show admin_stock' do
-      get admin_stock_url(@admin_stock)
+      get admin_product_stock_url(@product, @admin_stock)
       assert_response :success
     end
 
     test 'should get edit' do
-      get edit_admin_stock_url(@admin_stock)
+      get edit_admin_product_stock_url(@product, @admin_stock)
       assert_response :success
     end
 
     test 'should update admin_stock' do
-      patch admin_stock_url(@admin_stock),
+      patch admin_product_stock_url(@product, @admin_stock),
             params: { admin_stock: { amount: @admin_stock.amount, product_id: @admin_stock.product_id,
                                      size: @admin_stock.size } }
-      assert_redirected_to admin_stock_url(@admin_stock)
+      assert_redirected_to admin_product_stocks_url(@product)
     end
 
     test 'should destroy admin_stock' do
       assert_difference('Stock.count', -1) do
-        delete admin_stock_url(@admin_stock)
+        delete admin_product_stock_url(@product, @admin_stock)
       end
 
-      assert_redirected_to admin_stocks_url
+      assert_redirected_to admin_product_stocks_url(@product)
     end
   end
 end
