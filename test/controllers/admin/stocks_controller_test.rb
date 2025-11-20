@@ -5,7 +5,7 @@ require 'test_helper'
 module Admin
   class StocksControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @admin_stock = admin_stocks(:one)
+      @admin_stock = stocks(:one)
     end
 
     test 'should get index' do
@@ -19,13 +19,13 @@ module Admin
     end
 
     test 'should create admin_stock' do
-      assert_difference('Admin::Stock.count') do
+      assert_difference('Stock.count') do
         post admin_stocks_url,
              params: { admin_stock: { amount: @admin_stock.amount, product_id: @admin_stock.product_id,
                                       size: @admin_stock.size } }
       end
 
-      assert_redirected_to admin_stock_url(Admin::Stock.last)
+      assert_redirected_to admin_stock_url(Stock.last)
     end
 
     test 'should show admin_stock' do
@@ -46,7 +46,7 @@ module Admin
     end
 
     test 'should destroy admin_stock' do
-      assert_difference('Admin::Stock.count', -1) do
+      assert_difference('Stock.count', -1) do
         delete admin_stock_url(@admin_stock)
       end
 

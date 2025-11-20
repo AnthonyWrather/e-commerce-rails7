@@ -5,7 +5,7 @@ require 'test_helper'
 module Admin
   class CategoriesControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @admin_category = admin_categories(:one)
+      @admin_category = categories(:one)
     end
 
     test 'should get index' do
@@ -19,12 +19,12 @@ module Admin
     end
 
     test 'should create admin_category' do
-      assert_difference('Admin::Category.count') do
+      assert_difference('Category.count') do
         post admin_categories_url,
              params: { admin_category: { description: @admin_category.description, name: @admin_category.name } }
       end
 
-      assert_redirected_to admin_category_url(Admin::Category.last)
+      assert_redirected_to admin_category_url(Category.last)
     end
 
     test 'should show admin_category' do
@@ -44,7 +44,7 @@ module Admin
     end
 
     test 'should destroy admin_category' do
-      assert_difference('Admin::Category.count', -1) do
+      assert_difference('Category.count', -1) do
         delete admin_category_url(@admin_category)
       end
 
