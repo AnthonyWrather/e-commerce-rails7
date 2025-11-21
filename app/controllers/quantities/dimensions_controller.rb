@@ -6,10 +6,10 @@ class Quantities::DimensionsController < ApplicationController
   add_breadcrumb 'Calculate by Dimensions', :quantities_dimensions_path
 
   def index
-    @length = params[:length].presence.to_f || 1.0
-    @width = params[:width].presence.to_f || 1.0
+    @length = (params[:length].presence || '1.0').to_f
+    @width = (params[:width].presence || '1.0').to_f
     @depth = 0
-    @catalyst = params[:catalyst].presence.to_i || 1
+    @catalyst = (params[:catalyst].presence || '1').to_i
     @material = params[:material].presence || ''
     # @material_width = params[:material_width].presence.to_f || 0.95
     @material_width = 0.95
