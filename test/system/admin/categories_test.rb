@@ -5,6 +5,7 @@ require 'application_system_test_case'
 module Admin
   class CategoriesTest < ApplicationSystemTestCase
     setup do
+      sign_in_admin
       @admin_category = categories(:category_one)
     end
 
@@ -38,7 +39,8 @@ module Admin
     end
 
     test 'should destroy Category' do
-      visit admin_category_url(@admin_category)
+      category_to_destroy = categories(:category_three)
+      visit admin_category_url(category_to_destroy)
       click_on 'Destroy this category', match: :first
 
       assert_text 'Category was successfully destroyed'

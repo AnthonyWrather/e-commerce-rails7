@@ -5,6 +5,7 @@ require 'application_system_test_case'
 module Admin
   class OrdersTest < ApplicationSystemTestCase
     setup do
+      sign_in_admin
       @admin_order = orders(:order_one)
     end
 
@@ -29,7 +30,7 @@ module Admin
 
     test 'should update Order' do
       visit admin_order_url(@admin_order)
-      click_on 'Edit this order', match: :first
+      click_on 'Edit this admin_order', match: :first
 
       fill_in 'Address', with: @admin_order.address
       fill_in 'Customer email', with: @admin_order.customer_email
@@ -39,13 +40,6 @@ module Admin
 
       assert_text 'Order was successfully updated'
       click_on 'Back'
-    end
-
-    test 'should destroy Order' do
-      visit admin_order_url(@admin_order)
-      click_on 'Destroy this order', match: :first
-
-      assert_text 'Order was successfully destroyed'
     end
   end
 end

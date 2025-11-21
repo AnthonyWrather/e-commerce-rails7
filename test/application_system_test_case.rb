@@ -9,4 +9,11 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
   end
+
+  include Devise::Test::IntegrationHelpers
+
+  def sign_in_admin(admin = nil)
+    admin ||= admin_users(:admin_user_one)
+    sign_in admin
+  end
 end

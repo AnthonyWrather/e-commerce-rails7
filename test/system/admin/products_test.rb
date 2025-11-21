@@ -5,6 +5,7 @@ require 'application_system_test_case'
 module Admin
   class ProductsTest < ApplicationSystemTestCase
     setup do
+      sign_in_admin
       @admin_product = products(:product_one)
     end
 
@@ -18,7 +19,7 @@ module Admin
       click_on 'New product'
 
       check 'Active' if @admin_product.active
-      fill_in 'Category', with: @admin_product.category_id
+      select @admin_product.category.name, from: 'Category'
       fill_in 'Description', with: @admin_product.description
       fill_in 'Name', with: @admin_product.name
       fill_in 'Price', with: @admin_product.price
@@ -30,22 +31,22 @@ module Admin
 
     test 'should update Product' do
       visit admin_product_url(@admin_product)
-      click_on 'Edit this product', match: :first
+      click_on 'Edit this admin_product', match: :first
 
       check 'Active' if @admin_product.active
-      fill_in 'Category', with: @admin_product.category_id
+      select @admin_product.category.name, from: 'Category'
       fill_in 'Description', with: @admin_product.description
       fill_in 'Name', with: @admin_product.name
       fill_in 'Price', with: @admin_product.price
-      click_on 'Update Product'
+      find('input[type="submit"]').click
 
-      assert_text 'Product was successfully updated'
-      click_on 'Back'
+      assert_text 'Product updated successfully'
     end
 
     test 'should destroy Product' do
-      visit admin_product_url(@admin_product)
-      click_on 'Destroy this product', match: :first
+      product_to_destroy = products(:product_three)
+      visit admin_product_url(product_to_destroy)
+      click_on 'Destroy this admin_product', match: :first
 
       assert_text 'Product was successfully destroyed'
     end
