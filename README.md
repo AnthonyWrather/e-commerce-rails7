@@ -372,6 +372,8 @@ bin/rails test:system
 rubocop
 # Run the local webserver
 bin/dev
+# Edit Credentials in VSCode
+EDITOR="code --wait" rails credentials:edit
 # Run this on the host for external connectivity.
 ngrok http --url=loved-anchovy-on.ngrok-free.app 3000
 ```
