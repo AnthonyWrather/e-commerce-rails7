@@ -379,40 +379,51 @@ ngrok http --url=loved-anchovy-on.ngrok-free.app 3000
 ## localhost Dev Environment
 
 Ngrok Request Inspection Interface
+
 * [http://localhost:4040/inspect/http](http://localhost:4040/inspect/http)
 
 (If configured) Letter Opener
+
 * [http://localhost:3000/letter_opener](http://localhost:3000/letter_opener)
 
 Dev pgadmin Interface
+
 * [http://localhost:15432/login?next=/browser/](http://localhost:15432/login?next=/browser/)
 
 Dev Shop FE
+
 * [http://localhost:3000/](http://localhost:3000/)
 
 Dev Admin FE
+
 * [http://localhost:3000/admin_users/sign_in](http://localhost:3000/admin_users/sign_in)
 
 ## External Dev Environment
 
 (If configured) Letter Opener
+
 * [https://loved-anchovy-on.ngrok-free.app/letter_opener](https://loved-anchovy-on.ngrok-free.app/letter_opener)
 
 Dev Shop FE
+
 * [https://loved-anchovy-on.ngrok-free.app/](https://loved-anchovy-on.ngrok-free.app/)
 
 Dev Admin FE
+
 * [https://loved-anchovy-on.ngrok-free.app/admin_users/sign_in](https://loved-anchovy-on.ngrok-free.app/admin_users/sign_in)
 
 ## Render Hosted Test Environment
 
 (If configured) Letter Opener
+
 * [https://e-commerce-rails7.onrender.com/letter_opener](https://e-commerce-rails7.onrender.com/letter_opener)
 
 Test Shop FE
+
 * [https://e-commerce-rails7.onrender.com/](https://e-commerce-rails7.onrender.com/)
 
 Test Admin FE
+
 * [https://e-commerce-rails7.onrender.com/admin_users/sign_in](https://e-commerce-rails7.onrender.com/admin_users/sign_in)
 
 ## Render Hosted Production Environment
@@ -421,7 +432,9 @@ When it is available it will be here.
 For now it just links back to the Test Environment as a placeholder.
 
 Production Shop FE
+
 * [https://shop.cariana.tech/](https://shop.cariana.tech//)
 
 Production Admin FE
+
 * [https://shop.cariana.tech/admin_users/sign_in](https://shop.cariana.tech/admin_users/sign_in)
