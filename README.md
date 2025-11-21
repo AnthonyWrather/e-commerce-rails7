@@ -350,3 +350,6 @@ Edit the docker-compose.yml
 ```docker
       - ../storage/pgadmin/backups:/var/lib/pgadmin/storage/admin_pgadmin.com/backups
 ```
+
+## Welcome to adding GitHub CoPilot support.
+
