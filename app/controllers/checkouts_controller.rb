@@ -75,7 +75,7 @@ class CheckoutsController < ApplicationController
       product = Product.find(item['id'])
       product_stock_id, price = get_product_pricing(product, item)
 
-      return unless validate_stock(product, product_stock_id, item)
+      return unless stock_available?(product, product_stock_id, item)
 
       build_line_item(item, product, product_stock_id, price)
     end
@@ -90,7 +90,7 @@ class CheckoutsController < ApplicationController
     end
   end
 
-  def validate_stock(product, product_stock_id, item)
+  def stock_available?(product, product_stock_id, item)
     stock_obj = Stock.find_by(id: product_stock_id) if product_stock_id != product.id
     available = stock_obj ? stock_obj.amount : product.amount
 

@@ -6,8 +6,8 @@ class Quantities::AreaController < ApplicationController
   add_breadcrumb 'Calculate by Area', :quantities_area_path
 
   def index
-    @area = params[:area].presence.to_f || 1.0
-    @catalyst = params[:catalyst].presence.to_i || 1
+    @area = (params[:area].presence || '1.0').to_f
+    @catalyst = (params[:catalyst].presence || '1').to_i
     @material = params[:material].presence || ''
     # @material_width = params[:material_width].presence.to_f || 0.95
     @material_width = 0.95

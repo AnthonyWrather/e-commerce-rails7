@@ -18,9 +18,9 @@ class AdminController < ApplicationController
     @monthly_stats = {
       sales: num_orders_monthly,
       items: num_products_monthly,
-      revenue: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).sum(:total)&.round(),
-      avg_sale: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).average(:total)&.round(),
-      shipping: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).where.not(shipping_cost: nil).sum(:shipping_cost)&.round(),
+      revenue: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).sum(:total)&.round,
+      avg_sale: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).average(:total)&.round,
+      shipping: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).where.not(shipping_cost: nil).sum(:shipping_cost)&.round,
       per_sale: avg_items_monthly
     }
 

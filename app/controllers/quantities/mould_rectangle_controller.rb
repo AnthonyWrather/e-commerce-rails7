@@ -6,10 +6,10 @@ class Quantities::MouldRectangleController < ApplicationController
   add_breadcrumb 'Calculate a Rectangle Mould', :quantities_mould_rectangle_path
 
   def index
-    @length = params[:length].presence.to_f || 1.0
-    @width = params[:width].presence.to_f || 1.0
-    @depth = params[:depth].presence.to_f || 1.0
-    @catalyst = params[:catalyst].presence.to_i || 1
+    @length = (params[:length].presence || '1.0').to_f
+    @width = (params[:width].presence || '1.0').to_f
+    @depth = (params[:depth].presence || '1.0').to_f
+    @catalyst = (params[:catalyst].presence || '1').to_i
     @material = params[:material].presence || ''
     # @material_width = params[:material_width].presence.to_f || 0.95
     @material_width = 0.95
