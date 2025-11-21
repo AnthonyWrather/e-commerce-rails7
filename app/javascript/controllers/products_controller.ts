@@ -1,5 +1,21 @@
 import { Controller } from "@hotwired/stimulus"
 
+interface Product {
+  id: number
+  name: string
+  price: number
+}
+
+interface Stock {
+  size: string
+  price: number
+  amount: number
+}
+
+interface MessageOptions {
+  type?: 'error' | 'alert' | 'success'
+}
+
 // Connects to data-controller="products"
 export default class extends Controller {
   static values = {
@@ -9,7 +25,12 @@ export default class extends Controller {
     messageTimeout: { default: 2.5 * 1000, type: Number }
   }
 
-  addToCart() {
+  declare sizeValue: string
+  declare readonly productValue: Product
+  declare readonly stockValue: Stock[]
+  declare readonly messageTimeoutValue: number
+
+  addToCart(): void {
     console.log("product: ", this.productValue)
     // If Size is set then get the Price from Stock
     let price = 0
@@ -20,10 +41,10 @@ export default class extends Controller {
       price = this.productValue.price
     }
 
-    const cart = localStorage.getItem("cart")
-    if (cart) {
-      const cartArray = JSON.parse(cart)
-      const foundIndex = cartArray.findIndex(item => item.id === this.productValue.id && item.size === this.sizeValue)
+    const cartData = localStorage.getItem("cart")
+    if (cartData) {
+      const cartArray = JSON.parse(cartData)
+      const foundIndex = cartArray.findIndex((item: any) => item.id === this.productValue.id && item.size === this.sizeValue)
       if (foundIndex >= 0) {
         cartArray[foundIndex].quantity = parseInt(cartArray[foundIndex].quantity) + 1
       } else {
@@ -50,35 +71,52 @@ export default class extends Controller {
     this.addMessage({ message: `${this.productValue.name} added to basket.` }, { type: 'alert' });
   }
 
-  selectSize(e) {
-    // TODO: Need to do this properly.
-    this.sizeValue = e.target.value
+  selectSize(e: Event): void {
+    const target = e.target as HTMLButtonElement
+    this.sizeValue = target.value
     const selectedSizeEl = document.getElementById("selected-size")
-    selectedSizeEl.innerText = `Selected Size: ${this.sizeValue}`
-
-    const selectedButtonTextEl = document.getElementById(e.target.id)
-    const myPrice = selectedButtonTextEl.innerText.split("£")
-    const selectedPriceEl = document.getElementById("product-price")
-    if (myPrice[1]) {
-      selectedPriceEl.innerText = `£${myPrice[1]}`
-      const selectedPriceExVatEl = document.getElementById("product-price-exvat")
-      selectedPriceExVatEl.innerText = `Ex VAT £${(myPrice[1]/1.2).toFixed(2)}`
-    } else {
-      selectedPriceEl.innerText = "Out of stock."
+    if (selectedSizeEl) {
+      selectedSizeEl.innerText = `Selected Size: ${this.sizeValue}`
     }
 
-    const addToCartButton = document.getElementById("add-to-cart-button")
-    addToCartButton.disabled = false
-    addToCartButton.classList.remove("invisible")
+    const selectedButtonTextEl = document.getElementById(target.id)
+    if (selectedButtonTextEl) {
+      const myPrice = selectedButtonTextEl.innerText.split("£")
+      const selectedPriceEl = document.getElementById("product-price")
+      if (myPrice[1]) {
+        if (selectedPriceEl) {
+          selectedPriceEl.innerText = `£${myPrice[1]}`
+        }
+        const selectedPriceExVatEl = document.getElementById("product-price-exvat")
+        if (selectedPriceExVatEl) {
+          selectedPriceExVatEl.innerText = `Ex VAT £${(parseFloat(myPrice[1]) / 1.2).toFixed(2)}`
+        }
+      } else {
+        if (selectedPriceEl) {
+          selectedPriceEl.innerText = "Out of stock."
+        }
+      }
+    }
+
+    const addToCartButton = document.getElementById("add-to-cart-button") as HTMLButtonElement | null
+    if (addToCartButton) {
+      addToCartButton.disabled = false
+      addToCartButton.classList.remove("invisible")
+    }
   }
 
-  addMessage(content, { type = "error" } = {}) {
+  addMessage(content: { message: string }, { type: _type = "error" }: MessageOptions = {}): void {
     const flashContainer = document.getElementById("flash");
     if (!flashContainer) return;
 
-    const template = flashContainer.querySelector("[data-template]");
-    const node = template.content.firstElementChild.cloneNode(true);
-    node.querySelector("[data-value]").innerText = content.message;
+    const template = flashContainer.querySelector("[data-template]") as HTMLTemplateElement | null;
+    if (!template) return;
+
+    const node = template.content.firstElementChild?.cloneNode(true) as HTMLElement;
+    const valueElement = node.querySelector("[data-value]");
+    if (valueElement) {
+      valueElement.textContent = content.message;
+    }
 
     flashContainer.append(node);
 
@@ -88,7 +126,7 @@ export default class extends Controller {
     }, this.messageTimeoutValue);
   }
 
-  formatCurrency(price) {
+  formatCurrency(price: number): string {
     // TODO: I think this is better done with events.
     const unit = "£";
     const separator = ".";

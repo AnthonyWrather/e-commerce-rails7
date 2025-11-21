@@ -5,7 +5,7 @@ import { application } from "./application"
 
 // Manually register each controller
 import CartController from "./cart_controller"
-import ProductsController from "./products_controller"
+import ProductsController from "./products_controller.ts"
 import DashboardController from "./dashboard_controller.ts"
 import QuantitiesController from "./quantities_controller.ts"
 
