@@ -1,22 +1,56 @@
 import { Controller } from "@hotwired/stimulus"
 
+interface CartItem {
+  id: number
+  name: string
+  price: number
+  size: string
+  quantity: number
+}
+
+interface MessageContent {
+  message: string
+}
+
+interface MessageOptions {
+  type?: 'error' | 'alert' | 'success'
+}
+
+interface CheckoutPayload {
+  authenticity_token: string
+  cart: CartItem[]
+}
+
+interface CheckoutResponse {
+  url: string
+}
+
+interface ErrorResponse {
+  error: string
+}
+
 // Connects to data-controller="cart"
 export default class extends Controller {
   static values = {
     messageTimeout: { default: 3.5 * 1000, type: Number }
   }
 
-  initialize() {
+  declare readonly messageTimeoutValue: number
 
+  initialize(): void {
     console.log("cart controller initialized")
-    const cart = JSON.parse(localStorage.getItem("cart"))
-    if (!cart) {
+    const cartData = localStorage.getItem("cart")
+    if (!cartData) {
       return
     }
 
+    const cart: CartItem[] = JSON.parse(cartData)
+
     let total = 0
-    const table_body = document.getElementById("table_body")
-    for (let i=0; i < cart.length; i++) {
+    const table_body = document.getElementById("table_body") as HTMLTableSectionElement | null
+    if (!table_body) return
+
+    for (let i = 0; i < cart.length; i++) {
       const item = cart[i]
       total += item.price * item.quantity
       const name = `${item.name}`,
@@ -39,7 +73,7 @@ export default class extends Controller {
       td_price.style.textAlign = 'right';
 
       const td_price_exvat = tr.insertCell();
-      td_price_exvat.appendChild(document.createTextNode(this.formatCurrency(item.price/1.2)));
+      td_price_exvat.appendChild(document.createTextNode(this.formatCurrency(item.price / 1.2)));
       td_price_exvat.style.border = '1px solid black';
       td_price_exvat.style.textAlign = 'right';
       td_price_exvat.style.color = 'black';
@@ -57,7 +91,7 @@ export default class extends Controller {
       const deleteButton = document.createElement("button")
       deleteButton.innerText = "Remove"
       console.log("item.id: ", item.id)
-      deleteButton.value = JSON.stringify({id: item.id, size: item.size})
+      deleteButton.value = JSON.stringify({ id: item.id, size: item.size })
       deleteButton.classList.add("bg-red-500", "hover:bg-red-600", "rounded", "text-white", "px-2", "py-1", "ml-2")
       deleteButton.addEventListener("click", this.removeFromCart)
 
@@ -68,30 +102,36 @@ export default class extends Controller {
 
     const totalEl = document.createElement("div")
     totalEl.classList.add("text-white")
-    totalEl.innerText= `Invoice Total (Inc VAT): ${this.formatCurrency(total)}`
-    let totalContainer = document.getElementById("total")
-    totalContainer.appendChild(totalEl)
+    totalEl.innerText = `Invoice Total (Inc VAT): ${this.formatCurrency(total)}`
+    const totalContainer = document.getElementById("total")
+    if (totalContainer) {
+      totalContainer.appendChild(totalEl)
 
-    const totalExvatEl = document.createElement("div")
-    totalExvatEl.classList.add("text-white")
-    totalExvatEl.innerText= `Invoice Total (Ex VAT): ${this.formatCurrency(total/1.2)}`
-    totalContainer.appendChild(totalExvatEl)
+      const totalExvatEl = document.createElement("div")
+      totalExvatEl.classList.add("text-white")
+      totalExvatEl.innerText = `Invoice Total (Ex VAT): ${this.formatCurrency(total / 1.2)}`
+      totalContainer.appendChild(totalExvatEl)
 
-    const totalVatEl = document.createElement("div")
-    totalVatEl.classList.add("text-white")
-    totalVatEl.innerText= `Total VAT @20%: ${this.formatCurrency(total - (total/1.2))}`
-    totalContainer.appendChild(totalVatEl)
+      const totalVatEl = document.createElement("div")
+      totalVatEl.classList.add("text-white")
+      totalVatEl.innerText = `Total VAT @20%: ${this.formatCurrency(total - (total / 1.2))}`
+      totalContainer.appendChild(totalVatEl)
+    }
   }
 
-  clear() {
+  clear(): void {
     localStorage.removeItem("cart")
     window.location.reload()
   }
 
-  removeFromCart(event) {
-    const cart = JSON.parse(localStorage.getItem("cart"))
-    const values = JSON.parse(event.target.value)
-    const {id, size} = values
+  removeFromCart(event: Event): void {
+    const target = event.target as HTMLButtonElement
+    const cartData = localStorage.getItem("cart")
+    if (!cartData) return
+
+    const cart: CartItem[] = JSON.parse(cartData)
+    const values: { id: number; size: string } = JSON.parse(target.value)
+    const { id, size } = values
     const index = cart.findIndex(item => item.id === id && item.size === size)
     if (index >= 0) {
       cart.splice(index, 1)
@@ -100,14 +140,20 @@ export default class extends Controller {
     window.location.reload()
   }
 
-  checkout() {
-    const cart = JSON.parse(localStorage.getItem("cart"))
-    const payload = {
+  checkout(): void {
+    const cartData = localStorage.getItem("cart")
+    if (!cartData) return
+
+    const cart: CartItem[] = JSON.parse(cartData)
+    const payload: CheckoutPayload = {
       authenticity_token: "",
       cart: cart
     }
 
-    const csrfToken = document.querySelector("[name='csrf-token']").content
+    const csrfTokenElement = document.querySelector("[name='csrf-token']") as HTMLMetaElement | null
+    if (!csrfTokenElement) return
+
+    const csrfToken = csrfTokenElement.content
 
     fetch("/checkout", {
       method: "POST",
@@ -117,26 +163,31 @@ export default class extends Controller {
       },
       body: JSON.stringify(payload)
     }).then(response => {
-        if (response.ok) {
-          response.json().then(body => {
-            window.location.href = body.url
-          })
-        } else {
-          response.json().then(body => {
-            this.addMessage({ message: `There was an error processing your order. ${body.error}` }, { type: 'alert' });
-          })
-        }
-      })
+      if (response.ok) {
+        response.json().then((body: CheckoutResponse) => {
+          window.location.href = body.url
+        })
+      } else {
+        response.json().then((body: ErrorResponse) => {
+          this.addMessage({ message: `There was an error processing your order. ${body.error}` }, { type: 'alert' });
+        })
+      }
+    })
   }
 
-  addMessage(content, { type = "error" } = {}) {
+  addMessage(content: MessageContent, { type: _type = "error" }: MessageOptions = {}): void {
     console.log("addMessage")
     const flashContainer = document.getElementById("flash");
     if (!flashContainer) return;
 
-    const template = flashContainer.querySelector("[data-template]");
-    const node = template.content.firstElementChild.cloneNode(true);
-    node.querySelector("[data-value]").innerText = content.message;
+    const template = flashContainer.querySelector("[data-template]") as HTMLTemplateElement | null;
+    if (!template) return;
+
+    const node = template.content.firstElementChild?.cloneNode(true) as HTMLElement;
+    const valueElement = node.querySelector("[data-value]");
+    if (valueElement) {
+      valueElement.textContent = content.message;
+    }
 
     flashContainer.append(node);
 
@@ -146,7 +197,7 @@ export default class extends Controller {
     }, this.messageTimeoutValue);
   }
 
-  formatCurrency(price) {
+  formatCurrency(price: number): string {
     // TODO: I think this is better done with events.
     const unit = "£";
     const separator = ".";
@@ -165,4 +216,3 @@ export default class extends Controller {
     return `${unit}${integerPart}${separator}${decimalPart}`;
   }
 }
-
