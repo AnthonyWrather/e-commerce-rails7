@@ -63,8 +63,8 @@ test:
   # url: <%= ENV["MY_APP_DATABASE_URL_TEST"] %>
   host: postgres
   database: e_commerce_rails7_test
-  username: e_commerce_rails7
-  password: e_commerce_rails7
+  username: postgres
+  password: postgres
   # password: <%= ENV["E_COMMERCE_RAILS7_DATABASE_PASSWORD_TEST"] %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
