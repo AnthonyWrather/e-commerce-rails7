@@ -16,7 +16,7 @@ FROM base AS build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config ssh google-chrome-stable
+    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config ssh
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -28,6 +28,11 @@ RUN bundle install && \
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libvips postgresql-client && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+
+# RUN apt-get update -qq && \
+#     apt-get install --no-install-recommends -y google-chrome-stable && \
+#     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 FROM build as staging
 
