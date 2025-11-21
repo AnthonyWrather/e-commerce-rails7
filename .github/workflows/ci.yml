@@ -51,6 +51,7 @@ jobs:
 
       - name: Grant superuser to test database user
         run: |
+          psql -U postgres -c "CREATE ROLE root WITH LOGIN SUPERUSER PASSWORD 'postgres';"
           PGPASSWORD=postgres psql -h localhost -U postgres -c "ALTER USER postgres WITH SUPERUSER;"
 
       - name: Run RuboCop

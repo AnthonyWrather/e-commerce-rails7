@@ -14,6 +14,7 @@ AllCops:
   SuggestExtensions: false
   Exclude:
     - db/schema.rb
+    - vendor/**/*
 
 Style/Documentation:
   Enabled: false
