@@ -102,3 +102,5 @@ gem 'aws-sdk-s3', require: false
 # gem "irb"
 gem 'breadcrumbs_on_rails'
 gem 'shipengine_sdk'
+
+gem 'jsbundling-rails', '~> 1.3'
