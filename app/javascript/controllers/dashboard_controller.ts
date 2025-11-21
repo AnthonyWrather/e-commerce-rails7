@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import {Chart, registerables } from 'chart.js'
+import { Chart, registerables } from 'chart.js'
 
 Chart.register(...registerables)
 
@@ -10,11 +10,14 @@ export default class extends Controller {
     elementid: String
   }
 
-  initialize() {
-    const data = this.revenueValue.map((item) => item[1]/100.0)
+  declare readonly revenueValue: Array<[string, number]>
+  declare readonly elementidValue: string
+
+  initialize(): void {
+    const data = this.revenueValue.map((item) => item[1] / 100.0)
     const labels = this.revenueValue.map((item) => item[0])
 
-    const ctx = document.getElementById(this.elementidValue)
+    const ctx = document.getElementById(this.elementidValue) as HTMLCanvasElement
 
     new Chart(ctx, {
       type: 'line',
@@ -51,6 +54,5 @@ export default class extends Controller {
         }
       }
     })
-
   }
 }
