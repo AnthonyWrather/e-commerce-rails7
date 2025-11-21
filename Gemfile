@@ -74,7 +74,7 @@ group :development do
   gem 'htmlbeautifier'
   gem 'ruby-lsp'
   gem 'ruby-lsp-rails'
-  gem 'solargraph'
+  gem 'solargraph', '~> 0.57.0'
 end
 
 # TODO: These will need moving into the Dev and Test only groups when the Render deploy is set to Test
