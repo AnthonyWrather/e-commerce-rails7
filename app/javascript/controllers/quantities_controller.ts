@@ -5,12 +5,14 @@ export default class extends Controller {
   static values = {
   }
 
-  connect() {
+  static targets = ["output"]
+
+  declare readonly outputTarget: HTMLElement
+
+  connect(): void {
   }
 
-  greet() {
+  greet(): void {
     this.outputTarget.textContent = "Hello from Stimulus!";
   }
-
-  static targets = ["output"]
 }

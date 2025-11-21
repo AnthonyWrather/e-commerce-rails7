@@ -7,7 +7,7 @@ import { application } from "./application"
 import CartController from "./cart_controller"
 import ProductsController from "./products_controller"
 import DashboardController from "./dashboard_controller"
-import QuantitiesController from "./quantities_controller"
+import QuantitiesController from "./quantities_controller.ts"
 
 application.register("cart", CartController)
 application.register("products", ProductsController)
