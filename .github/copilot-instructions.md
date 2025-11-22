@@ -158,9 +158,20 @@ Set in docker-compose.yml:
 ### Initial Setup
 ```bash
 bin/rails db:migrate
-bin/rails tailwindcss:build
-bin/dev  # Runs both Rails server and Tailwind watcher (see Procfile.dev)
+yarn install              # Install JavaScript dependencies
+yarn build                # Build TypeScript/JavaScript
+bin/dev                   # Runs Rails server, Tailwind watcher, and JS build watcher
 ```
+
+### TypeScript Development
+```bash
+yarn build                # One-time TypeScript → JavaScript build
+yarn build:ts             # Type-check then build
+yarn build --watch        # Watch mode (runs via bin/dev)
+tsc --noEmit              # Type-check only
+```
+
+Build output: `app/assets/builds/application.js` (762KB bundled)
 
 ### Create Admin Users
 ```bash
@@ -352,21 +363,30 @@ Two distinct layouts:
 - **application.html.erb**: Public-facing shop with navbar/footer partials, blue theme
 - **admin.html.erb**: Admin interface with sticky sidebar nav, gray theme
 
-### JavaScript Stack
-- **Hotwire**: Turbo + Stimulus (no webpack/node build process)
-- **Import Maps**: ESM modules via `config/importmap.rb`
-- **Chart.js**: Dashboard visualizations (pinned from jspm.io CDN)
+### JavaScript/TypeScript Stack
+- **TypeScript**: Full TypeScript setup with esbuild bundler (migrated from importmap)
+- **Hotwire**: Turbo + Stimulus controllers (now TypeScript-first)
+- **esbuild**: JavaScript/TypeScript bundler (no webpack/node)
+- **Chart.js**: Dashboard visualizations (via npm package)
+- **Build process**: `yarn build` compiles TypeScript → JavaScript in `app/assets/builds/`
 
-### Stimulus Controllers
-- **cart_controller.js**: LocalStorage cart management, checkout flow, VAT calculations
-- **products_controller.js**: Size selection, dynamic pricing, add to cart with flash messages
-- **dashboard_controller.js**: Chart.js integration for revenue visualization
-- **quantities_controller.js**: Custom material calculations
+### Stimulus Controllers (TypeScript)
+- **cart_controller.ts**: LocalStorage cart management, checkout flow, VAT calculations
+- **products_controller.ts**: Size selection, dynamic pricing, add to cart with flash messages
+- **dashboard_controller.ts**: Chart.js integration for revenue visualization
+- **quantities_controller.ts**: Custom material calculations (stub)
+
+All controllers now use TypeScript with proper type definitions for:
+- Stimulus values (e.g., `declare readonly productValue: Product`)
+- DOM elements (e.g., `HTMLButtonElement`, `HTMLTemplateElement`)
+- Event handlers with typed parameters
+- Interface definitions for data structures (Product, Stock, CartItem)
 
 ### Stimulus Controller Details
 
-#### cart_controller.js
+#### cart_controller.ts
 **Purpose**: Complete cart lifecycle - render, modify, checkout
+**Type Interfaces**: `CartItem`, `MessageContent`, `MessageOptions`, `CheckoutPayload`, `CheckoutResponse`, `ErrorResponse`
 **Static Values**: `messageTimeout` (default: 3500ms)
 **Actions**:
 - `initialize()` - Auto-runs on connect, reads localStorage, builds table DOM, calculates VAT totals
@@ -381,9 +401,11 @@ Two distinct layouts:
 - VAT calculation: Ex VAT = price/1.2 (20% UK VAT)
 - Duplicate in `success.html.erb` - cart renders same way after order
 - Page reload strategy (not Turbo updates)
+- Typed fetch responses and localStorage parsing
 
-#### products_controller.js
+#### products_controller.ts
 **Purpose**: Product page size selection and add-to-cart
+**Type Interfaces**: `Product`, `Stock`, `MessageOptions`
 **Static Values**:
 - `size` (String) - Currently selected size
 - `product` (Object) - Full product JSON from Rails
@@ -392,7 +414,7 @@ Two distinct layouts:
 
 **Actions**:
 - `addToCart()` - Adds/increments item in localStorage, shows success message
-- `selectSize(e)` - Updates UI price, enables "Add to Cart" button
+- `selectSize(e: Event)` - Updates UI price, enables "Add to Cart" button
 - `addMessage()` - Template-based flash (2.5s timeout)
 - `formatCurrency()` - Same as cart controller
 
@@ -402,11 +424,12 @@ Two distinct layouts:
 - Finds stock by size, falls back to product.price if no variants
 - Button disabled state + invisible class until size selected
 - Quantity increment logic: finds existing cart item by id+size
+- Null checks for all DOM element queries
 
-#### dashboard_controller.js
+#### dashboard_controller.ts
 **Purpose**: Chart.js line charts for admin revenue visualization
 **Static Values**:
-- `revenue` (Array) - Array of `[label, value_in_pence]` tuples
+- `revenue` (Array<[string, number]>) - Array of `[label, value_in_pence]` tuples
 - `elementid` (String) - Canvas element ID to render into
 
 **Actions**:
@@ -418,11 +441,13 @@ Two distinct layouts:
 - Custom grid styling (dashed y-axis, hidden x-axis)
 - Used in both `admin/index` and `admin/reports/index`
 - Multiple charts per page (different elementid values)
+- Canvas element cast to `HTMLCanvasElement` for Chart.js
 
-#### quantities_controller.js
+#### quantities_controller.ts
 **Purpose**: Placeholder for material calculations
-**Current State**: Stub implementation (greet method unused)
-**Note**: Actual calculations might be in Turbo Frames or server-side
+**Current State**: Stub implementation with TypeScript types
+**Static Targets**: `output` (HTMLElement)
+**Note**: Actual calculations are server-side in Quantities controllers
 
 ### Key Patterns
 
@@ -435,6 +460,13 @@ data-dashboard-revenue-value="<%= @revenue_by_month.to_json %>"
 data-dashboard-elementId-value="revenueChartMonthly"
 ```
 
+TypeScript controllers declare these values with proper types:
+```typescript
+declare readonly productValue: Product
+declare readonly stockValue: Stock[]
+declare sizeValue: string  // Mutable values don't use readonly
+```
+
 #### Action Syntax
 Controllers use click events primarily:
 ```erb
@@ -443,16 +475,24 @@ data-action="click->products#selectSize"
 ```
 
 #### No Targets Used
-Controllers don't use Stimulus targets - rely on `document.getElementById()` instead:
-```javascript
-const table_body = document.getElementById("table_body")
-const selectedSizeEl = document.getElementById("selected-size")
+Controllers primarily use `document.getElementById()` instead of Stimulus targets:
+```typescript
+const table_body = document.getElementById("table_body") as HTMLTableSectionElement
+const selectedSizeEl = document.getElementById("selected-size") as HTMLSpanElement
 ```
+
+**TypeScript Pattern**: Always cast getElementById results to specific HTML element types for proper type checking.
 
 #### LocalStorage Cart
 Cart lives entirely in browser localStorage (JSON array):
-```javascript
-{id: 1, name: "Product", price: 1000, size: "Large", quantity: 2}
+```typescript
+interface CartItem {
+  id: number
+  name: string
+  price: number
+  size: string
+  quantity: number
+}
 ```
 **Cart Structure**:
 - `id` - Product ID (integer)
@@ -469,6 +509,8 @@ Cart lives entirely in browser localStorage (JSON array):
 - Sent to backend on checkout (`POST /checkout` with CSRF token)
 
 **Important**: Cart is ephemeral - no persistence, no user accounts, cleared on success
+
+**TypeScript Pattern**: Parse localStorage with type assertion: `JSON.parse(cartString) as CartItem[]`
 
 #### Price Display
 - Prices stored in **pence** (integers) in database
@@ -555,12 +597,10 @@ Limited use - mainly for quantities calculators:
   - `bin/dev` - Runs Rails + Tailwind together (Procfile.dev)
 
 ### Import Maps (`config/importmap.rb`)
-- **No Node.js/webpack** - Uses browser-native ESM
-- **Pinned packages**:
-  - Hotwire (Turbo, Stimulus) from local CDN
-  - Chart.js from jspm.io CDN
-  - All Stimulus controllers auto-loaded from `app/javascript/controllers`
-- **Preloading**: Application, Turbo, Stimulus preloaded for performance
+**Status**: Removed in favor of esbuild bundling
+- Previous approach used browser-native ESM from CDN
+- Migrated to TypeScript with esbuild for better type safety and bundling
+- See package.json and tsconfig.json for current JavaScript/TypeScript configuration
 
 ### Active Storage
 - **Development**: Local disk (`storage/`)
@@ -626,6 +666,9 @@ Event listener on `turbo:load` reads meta tag and initializes gtag.
 5. **Credentials**: Use `rails credentials:edit` not `.env` files for secrets
 6. **Price Storage**: Always in pence (multiply user input by 100 before saving)
 7. **Cart State**: Cart cleared on success page load - stored in localStorage only
+8. **TypeScript Build**: Must run `yarn build` before deploying (automated in render-build.sh)
+9. **Type Safety**: Use proper type casting for DOM elements and localStorage parsing
+10. **Import Extensions**: Don't use `.ts` extensions in TypeScript imports (extension-less preferred)
 
 ## Form Patterns & Conventions
 
