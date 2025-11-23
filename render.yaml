@@ -108,7 +108,7 @@ projects:
     services:
     # Redis for Action Cable (WebSockets)
     - type: redis
-      name: e_commerce_rails7_redis
+      name: e_commerce_rails7_redis_test
       plan: free
       maxmemoryPolicy: allkeys-lru
       region: frankfurt
