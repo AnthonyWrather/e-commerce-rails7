@@ -26,7 +26,7 @@ projects:
 
     # Rails Web Application - Production
     - type: web
-      name: e-commerce-rails7
+      name: e-commerce-rails7-prod
       runtime: docker
       repo: https://github.com/AnthonyWrather/e-commerce-rails7
       plan: starter
@@ -120,6 +120,19 @@ projects:
       healthCheckPath: /up
       domains:
       - test.cariana.tech  # Test subdomain
+      # Add build filters to skip rebuilds on docs changes
+      buildFilter:
+        paths:
+          - app/**
+          - config/**
+          - db/**
+          - lib/**
+          - Gemfile
+          - Gemfile.lock
+        ignoredPaths:
+          - '*.md'
+          - documentation/**
+          - .results/**
       envVars:
         # Connect to same PostgreSQL but different database
         - key: DATABASE_URL
@@ -154,3 +167,20 @@ projects:
           sync: false
         - key: STRIPE_WEBHOOK_KEY
           sync: false
+        # MailerSend SMTP (Email)
+        - key: MAILERSEND_DOMAIN
+          sync: false
+        - key: MAILERSEND_USERNAME
+          sync: false
+        - key: MAILERSEND_PASSWORD
+          sync: false
+        # AWS S3 for Active Storage
+        # Currently stored in the secrets file.
+        - key: AWS_ACCESS_KEY_ID
+          sync: false
+        - key: AWS_SECRET_ACCESS_KEY
+          sync: false
+        - key: AWS_REGION
+          value: eu-central-1
+        - key: AWS_BUCKET
+          value: e-commerce-rails7-aws-s3-bucket
