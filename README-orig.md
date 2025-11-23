@@ -1,0 +1,444 @@
+# README
+
+* This is a demo project based on a tutorial from Conner Jensen.
+
+> This is the repo that goes along with my Fullstack E-Commerce app tutorial.
+> Check it out here <https://youtu.be/hURUMwdCWuI?si=YxSO5hpRAESz6rEU>
+
+* About E-Commerce-Rails7
+
+Things you may want to cover:
+
+* Ruby version
+`3.2.2`
+
+* Configuration
+Add your env variables to the `config/credentials.yml.enc` file. You can do this by running `bin/rails credentials:edit`
+
+* Database creation
+Locally we use sqlite3 as our database. This is already set up for you. In production make sure your `DATABASE_URL` env variable is set. We use PostgreSQL in production.
+
+* Database initialization
+run `bin/rails db:migrate` to create the tables
+
+* Deployment instructions
+We deploy on Render create a free account here render.com
+
+* Initial Dev setup
+You need to build the Tailwind components before you can start the server.
+
+```bash
+bin/rails tailwindcss:build
+bin/rails s
+bin/rails tailwindcss:watch
+```
+
+Next you need to add 1 or more admin users.
+
+```bash
+bin/rails c
+```
+
+```ruby
+Admin.create(email: "admin1@example.com", password: "12345678")
+Admin.create(email: "admin2@example.com", password: "12345678")
+```
+
+You might need to install VIPS if running locally.
+
+```bash
+brew install vips
+```
+
+To build the Dockerfile you need to run
+
+```bash
+docker build -f Dockerfile -t e-commerce-rails7 .
+docker run -p 3000:3000 -v $(PWD):/rails e-commerce-rails7
+```
+
+Setup DevContainers with postgresql
+
+The devcontainer's are setup but the app is still using sqlite.
+
+Change the app to use postgresql and pgadmin.
+
+```bash
+rails db:system:change --to=postgresql
+
+EDITOR="code --wait" rails credentials:edit
+```
+
+The pgadmin web interface can be found here <localhost:15432> and needs user(postgres)/password(postgres)/host(postgres).
+
+You can also run pgadmin locally and connect via <localhost:5432>
+
+Added the VSCode extensions to autoload.
+
+```json
+// Configure tool-specific properties.
+"customizations": {
+  // Configure properties specific to VS Code.
+  "vscode": {
+    // Set *default* container specific settings.json values on container create.
+    "settings": {},
+    "extensions": [
+      "streetsidesoftware.code-spell-checker",
+      "ms-azuretools.vscode-containers",
+      "p1c2u.docker-compose",
+      "aliariff.vscode-erb-beautify",
+      "github.vscode-github-actions",
+      "mohd-akram.vscode-html-format",
+      "oderwat.indent-rainbow",
+      "bierner.markdown-preview-github-styles",
+      "ms-ossdata.vscode-pgsql",
+      "esbenp.prettier-vscode",
+      "shopify.ruby-lsp",
+      "castwide.solargraph",
+      "hoovercj.ruby-linter",
+      "misogi.ruby-rubocop",
+      "miguel-savignano.ruby-symbols",
+      "bradlc.vscode-tailwindcss",
+      "austenc.tailwind-docs",
+      "zarifprogrammer.tailwind-snippets",
+      "heybourn.headwind",
+      "gruntfuggly.todo-tree",
+      "redhat.vscode-yaml",
+      "vscode-icons-team.vscode-icons",
+      "davidanson.vscode-markdownlint",
+      "hridoy.rails-snippets",
+      "kaiwood.endwise",
+      "manuelpuyol.erb-linter"
+    ]
+  }
+}
+```
+
+Robocop playtime...
+
+```bash
+# Run the safe only cops.
+rubocop -a
+
+# Run the safe and unsafe cops.
+# Beware there are dragons in there...
+rubocop -A
+
+# To run only a set of the cops.
+rubocop --only Style/Documentation
+
+# To run and fix just a set of cops.
+rubocop --only Style/FrozenStringLiteralComment -A
+```
+
+The final rubocop.yml file is
+
+```yml
+# The behaviour of RuboCop can be controlled via the .rubocop.yml
+# configuration file. It makes it possible to enable/disable
+# certain cops (checks) and to alter their behaviour if they accept
+# any parameters. The file can be placed either in your home
+# directory or in some project directory.
+#
+# RuboCop will start looking for the configuration file in the directory
+# where the inspected file is and continue its way up to the root directory.
+#
+# See https://docs.rubocop.org/rubocop/configuration
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+
+Style/Documentation:
+  Enabled: false
+
+Layout/LineLength:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+# Examine these changes to see what breaks.
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/ConditionalAssignment:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/SafeNavigation:
+  Enabled: false
+
+Style/SlicingWithRange:
+  Enabled: false
+
+Lint/NonLocalExitFromIterator:
+  Enabled: false
+```
+
+Changed the currency from USD to GBP
+
+Add a price to the stock record so each variant can have its own price.
+
+```bash
+bin/rails generate migration AddPriceToStock
+```
+
+Add an amount to the product record so that a single priced item can have a stock level.
+
+```bash
+bin/rails generate migration AddAmountToProduct
+```
+
+Add a price to the order_products table so we can record the line item prices.
+
+```bash
+bin/rails generate migration AddPriceToOrderProducts
+```
+
+Add a Name to the Orders table.
+
+```bash
+bin/rails generate migration AddNameToOrderOrders
+```
+
+Added Render to Slack integration so there is a notification of each deployment.
+Well that's the strategy....
+
+Fixed various bugs and added various features.
+
+Adding ssh to the Render test server.
+Create the local ssh key.
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_docker
+```
+
+Upload the SSH key to render.
+
+To connect use
+
+```bash
+ssh -i ~/.ssh/id_ed25519_docker srv-d2mv4qp5pdvs739c15mg@ssh.frankfurt.render.com
+```
+
+## Setup the Stripe Sandpit WebHook for development and testing
+
+Setup the Stripe sandpit for Test
+In Stripe remember to add /webhooks to the target endpoint.
+Get the secret key and webhook key for the app.
+Add them to Render as env variables.
+
+Setup the Stripe Sandpit for your local Dev Env.
+Get the secret key and webhook key for the app and add them to credentials.enc
+Install NGROK on your LOCAL system. MacOS for me, your may vary.
+Add your NGROK secret key.
+
+```bash
+brew install ngrok
+ngrok config add-authtoken YOUR_NGROK_TOKEN
+```
+
+Setup your local to remote connection.\
+This must be run on your local machine.\
+Your URL will be different..... yea honest lol
+
+```bash
+ngrok http --url=loved-anchovy-on.ngrok-free.app 3000
+```
+
+And add the host to config/environments/development.rb
+
+```ruby
+  config.hosts << "loved-anchovy-on.ngrok-free.app"
+```
+
+More information can be found here.[NGROK Stripe documentation.](https://ngrok.com/docs/integrations/stripe/webhooks/)
+
+Add foreman to the gems to run in both the Rails server monitoring the Ruby code and tailwind looking after the Javascript and assets dev mode.
+
+```bash
+bin/dev
+```
+
+Install and configure letter_opener gem for local email testing.\
+<https://github.com/ryanb/letter_opener>\
+<https://github.com/fgrehm/letter_opener_web>
+
+And it can be accessed on the localhost\
+<https://loved-anchovy-on.ngrok-free.app/letter_opener>
+
+Or in the Test machine\
+<https://e-commerce-rails7.onrender.com/letter_opener>
+
+```bash
+bin/rails g mailer OrderMailer new_order_email
+```
+
+To send an email directly from the Rails console.
+
+```ruby
+ActionMailer::Base.mail(
+  from: "test@example.co",
+  to: "test@anthonywrather.me.uk",
+  subject: "Test Subject",
+  body: "Test email body."
+).deliver_now
+```
+
+Generate the Reports screens.
+
+```ruby
+rails generate controller admin::reports index
+```
+
+Generate the Product Image Delete action.
+
+```ruby
+rails generate controller admin::images destroy
+```
+
+```ruby
+rails generate controller quantities index
+rails generate stimulus quantities
+```
+
+## Mat Calculation
+
+* Area = Width x Length
+* Total Area = A1 + A2....
+
+Required Weight of Mat
+
+* Select g/m2 of cloth + Roll Width
+* Total Weight (kg) = Total Area (m2) \* Mat Weight (g/m2) \* Number of Layers
+
+Required Length of Mat
+
+* Required Length (m) = (Total Area (m2) \* Number of Layers) / Roll Width (m)
+
+Add 10% to 15% to the Mat for wastage, overlap and feathering.
+
+* Total Length (m) = Required Length (m) \* 1.15
+
+## Enable file sharing with the local docker pgadmin container
+
+pgadmin saves it export files to
+
+```bash
+/var/lib/pgadmin/storage/admin_pgadmin.com
+```
+
+So this needs to be mounted from the local dev system.
+
+Edit the docker-compose.yml
+
+```docker
+      - ../storage/pgadmin/backups:/var/lib/pgadmin/storage/admin_pgadmin.com/backups
+```
+
+## Welcome to adding GitHub CoPilot support
+
+Using Claude Sonnet 4.5 seems to provide a very useful helper.
+
+## localhost Dev Env Setup
+
+* VSCode runs in a devcontainer on Docker.
+* postgres runs in a local container on Docker.
+* pg_admin runs in a local container on Docker.
+* ngrok runs on the host for external connectivity.
+* Images in dev are stored locally. Test and Production use AWS.
+
+```bash
+# Run Unit Tests
+bin/rails test
+# Run System Tests
+bin/rails test:system
+# Check code compliance.
+rubocop
+# Run the local webserver
+bin/dev
+# Edit Credentials in VSCode
+EDITOR="code --wait" rails credentials:edit
+# Run this on the host for external connectivity.
+ngrok http --url=loved-anchovy-on.ngrok-free.app 3000
+# To clone the wiki pages repo
+git clone https://github.com/AnthonyWrather/e-commerce-rails7.wiki.git
+```
+
+## localhost Dev Environment
+
+Ngrok Request Inspection Interface
+
+* [http://localhost:4040/inspect/http](http://localhost:4040/inspect/http)
+
+(If configured) Letter Opener
+
+* [http://localhost:3000/letter_opener](http://localhost:3000/letter_opener)
+
+Dev pgadmin Interface
+
+* [http://localhost:15432/login?next=/browser/](http://localhost:15432/login?next=/browser/)
+
+Dev Shop FE
+
+* [http://localhost:3000/](http://localhost:3000/)
+
+Dev Admin FE
+
+* [http://localhost:3000/admin_users/sign_in](http://localhost:3000/admin_users/sign_in)
+
+## External Dev Environment
+
+(If configured) Letter Opener
+
+* [https://loved-anchovy-on.ngrok-free.app/letter_opener](https://loved-anchovy-on.ngrok-free.app/letter_opener)
+
+Dev Shop FE
+
+* [https://loved-anchovy-on.ngrok-free.app/](https://loved-anchovy-on.ngrok-free.app/)
+
+Dev Admin FE
+
+* [https://loved-anchovy-on.ngrok-free.app/admin_users/sign_in](https://loved-anchovy-on.ngrok-free.app/admin_users/sign_in)
+
+## Render Hosted Test Environment
+
+(If configured) Letter Opener
+
+* [https://e-commerce-rails7.onrender.com/letter_opener](https://e-commerce-rails7.onrender.com/letter_opener)
+
+Test Shop FE
+
+* [https://e-commerce-rails7.onrender.com/](https://e-commerce-rails7.onrender.com/)
+
+Test Admin FE
+
+* [https://e-commerce-rails7.onrender.com/admin_users/sign_in](https://e-commerce-rails7.onrender.com/admin_users/sign_in)
+
+## Render Hosted Production Environment
+
+When it is available it will be here.
+For now it just links back to the Test Environment as a placeholder.
+
+Production Shop FE
+
+* [https://shop.cariana.tech/](https://shop.cariana.tech//)
+
+Production Admin FE
+
+* [https://shop.cariana.tech/admin_users/sign_in](https://shop.cariana.tech/admin_users/sign_in)
