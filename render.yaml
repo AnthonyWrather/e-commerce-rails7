@@ -38,9 +38,7 @@ projects:
       domains:
       - shop.cariana.tech
       autoDeployTrigger: commit
-      autoDeploy: true
       buildCommand: "./bin/render-build.sh"
-      startCommand: "bundle exec puma -C config/puma.rb"
       healthCheckPath: /up
       disk:
         name: rails-disk
