@@ -104,3 +104,5 @@ gem 'breadcrumbs_on_rails'
 gem 'shipengine_sdk'
 
 gem 'jsbundling-rails', '~> 1.3'
+
+gem 'honeybadger', '~> 6.1'
