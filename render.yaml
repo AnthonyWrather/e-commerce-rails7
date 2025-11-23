@@ -2,13 +2,15 @@ databases:
   - name: e_commerce_rails7_db
     databaseName: e_commerce_rails7_production
     user: e_commerce_rails7
-    plan: free
+    plan: basic-256mb
+    region: frankfurt
 
 services:
   - type: web
     name: e_commerce_rails7
     runtime: ruby
-    plan: free
+    plan: starter
+    region: frankfurt
     buildCommand: "./bin/render-build.sh"
     startCommand: "bundle exec puma -C config/puma.rb"
     envVars:
