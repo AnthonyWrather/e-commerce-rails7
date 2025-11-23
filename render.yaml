@@ -35,8 +35,6 @@ projects:
       branch: main
       dockerContext: .
       dockerfilePath: ./Dockerfile
-      domains:
-      - shop.cariana.tech
       autoDeployTrigger: commit
       buildCommand: "./bin/render-build.sh"
       healthCheckPath: /up
