@@ -10,9 +10,7 @@ projects:
       user: e_commerce_rails7
       plan: basic-256mb
       region: frankfurt
-      ipAllowList:
-      - source: 0.0.0.0/0
-        description: everywhere
+      ipAllowList: []
       postgresMajorVersion: "17"
       diskSizeGB: 1
 
@@ -43,6 +41,19 @@ projects:
         name: rails-disk
         mountPath: /rails/storage
         sizeGB: 1
+      # Add build filters to skip rebuilds on docs changes
+      buildFilter:
+        paths:
+          - app/**
+          - config/**
+          - db/**
+          - lib/**
+          - Gemfile
+          - Gemfile.lock
+        ignoredPaths:
+          - '*.md'
+          - documentation/**
+          - .results/**
       envVars:
         # Database
         - key: DATABASE_URL
@@ -69,7 +80,7 @@ projects:
 
         # Puma Configuration
         - key: WEB_CONCURRENCY
-          sync: false
+          value: 2
         - key: RAILS_MAX_THREADS
           value: 5
 
@@ -86,3 +97,14 @@ projects:
           sync: false
         - key: MAILERSEND_PASSWORD
           sync: false
+
+        # AWS S3 for Active Storage
+        # Currently stored in the secrets file.
+        - key: AWS_ACCESS_KEY_ID
+          sync: false
+        - key: AWS_SECRET_ACCESS_KEY
+          sync: false
+        - key: AWS_REGION
+          value: eu-central-1
+        - key: AWS_BUCKET
+          value: e-commerce-rails7-aws-s3-bucket
