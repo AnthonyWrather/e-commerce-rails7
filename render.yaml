@@ -3,8 +3,9 @@ version: "1"
 projects:
 - name: E-Commerce-Rails7
   environments:
-  - name: Testing
+  - name: Production
     databases:
+    # Postgres database server for Production and Test
     - name: e_commerce_rails7_db
       databaseName: e_commerce_rails7_production
       user: e_commerce_rails7
@@ -60,14 +61,12 @@ projects:
           fromDatabase:
             name: e_commerce_rails7_db
             property: connectionString
-
         # Redis for Action Cable
         - key: REDIS_URL
           fromService:
             type: redis
             name: e_commerce_rails7_redis
             property: connectionString
-
         # Rails Configuration
         - key: RAILS_MASTER_KEY
           sync: false
@@ -77,19 +76,16 @@ projects:
           value: info
         - key: RAILS_SERVE_STATIC_FILES
           value: "true"
-
         # Puma Configuration
         - key: WEB_CONCURRENCY
           value: 2
         - key: RAILS_MAX_THREADS
           value: 5
-
         # Stripe Payment Processing
         - key: STRIPE_SECRET_KEY
           sync: false
         - key: STRIPE_WEBHOOK_KEY
           sync: false
-
         # MailerSend SMTP (Email)
         - key: MAILERSEND_DOMAIN
           sync: false
@@ -97,7 +93,6 @@ projects:
           sync: false
         - key: MAILERSEND_PASSWORD
           sync: false
-
         # AWS S3 for Active Storage
         # Currently stored in the secrets file.
         - key: AWS_ACCESS_KEY_ID
