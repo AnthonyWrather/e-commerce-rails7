@@ -103,3 +103,13 @@ projects:
           value: eu-central-1
         - key: AWS_BUCKET
           value: e-commerce-rails7-aws-s3-bucket
+
+  - name: Test
+    services:
+    # Redis for Action Cable (WebSockets)
+    - type: redis
+      name: e_commerce_rails7_redis
+      plan: free
+      maxmemoryPolicy: allkeys-lru
+      region: frankfurt
+      ipAllowList: []
