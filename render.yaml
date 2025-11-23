@@ -1,92 +1,109 @@
-databases:
-  - name: e_commerce_rails7_db
-    databaseName: e_commerce_rails7_production
-    user: e_commerce_rails7
-    plan: basic-256mb
-    region: frankfurt
+# Exported from Render on 2025-11-23T03:17:06Z
+version: "1"
+projects:
+- name: E-Commerce-Rails7
+  environments:
+  - name: Testing
+    databases:
+    - name: e_commerce_rails7_db
+      databaseName: e_commerce_rails7_production
+      user: e_commerce_rails7
+      plan: basic-256mb
+      region: frankfurt
+      ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+      postgresMajorVersion: "17"
+      diskSizeGB: 1
 
-services:
-  # Redis for Action Cable (WebSockets)
-  - type: redis
-    name: e_commerce_rails7_redis
-    plan: free
-    maxmemoryPolicy: allkeys-lru
-    region: frankfurt
-    ipAllowList: []
+    services:
+    # Redis for Action Cable (WebSockets)
+    - type: redis
+      name: e_commerce_rails7_redis
+      plan: free
+      maxmemoryPolicy: allkeys-lru
+      region: frankfurt
+      ipAllowList: []
 
-  # Rails Web Application
-  - type: web
-    name: e_commerce_rails7
-    runtime: ruby
-    plan: starter
-    region: frankfurt
-    branch: main
-    autoDeploy: true
-    buildCommand: "./bin/render-build.sh"
-    startCommand: "bundle exec puma -C config/puma.rb"
-    healthCheckPath: /up
-    disk:
-      name: rails-disk
-      mountPath: /rails/storage
-      sizeGB: 1
-    buildFilter:
-      paths:
-        - app/**
-        - config/**
-        - db/**
-        - lib/**
-        - bin/**
-        - Gemfile
-        - Gemfile.lock
-        - package.json
-        - yarn.lock
-        - Procfile.dev
-      ignoredPaths:
-        - '*.md'
-        - .github/**
-        - documentation/**
-        - test/**
-        - .results/**
-    envVars:
-      # Database
-      - key: DATABASE_URL
-        fromDatabase:
-          name: e_commerce_rails7_db
-          property: connectionString
+    # Rails Web Application
+    - type: web
+      name: e_commerce_rails7
+      runtime: docker
+      repo: https://github.com/AnthonyWrather/e-commerce-rails7
+      plan: starter
+      region: frankfurt
+      branch: main
+      dockerContext: .
+      dockerfilePath: ./Dockerfile
+      domains:
+      - shop.cariana.tech
+      autoDeployTrigger: commit
+      autoDeploy: true
+      buildCommand: "./bin/render-build.sh"
+      startCommand: "bundle exec puma -C config/puma.rb"
+      healthCheckPath: /up
+      disk:
+        name: rails-disk
+        mountPath: /rails/storage
+        sizeGB: 1
+      buildFilter:
+        paths:
+          - app/**
+          - config/**
+          - db/**
+          - lib/**
+          - bin/**
+          - Gemfile
+          - Gemfile.lock
+          - package.json
+          - yarn.lock
+          - Procfile.dev
+        ignoredPaths:
+          - '*.md'
+          - .github/**
+          - documentation/**
+          - test/**
+          - .results/**
+      envVars:
+        # Database
+        - key: DATABASE_URL
+          fromDatabase:
+            name: e_commerce_rails7_db
+            property: connectionString
 
-      # Redis for Action Cable
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: e_commerce_rails7_redis
-          property: connectionString
+        # Redis for Action Cable
+        - key: REDIS_URL
+          fromService:
+            type: redis
+            name: e_commerce_rails7_redis
+            property: connectionString
 
-      # Rails Configuration
-      - key: RAILS_MASTER_KEY
-        sync: false
-      - key: RAILS_ENV
-        value: production
-      - key: RAILS_LOG_LEVEL
-        value: info
-      - key: RAILS_SERVE_STATIC_FILES
-        value: "true"
+        # Rails Configuration
+        - key: RAILS_MASTER_KEY
+          sync: false
+        - key: RAILS_ENV
+          value: production
+        - key: RAILS_LOG_LEVEL
+          value: info
+        - key: RAILS_SERVE_STATIC_FILES
+          value: "true"
 
-      # Puma Configuration
-      - key: WEB_CONCURRENCY
-        value: 2
-      - key: RAILS_MAX_THREADS
-        value: 5
+        # Puma Configuration
+        - key: WEB_CONCURRENCY
+          value: 2
+        - key: RAILS_MAX_THREADS
+          value: 5
 
-      # Stripe Payment Processing
-      - key: STRIPE_SECRET_KEY
-        sync: false
-      - key: STRIPE_WEBHOOK_KEY
-        sync: false
+        # Stripe Payment Processing
+        - key: STRIPE_SECRET_KEY
+          sync: false
+        - key: STRIPE_WEBHOOK_KEY
+          sync: false
 
-      # MailerSend SMTP (Email)
-      - key: MAILERSEND_DOMAIN
-        sync: false
-      - key: MAILERSEND_USERNAME
-        sync: false
-      - key: MAILERSEND_PASSWORD
-        sync: false
+        # MailerSend SMTP (Email)
+        - key: MAILERSEND_DOMAIN
+          sync: false
+        - key: MAILERSEND_USERNAME
+          sync: false
+        - key: MAILERSEND_PASSWORD
+          sync: false
