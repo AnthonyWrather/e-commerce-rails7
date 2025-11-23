@@ -36,7 +36,6 @@ projects:
       dockerContext: .
       dockerfilePath: ./Dockerfile
       autoDeployTrigger: commit
-      buildCommand: "./bin/render-build.sh"
       healthCheckPath: /up
       domains:
       - shop.cariana.tech
@@ -44,24 +43,6 @@ projects:
         name: rails-disk
         mountPath: /rails/storage
         sizeGB: 1
-      buildFilter:
-        paths:
-          - app/**
-          - config/**
-          - db/**
-          - lib/**
-          - bin/**
-          - Gemfile
-          - Gemfile.lock
-          - package.json
-          - yarn.lock
-          - Procfile.dev
-        ignoredPaths:
-          - '*.md'
-          - .github/**
-          - documentation/**
-          - test/**
-          - .results/**
       envVars:
         # Database
         - key: DATABASE_URL
