@@ -5,4 +5,9 @@ if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
 fi
 
+# if the command is bundle exec puma then also create or migrate existing database
+if [ "${1}" == "bundle" ] && [ "${2}" == "exec" ] && [ "${3}" == "puma" ]; then
+  ./bin/rails db:prepare
+fi
+
 exec "${@}"
