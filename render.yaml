@@ -131,8 +131,9 @@ projects:
           value: e_commerce_rails7_test
         # Share same Redis
         - key: REDIS_URL
-          fromDatabase:
-            name: e_commerce_rails7_redis
+          fromService:
+            type: redis
+            name: e_commerce_rails7_redis  # Same server
             property: connectionString
         # Rails Configuration
         - key: RAILS_MASTER_KEY
