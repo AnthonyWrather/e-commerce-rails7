@@ -27,7 +27,7 @@ projects:
 
     # Rails Web Application
     - type: web
-      name: e_commerce_rails7
+      name: e-commerce-rails7
       runtime: docker
       repo: https://github.com/AnthonyWrather/e-commerce-rails7
       plan: starter
@@ -38,6 +38,8 @@ projects:
       autoDeployTrigger: commit
       buildCommand: "./bin/render-build.sh"
       healthCheckPath: /up
+      domains:
+      - shop.cariana.tech
       disk:
         name: rails-disk
         mountPath: /rails/storage
@@ -86,7 +88,7 @@ projects:
 
         # Puma Configuration
         - key: WEB_CONCURRENCY
-          value: 2
+          sync: false
         - key: RAILS_MAX_THREADS
           value: 5
 
