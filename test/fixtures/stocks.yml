@@ -2,7 +2,7 @@
 
 stock_one:
   size: "1m x 10m Roll"
-  amount: 25
+  stock_level: 25
   price: 14000
   product: product_one
   weight: 3000
@@ -12,7 +12,7 @@ stock_one:
 
 stock_two:
   size: "1m x 5m Roll"
-  amount: 40
+  stock_level: 40
   price: 9500
   product: product_two
   weight: 2250

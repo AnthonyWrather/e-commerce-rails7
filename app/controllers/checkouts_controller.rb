@@ -92,7 +92,7 @@ class CheckoutsController < ApplicationController
 
   def stock_available?(product, product_stock_id, item)
     stock_obj = Stock.find_by(id: product_stock_id) if product_stock_id != product.id
-    available = stock_obj ? stock_obj.amount : product.amount
+    available = stock_obj ? stock_obj.stock_level : product.stock_level
 
     if available < item['quantity'].to_i
       size_text = item['size'].present? ? " in size #{item['size']}" : ''

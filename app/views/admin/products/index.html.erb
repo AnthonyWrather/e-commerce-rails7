@@ -43,7 +43,7 @@
                   Price
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
-                  Amount
+                  Stock Level
                 </th>
                 <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
                   Active
@@ -83,12 +83,12 @@
                     <% end %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
-                    <% if p.amount %>
-                      <%= p.amount %>
+                    <% if p.stock_level %>
+                      <%= p.stock_level %>
                     <% end %>
                     <% @admin_stocks.where(product_id: p.id).each do |s| %>
-                      <% if s.amount %>
-                        <p><%= s.amount %></p>
+                      <% if s.stock_level %>
+                        <p><%= s.stock_level %></p>
                       <% else %>
                         <p>0</p>
                       <% end %>
