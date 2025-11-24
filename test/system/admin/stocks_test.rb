@@ -21,7 +21,7 @@ module Admin
 
       fill_in 'Size', with: @admin_stock.size
       fill_in 'Price', with: @admin_stock.price
-      fill_in 'Amount', with: @admin_stock.amount
+      fill_in 'Stock level', with: @admin_stock.stock_level
       click_on 'Create Stock'
 
       assert_text 'Stock was successfully created'

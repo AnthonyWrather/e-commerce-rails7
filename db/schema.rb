@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_20_215534) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_24_215657) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -99,7 +99,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_20_215534) do
     t.boolean "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "amount"
+    t.integer "stock_level"
     t.integer "weight"
     t.integer "length"
     t.integer "width"
@@ -115,7 +115,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_20_215534) do
     t.boolean "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "amount"
+    t.integer "stock_level"
     t.integer "weight"
     t.integer "length"
     t.integer "width"
@@ -124,7 +124,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_20_215534) do
 
   create_table "stocks", force: :cascade do |t|
     t.string "size"
-    t.integer "amount"
+    t.integer "stock_level"
     t.integer "product_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -138,7 +138,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_20_215534) do
 
   create_table "stocks_backup", id: :bigint, default: -> { "nextval('stocks_id_seq'::regclass)" }, force: :cascade do |t|
     t.string "size"
-    t.integer "amount"
+    t.integer "stock_level"
     t.integer "product_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

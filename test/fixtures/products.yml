@@ -6,7 +6,7 @@ product_one:
   price: 1500
   category: category_one
   active: true
-  amount: 100
+  stock_level: 100
   weight: 300
   length: 100
   width: 100
@@ -18,7 +18,7 @@ product_two:
   price: 2000
   category: category_two
   active: true
-  amount: 50
+  stock_level: 50
   weight: 450
   length: 100
   width: 100
@@ -30,7 +30,7 @@ product_three:
   price: 2500
   category: category_one
   active: true
-  amount: 75
+  stock_level: 75
   weight: 600
   length: 100
   width: 100

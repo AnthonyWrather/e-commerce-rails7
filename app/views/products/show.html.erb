@@ -17,7 +17,7 @@
     <h1 class="text-4xl font-bold text-white uppercase"><%= @product.name %></h1>
     <p class="mt-4 text-2xl text-white" id="product-price">
       <% if @product.price %>
-        <% if @product.amount && @product.amount > 0 && @product.price > 0 %>
+        <% if @product.stock_level && @product.stock_level > 0 && @product.price > 0 %>
           <%= formatted_price(@product.price) %>
         <% else %>
           Out of stock.
@@ -40,7 +40,7 @@
       <% if @product.stocks.count > 0 %>
         <p class='text-lg text-white uppercase'>Size</p>
         <% @product.stocks.each do |stock| %>
-          <% if stock.amount && stock.amount > 0 %>
+          <% if stock.stock_level && stock.stock_level > 0 %>
               <% if stock.price && stock.price > 0 %>
                 <button data-action="click->products#selectSize" value="<%= stock.size %>" id="button-text-<%= stock.size %>" class="px-4 py-2 font-semibold text-black bg-gray-200 rounded hover:bg-gray-300 focus:outline-none focu:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
                   <%= stock.size %>
@@ -61,7 +61,7 @@
       <% end %>
     </div>
     <div id="selected-size" class="text-white"></div>
-      <% if @product.price && @product.amount && @product.amount > 0 && @product.price > 0 %>
+      <% if @product.price && @product.stock_level && @product.stock_level > 0 && @product.price > 0 %>
           <button id="add-to-cart-button" data-action="click->products#addToCart" class="inline-flex items-center justify-center px-5 py-3 font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white-500">Add To Cart</button>
       <% else %>
           <button disabled id="add-to-cart-button" data-action="click->products#addToCart" class="inline-flex items-center justify-center invisible px-5 py-3 font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white-500">Add To Cart</button>
