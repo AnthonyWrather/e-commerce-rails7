@@ -107,21 +107,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_24_215657) do
     t.index ["category_id"], name: "index_products_on_category_id"
   end
 
-  create_table "products_backup", id: :bigint, default: -> { "nextval('products_id_seq'::regclass)" }, force: :cascade do |t|
-    t.string "name"
-    t.text "description"
-    t.integer "price"
-    t.integer "category_id", null: false
-    t.boolean "active"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "stock_level"
-    t.integer "weight"
-    t.integer "length"
-    t.integer "width"
-    t.integer "height"
-  end
-
   create_table "stocks", force: :cascade do |t|
     t.string "size"
     t.integer "stock_level"
@@ -134,19 +119,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_24_215657) do
     t.integer "width"
     t.integer "height"
     t.index ["product_id"], name: "index_stocks_on_product_id"
-  end
-
-  create_table "stocks_backup", id: :bigint, default: -> { "nextval('stocks_id_seq'::regclass)" }, force: :cascade do |t|
-    t.string "size"
-    t.integer "stock_level"
-    t.integer "product_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "price"
-    t.integer "weight"
-    t.integer "length"
-    t.integer "width"
-    t.integer "height"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
