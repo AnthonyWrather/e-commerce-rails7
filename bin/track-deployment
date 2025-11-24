@@ -16,8 +16,8 @@ begin
   end
   
   # Get the deployment user (fall back to 'deployment-script' if not available)
-  username = ENV.fetch('USER', nil) || `whoami 2>&1`.strip
-  local_username = username.nil? || username.empty? ? 'deployment-script' : username
+  username = ENV['USER'] || `whoami 2>&1`.strip
+  local_username = username&.empty? == false ? username : 'deployment-script'
   
   # Get repository URL from git config
   repository = `git config --get remote.origin.url 2>&1`.strip
