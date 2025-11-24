@@ -10,6 +10,5 @@ if [ "${1}" == "bundle" ] && [ "${2}" == "exec" ] && [ "${3}" == "puma" ]; then
   ./bin/rails db:prepare
 fi
 
-ruby ./bin/track-deployment
-
+# Finally exec the container's main process (what's set as CMD in the Dockerfile).
 exec "${@}"

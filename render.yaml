@@ -35,7 +35,6 @@ projects:
       dockerContext: .
       dockerfilePath: ./Dockerfile
       autoDeployTrigger: commit
-      preDeployCommand: ruby ./bin/track-deployment
       healthCheckPath: /up
       domains:
       - shop.cariana.tech
@@ -118,7 +117,6 @@ projects:
       dockerContext: .
       dockerfilePath: ./Dockerfile
       autoDeployTrigger: commit
-      preDeployCommand: ruby ./bin/track-deployment
       healthCheckPath: /up
       domains:
       - test.cariana.tech  # Test subdomain

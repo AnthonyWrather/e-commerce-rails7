@@ -11,6 +11,3 @@ bundle exec rails assets:clean
 # Uncomment the following line:
 
 bundle exec rails db:migrate
-
-# Track deployment to Honeybadger
-ruby ./bin/track-deployment
