@@ -5,27 +5,28 @@
 # This script should be called as part of the deployment process
 # (e.g., in bin/render-build.sh or CI/CD pipeline)
 
+require 'English'
 require_relative '../config/environment'
 
 begin
   # Get the current git revision
   revision = `git rev-parse HEAD 2>&1`.strip
-  if $?.exitstatus != 0
+  if $CHILD_STATUS.exitstatus != 0
     warn "⚠ Warning: Failed to get git revision. Using 'unknown'."
     revision = 'unknown'
   end
-  
+
   # Get the deployment user (fall back to 'deployment-script' if not available)
   username = ENV['USER'] || `whoami 2>&1`.strip
-  local_username = (username && !username.empty?) ? username : 'deployment-script'
-  
+  local_username = username && !username.empty? ? username : 'deployment-script'
+
   # Get repository URL from git config
   repository = `git config --get remote.origin.url 2>&1`.strip
-  if $?.exitstatus != 0 || repository.empty?
+  if $CHILD_STATUS.exitstatus != 0 || repository.empty?
     # Fallback to environment variable or default
     repository = ENV.fetch('REPOSITORY_URL', 'git@github.com:AnthonyWrather/e-commerce-rails7.git')
   end
-  
+
   # Track the deployment
   Honeybadger.track_deployment(
     environment: Rails.env,
@@ -33,8 +34,8 @@ begin
     local_username: local_username,
     repository: repository
   )
-  
-  puts "✓ Deployment tracked successfully to Honeybadger"
+
+  puts '✓ Deployment tracked successfully to Honeybadger'
   puts "  Environment: #{Rails.env}"
   puts "  Revision: #{revision}"
   puts "  User: #{local_username}"
