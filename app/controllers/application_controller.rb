@@ -15,13 +15,5 @@ class ApplicationController < ActionController::Base
                             user_email: 'none@guest.com'
                           })
     end
-
-    # TODO: Move this to a deployment script or CI/CD pipeline
-    # Honeybadger.track_deployment(
-    #   environment: Rails.env,
-    #   revision: `git rev-parse HEAD`.strip,
-    #   local_username: `whoami`.strip,
-    #   repository: "git@github.com:AnthonyWrather/e-commerce-rails7.git"
-    # )
   end
 end

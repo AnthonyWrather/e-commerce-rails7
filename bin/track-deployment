@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Track deployment to Honeybadger
+# This script should be called as part of the deployment process
+# (e.g., in bin/render-build.sh or CI/CD pipeline)
+
+require_relative '../config/environment'
+
+begin
+  # Get the current git revision
+  revision = `git rev-parse HEAD`.strip
+  
+  # Get the deployment user (fall back to 'deployment-script' if not available)
+  local_username = ENV.fetch('USER', `whoami`.strip.presence || 'deployment-script')
+  
+  # Track the deployment
+  Honeybadger.track_deployment(
+    environment: Rails.env,
+    revision: revision,
+    local_username: local_username,
+    repository: 'git@github.com:AnthonyWrather/e-commerce-rails7.git'
+  )
+  
+  puts "✓ Deployment tracked successfully to Honeybadger"
+  puts "  Environment: #{Rails.env}"
+  puts "  Revision: #{revision}"
+  puts "  User: #{local_username}"
+rescue StandardError => e
+  # Log error but don't fail the deployment
+  warn "⚠ Warning: Failed to track deployment to Honeybadger: #{e.message}"
+  exit 0
+end
