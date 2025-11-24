@@ -22,7 +22,8 @@ begin
   # Get repository URL from git config
   repository = `git config --get remote.origin.url 2>&1`.strip
   if $?.exitstatus != 0 || repository.empty?
-    repository = 'git@github.com:AnthonyWrather/e-commerce-rails7.git'
+    # Fallback to environment variable or default
+    repository = ENV.fetch('REPOSITORY_URL', 'git@github.com:AnthonyWrather/e-commerce-rails7.git')
   end
   
   # Track the deployment
@@ -37,6 +38,7 @@ begin
   puts "  Environment: #{Rails.env}"
   puts "  Revision: #{revision}"
   puts "  User: #{local_username}"
+  exit 0
 rescue StandardError => e
   # Log error but don't fail the deployment
   warn "⚠ Warning: Failed to track deployment to Honeybadger: #{e.message}"
