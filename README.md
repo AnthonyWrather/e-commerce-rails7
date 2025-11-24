@@ -273,7 +273,7 @@ The application is configured for deployment on **Render.com** with PostgreSQL.
 **Build Command:**
 ```bash
 ./bin/render-build.sh
-# Runs: bundle install, assets:precompile, assets:clean, db:migrate
+# Runs: bundle install, assets:precompile, assets:clean, db:migrate, track-deployment
 ```
 
 **Start Command:**
