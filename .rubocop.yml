@@ -37,6 +37,10 @@ Metrics/PerceivedComplexity:
 Metrics/CyclomaticComplexity:
   Enabled: false
 
+Metrics/ClassLength:
+  Exclude:
+    - test/**/*
+
 # Examine these changes to see what breaks.
 Style/ClassAndModuleChildren:
   Enabled: false
