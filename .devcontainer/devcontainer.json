@@ -14,10 +14,10 @@
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// This can be used to network with other containers or the host.
-	"forwardPorts": [3000, 5432, 15432, 587, 2525],
+	"forwardPorts": [3000, 5432, 15432, 587, 2525, 9323],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "bundle install",
+	"postCreateCommand": "bundle install && npm install && npx playwright install-deps && npx playwright install",
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -52,7 +52,8 @@
         "hridoy.rails-snippets",
         "kaiwood.endwise",
         "manuelpuyol.erb-linter",
-        "github.copilot-chat"
+        "github.copilot-chat",
+        "playwright.playwright"
       ]
     }
   },
