@@ -26,7 +26,7 @@ erDiagram
         boolean active
         datetime created_at
         datetime updated_at
-        integer amount "stock level"
+        integer stock_level
         integer weight "in grams"
         integer length "in cm"
         integer width "in cm"
@@ -36,7 +36,7 @@ erDiagram
     stocks {
         bigint id PK
         string size
-        integer amount "stock level"
+        integer stock_level
         integer product_id FK
         datetime created_at
         datetime updated_at
@@ -114,36 +114,6 @@ erDiagram
         bigint blob_id FK
         string variation_digest
     }
-
-    products_backup {
-        bigint id PK
-        string name
-        text description
-        integer price
-        integer category_id
-        boolean active
-        datetime created_at
-        datetime updated_at
-        integer amount
-        integer weight
-        integer length
-        integer width
-        integer height
-    }
-
-    stocks_backup {
-        bigint id PK
-        string size
-        integer amount
-        integer product_id
-        datetime created_at
-        datetime updated_at
-        integer price
-        integer weight
-        integer length
-        integer width
-        integer height
-    }
 ```
 
 ## Key Relationships
@@ -165,16 +135,11 @@ erDiagram
   - No foreign key relationships to other tables
   - Only admins have accounts, customers checkout as guests
 
-### Backup Tables
-- **products_backup**: Historical snapshot of products table
-- **stocks_backup**: Historical snapshot of stocks table
-- These are likely from data migration work
-
 ## Pricing Model
 The schema supports two pricing strategies:
 
-1. **Single Price**: Product has `price` and `amount` directly
-2. **Variant Pricing**: Product has multiple Stocks, each with their own `price` and `amount`
+1. **Single Price**: Product has `price` and `stock_level` directly
+2. **Variant Pricing**: Product has multiple Stocks, each with their own `price` and `stock_level`
 
 ## Important Notes
 - All prices stored in **pence** (integer)
@@ -182,4 +147,7 @@ The schema supports two pricing strategies:
 - All dimensions in **cm** (integer)
 - `order_products.price` captures the price at time of purchase (not calculated)
 - Orders created via Stripe webhook only (no direct user creation)
+
+## Schema Version
+Current schema version: `2025_11_24_215657` (PostgreSQL)
 
