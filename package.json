@@ -9,6 +9,7 @@
     "esbuild": "^0.19.11"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@types/chart.js": "^4.0.1",
     "@types/gtag.js": "^0.0.20",
     "@types/node": "^20.10.6",
@@ -16,6 +17,10 @@
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets",
-    "build:ts": "tsc --noEmit && npm run build"
+    "build:ts": "tsc --noEmit && npm run build",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report"
   }
 }
