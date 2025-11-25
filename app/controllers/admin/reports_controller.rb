@@ -2,52 +2,106 @@
 
 class Admin::ReportsController < AdminController
   def index
-    # Monthly Revenue Chart Data
-    num_orders_monthly = Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).count
-    num_products_monthly = OrderProduct.joins(:order).where(orders: { created_at: Time.now.beginning_of_month..Time.now.end_of_month }).sum(:quantity)
-    avg_items_monthly = 0
-    if num_orders_monthly.positive? && num_products_monthly.positive?
-      avg_items_monthly = num_products_monthly.div(num_orders_monthly)
-    end
+    # Calculate month ranges once to avoid repeated calculations
+    current_month_start = Time.now.beginning_of_month
+    current_month_end = Time.now.end_of_month
+    prev_month_start = 1.month.ago.beginning_of_month
+    prev_month_end = 1.month.ago.end_of_month
+
+    # Current Month: Combine all Order aggregations into a single efficient query
+    current_month_aggregates = Order
+                               .where(created_at: current_month_start..current_month_end)
+                               .pluck(
+                                 Arel.sql('COUNT(*)'),
+                                 Arel.sql('COALESCE(SUM(total), 0)'),
+                                 Arel.sql('COALESCE(AVG(total), 0)'),
+                                 Arel.sql('COALESCE(SUM(CASE WHEN shipping_cost IS NOT NULL THEN shipping_cost ELSE 0 END), 0)')
+                               ).first || [0, 0, 0, 0]
+
+    num_orders_monthly = current_month_aggregates[0]
+    revenue_total = current_month_aggregates[1].to_i.round
+    avg_sale = current_month_aggregates[2].to_i.round
+    shipping_total = current_month_aggregates[3].to_i.round
+
+    # Get total items sold for current month
+    num_products_monthly = OrderProduct
+                           .joins(:order)
+                           .where(orders: { created_at: current_month_start..current_month_end })
+                           .sum(:quantity)
+
+    avg_items_monthly = if num_orders_monthly.positive? && num_products_monthly.positive?
+                          num_products_monthly.div(num_orders_monthly)
+                        else
+                          0
+                        end
 
     @monthly_stats = {
       sales: num_orders_monthly,
       items: num_products_monthly,
-      revenue: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).sum(:total)&.round,
-      avg_sale: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).average(:total)&.round,
-      shipping: Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).where.not(shipping_cost: nil).sum(:shipping_cost)&.round,
+      revenue: revenue_total,
+      avg_sale: avg_sale,
+      shipping: shipping_total,
       per_sale: avg_items_monthly
     }
 
-    @monthly_orders_by_day = Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).order(:created_at)
-    @monthly_orders_by_day = @monthly_orders_by_day.group_by { |order| order.created_at.to_date }
-    @monthly_revenue_by_day = @monthly_orders_by_day.map { |day, orders| [day.strftime('%e %A'), orders.sum(&:total)] }
-    @days_of_month = (1..Time.days_in_month(Date.today.month, Date.today.year)).to_a
-    @monthly_revenue_by_day = @monthly_revenue_by_day.to_h
-    @revenue_by_month = @days_of_month.map { |day| [day, @monthly_revenue_by_day.fetch(Date.new(Date.today.year, Date.today.month, day).strftime('%e %A'), 0)] }
-
-    # Previous Month
-    num_orders_prev_month = Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).count
-    num_products_prev_month = OrderProduct.joins(:order).where(orders: { created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month }).sum(:quantity)
-    avg_items_prev_month = 0
-    if num_orders_prev_month.positive? && num_products_prev_month.positive?
-      avg_items_prev_month = num_products_prev_month.div(num_orders_prev_month)
+    # Optimize daily revenue breakdown using database-level GROUP BY
+    daily_revenue = Order
+                    .where(created_at: current_month_start..current_month_end)
+                    .group(Arel.sql('DATE(created_at)'))
+                    .pluck(Arel.sql('DATE(created_at)'), Arel.sql('SUM(total)'))
+                    .to_h # Fill in missing days with zero revenue for current month
+    days_current_month = (1..Time.days_in_month(Date.today.month, Date.today.year)).to_a
+    @revenue_by_month = days_current_month.map do |day|
+      date = Date.new(Date.today.year, Date.today.month, day)
+      revenue = daily_revenue[date] || 0
+      [day, revenue]
     end
+
+    # Previous Month: Same efficient aggregation pattern
+    prev_month_aggregates = Order
+                            .where(created_at: prev_month_start..prev_month_end)
+                            .pluck(
+                              Arel.sql('COUNT(*)'),
+                              Arel.sql('COALESCE(SUM(total), 0)'),
+                              Arel.sql('COALESCE(AVG(total), 0)'),
+                              Arel.sql('COALESCE(SUM(CASE WHEN shipping_cost IS NOT NULL THEN shipping_cost ELSE 0 END), 0)')
+                            ).first || [0, 0, 0, 0]
+
+    num_orders_prev_month = prev_month_aggregates[0]
+    revenue_total_prev = prev_month_aggregates[1].to_i.round
+    avg_sale_prev = prev_month_aggregates[2].to_i.round
+    shipping_total_prev = prev_month_aggregates[3].to_i.round # Get total items sold for previous month
+    num_products_prev_month = OrderProduct
+                              .joins(:order)
+                              .where(orders: { created_at: prev_month_start..prev_month_end })
+                              .sum(:quantity)
+
+    avg_items_prev_month = if num_orders_prev_month.positive? && num_products_prev_month.positive?
+                             num_products_prev_month.div(num_orders_prev_month)
+                           else
+                             0
+                           end
 
     @prev_month_stats = {
       sales: num_orders_prev_month,
       items: num_products_prev_month,
-      revenue: Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).sum(:total)&.round,
-      avg_sale: Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).average(:total)&.round,
-      shipping: Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).where.not(shipping_cost: nil).sum(:shipping_cost)&.round,
+      revenue: revenue_total_prev,
+      avg_sale: avg_sale_prev,
+      shipping: shipping_total_prev,
       per_sale: avg_items_prev_month
     }
 
-    @prev_month_orders_by_day = Order.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).order(:created_at)
-    @prev_month_orders_by_day = @prev_month_orders_by_day.group_by { |order| order.created_at.to_date }
-    @prev_month_revenue_by_day = @prev_month_orders_by_day.map { |day, orders| [day.strftime('%e %A'), orders.sum(&:total)] }
-    @days_of_month = (1..Time.days_in_month(1.month.ago.month, 1.month.ago.year)).to_a
-    @prev_month_revenue_by_day = @prev_month_revenue_by_day.to_h
-    @revenue_by_prev_month = @days_of_month.map { |day| [day, @prev_month_revenue_by_day.fetch(Date.new(1.month.ago.year, 1.month.ago.month, day).strftime('%e %A'), 0)] }
+    # Optimize previous month daily revenue breakdown
+    daily_revenue_prev = Order
+                         .where(created_at: prev_month_start..prev_month_end)
+                         .group(Arel.sql('DATE(created_at)'))
+                         .pluck(Arel.sql('DATE(created_at)'), Arel.sql('SUM(total)'))
+                         .to_h # Fill in missing days with zero revenue for previous month
+    days_prev_month = (1..Time.days_in_month(1.month.ago.month, 1.month.ago.year)).to_a
+    @revenue_by_prev_month = days_prev_month.map do |day|
+      date = Date.new(1.month.ago.year, 1.month.ago.month, day)
+      revenue = daily_revenue_prev[date] || 0
+      [day, revenue]
+    end
   end
 end
