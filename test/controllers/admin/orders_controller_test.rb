@@ -23,7 +23,7 @@ module Admin
       assert_difference('Order.count') do
         post admin_orders_url,
              params: { order: { address: @admin_order.address, customer_email: @admin_order.customer_email,
-                                fulfilled: @admin_order.fulfilled, total: @admin_order.total } }
+                                fulfilled: @admin_order.fulfilled, total: @admin_order.total, name: @admin_order.name } }
       end
 
       assert_redirected_to admin_order_url(Order.last)

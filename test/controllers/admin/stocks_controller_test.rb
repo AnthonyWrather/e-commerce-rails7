@@ -24,7 +24,7 @@ module Admin
       assert_difference('Stock.count') do
         post admin_product_stocks_url(@product),
              params: { stock: { stock_level: @admin_stock.stock_level, product_id: @admin_stock.product_id,
-                                size: @admin_stock.size } }
+                                size: @admin_stock.size, price: @admin_stock.price } }
       end
 
       assert_redirected_to admin_product_stock_url(@product, Stock.last)
