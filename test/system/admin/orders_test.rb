@@ -20,6 +20,7 @@ module Admin
 
       fill_in 'Address', with: @admin_order.address
       fill_in 'Customer email', with: @admin_order.customer_email
+      fill_in 'Name', with: @admin_order.name
       check 'Fulfilled' if @admin_order.fulfilled
       fill_in 'Total', with: @admin_order.total
       click_on 'Create Order'

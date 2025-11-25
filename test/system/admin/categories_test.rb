@@ -19,7 +19,7 @@ module Admin
       click_on 'New category'
 
       fill_in 'Description', with: @admin_category.description
-      fill_in 'Name', with: @admin_category.name
+      fill_in 'Name', with: 'Brand New Category Name'
       click_on 'Create Category'
 
       assert_text 'Category was successfully created'

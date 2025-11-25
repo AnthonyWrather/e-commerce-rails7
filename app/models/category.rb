@@ -6,4 +6,7 @@ class Category < ApplicationRecord
   end
 
   has_many :products, dependent: :destroy
+
+  # Validations
+  validates :name, presence: true, uniqueness: { case_sensitive: false }
 end
