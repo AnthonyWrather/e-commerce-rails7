@@ -66,7 +66,7 @@
                     <%= p.category.name %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 whitepsace-nowrap tex-sm">
-                    <% @admin_stocks.where(product_id: p.id).each do |s| %>
+                    <% p.stocks.each do |s| %>
                       <div class="text-nowrap"><%= s.size %></div>
                     <% end %>
                   </td>
@@ -74,7 +74,7 @@
                     <% if p.price %>
                       <%= formatted_price(p.price) %>
                     <% end %>
-                    <% @admin_stocks.where(product_id: p.id).each do |s| %>
+                    <% p.stocks.each do |s| %>
                       <% if s.price %>
                         <p><%= formatted_price(s.price) %></p>
                       <% else %>
@@ -86,7 +86,7 @@
                     <% if p.stock_level %>
                       <%= p.stock_level %>
                     <% end %>
-                    <% @admin_stocks.where(product_id: p.id).each do |s| %>
+                    <% p.stocks.each do |s| %>
                       <% if s.stock_level %>
                         <p><%= s.stock_level %></p>
                       <% else %>

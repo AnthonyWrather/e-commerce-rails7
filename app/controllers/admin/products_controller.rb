@@ -5,12 +5,14 @@ class Admin::ProductsController < AdminController
 
   # GET /admin/products or /admin/products.json
   def index
+    # Eager load associations to prevent N+1 queries
+    products = Product.includes(:category, :stocks, images_attachments: :blob)
+
     if params[:query].present?
-      @pagy, @admin_products = pagy(Product.where('name LIKE ?', "%#{params[:query]}%"))
+      @pagy, @admin_products = pagy(products.where('name LIKE ?', "%#{params[:query]}%"))
     else
-      @pagy, @admin_products = pagy(Product.all)
+      @pagy, @admin_products = pagy(products)
     end
-    @admin_stocks = Stock.all
   end
 
   # GET /admin/products/1 or /admin/products/1.json
