@@ -5,7 +5,8 @@ class AdminController < ApplicationController
   before_action :authenticate_admin_user!
 
   def index
-    @orders = Order.where(fulfilled: false).order(created_at: :desc).take(5)
+    # Use indexed column for better query performance
+    @orders = Order.where(fulfilled: false).order(created_at: :desc).limit(5)
 
     # Monthly Revenue Chart Data
     num_orders_monthly = Order.where(created_at: Time.now.beginning_of_month..Time.now.end_of_month).count

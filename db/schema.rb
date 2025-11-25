@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_24_230114) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_25_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -89,6 +89,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_24_230114) do
     t.integer "shipping_cost"
     t.string "shipping_id"
     t.string "shipping_description"
+    t.index ["created_at"], name: "index_orders_on_created_at"
+    t.index ["fulfilled", "created_at"], name: "index_orders_on_fulfilled_and_created_at"
+    t.index ["fulfilled"], name: "index_orders_on_fulfilled"
   end
 
   create_table "products", force: :cascade do |t|
@@ -104,7 +107,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_24_230114) do
     t.integer "length"
     t.integer "width"
     t.integer "height"
+    t.index ["active", "price", "category_id"], name: "index_products_on_active_and_price_and_category_id"
+    t.index ["active"], name: "index_products_on_active"
     t.index ["category_id"], name: "index_products_on_category_id"
+    t.index ["name"], name: "index_products_on_name"
+    t.index ["price"], name: "index_products_on_price"
   end
 
   create_table "stocks", force: :cascade do |t|
