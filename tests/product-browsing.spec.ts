@@ -14,6 +14,7 @@ test.describe('Product Browsing and Categories', () => {
         // Check if navigation was successful or stayed on homepage
         const url = page.url();
         const navigatedToCategory = url.includes('/categories/');
+        // TODO: Look at how this works with multiple environments.
         const stayedOnHomepage = url === 'https://shop.cariana.tech/';
         expect(navigatedToCategory || stayedOnHomepage).toBeTruthy();
 
