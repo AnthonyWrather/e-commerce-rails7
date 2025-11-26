@@ -46,6 +46,16 @@ module Admin
       assert_redirected_to edit_admin_product_url(@admin_product)
     end
 
+    test 'should update admin_product with stock_level' do
+      new_stock_level = 42
+      patch admin_product_url(@admin_product),
+            params: { product: { name: @admin_product.name, price: @admin_product.price,
+                                 category_id: @admin_product.category_id, stock_level: new_stock_level } }
+      assert_redirected_to edit_admin_product_url(@admin_product)
+      @admin_product.reload
+      assert_equal new_stock_level, @admin_product.stock_level
+    end
+
     test 'should destroy admin_product' do
       product_to_delete = products(:product_three)
       assert_difference('Product.count', -1) do
