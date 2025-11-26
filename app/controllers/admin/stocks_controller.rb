@@ -76,6 +76,6 @@ class Admin::StocksController < AdminController
 
   # Only allow a list of trusted parameters through.
   def admin_stock_params
-    params.require(:stock).permit(:size, :price, :amount, :weight, :length, :height, :width)
+    params.require(:stock).permit(:size, :price, :stock_level, :weight, :length, :height, :width)
   end
 end
