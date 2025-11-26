@@ -70,6 +70,29 @@ class CheckoutsController < ApplicationController
     ENV['STRIPE_SECRET_KEY'] || Rails.application.credentials.dig(:stripe, :secret_key)
   end
 
+  def tax_rate_id
+    # UK VAT tax rate - either use existing or create new
+    # For production, create this once in Stripe dashboard and store ID in credentials
+    ENV['STRIPE_TAX_RATE_ID'] || Rails.application.credentials.dig(:stripe, :tax_rate_id) || create_uk_vat_rate
+  end
+
+  def create_uk_vat_rate
+    # Create UK VAT rate of 20% (standard rate)
+    # This rate is marked as inclusive since our prices already include VAT
+    tax_rate = Stripe::TaxRate.create(
+      display_name: 'VAT',
+      description: 'UK VAT',
+      jurisdiction: 'GB',
+      percentage: 20.0,
+      inclusive: true
+    )
+    tax_rate.id
+  rescue Stripe::StripeError => e
+    Rails.logger.error("Failed to create tax rate: #{e.message}")
+    # Return nil and handle gracefully - line items will work without tax display
+    nil
+  end
+
   def build_line_items(cart)
     cart.map do |item|
       product = Product.find(item['id'])
@@ -103,7 +126,7 @@ class CheckoutsController < ApplicationController
   end
 
   def build_line_item(item, product, product_stock_id, price)
-    {
+    line_item = {
       quantity: item['quantity'].to_i,
       price_data: {
         product_data: {
@@ -111,9 +134,16 @@ class CheckoutsController < ApplicationController
           metadata: { product_id: product.id, size: item['size'], product_stock_id: product_stock_id, product_price: price }
         },
         currency: 'gbp',
-        unit_amount: item['price'].to_i
+        unit_amount: item['price'].to_i,
+        tax_behavior: 'inclusive'
       }
     }
+
+    # Add tax rate if available
+    tax_id = tax_rate_id
+    line_item[:tax_rates] = [tax_id] if tax_id.present?
+
+    line_item
   end
 
   def create_stripe_session(line_items)
