@@ -5,6 +5,6 @@ class HomeController < ApplicationController
 
   def index
     # Eager load image attachment to prevent N+1 queries
-    @main_categories = Category.includes(image_attachment: :blob).take(10)
+    @main_categories = Category.includes(image_attachment: :blob).limit(10)
   end
 end

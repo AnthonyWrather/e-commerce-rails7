@@ -11,3 +11,11 @@ category_two:
 category_three:
   name: "Test Category"
   description: "Category for destroy testing without dependencies"
+
+category_four:
+  name: "Resin & Gel Coats"
+  description: "Polyester and epoxy resins, gel coats, and hardeners"
+
+category_five:
+  name: "Tools & Accessories"
+  description: "Brushes, rollers, mixing tools, and other fiberglass accessories"
