@@ -34,6 +34,8 @@ RUN apt-get update -qq && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install --no-install-recommends -y nodejs && \
     npm install -g yarn && \
+    npx playwright install-deps && \
+    npx playwright install && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 FROM build as staging

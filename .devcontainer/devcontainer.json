@@ -17,7 +17,9 @@
 	"forwardPorts": [3000, 5432, 15432, 587, 2525, 9323],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "bundle install && npm install && npx playwright install-deps && npx playwright install",
+  // Moved the playwright install to the dev Dockerfile
+	// "postCreateCommand": "bundle install && npm install && npx playwright install-deps && npx playwright install",
+	"postCreateCommand": "bundle install",
 
 	// Configure tool-specific properties.
 	"customizations": {

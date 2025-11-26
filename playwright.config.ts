@@ -18,8 +18,10 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
+    // TODO: Look at how this works with multiple environments.
     // baseURL: 'http://localhost:3000',
-    baseURL: 'https://shop.cariana.tech/',
+    baseURL: 'https://shop.cariana.tech',
+    // baseURL: 'https://loved-anchovy-on.ngrok-free.app',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
