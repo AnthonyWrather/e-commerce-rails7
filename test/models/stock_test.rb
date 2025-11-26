@@ -9,10 +9,10 @@ class StockTest < ActiveSupport::TestCase
       size: '1m x 10m Roll',
       stock_level: 50,
       price: 15_000,
-      weight: 3000,
-      length: 1000,
-      width: 100,
-      height: 10,
+      shipping_weight: 3000,
+      shipping_length: 1000,
+      shipping_width: 100,
+      shipping_height: 10,
       product: @product
     )
   end
@@ -111,141 +111,141 @@ class StockTest < ActiveSupport::TestCase
 
   # Weight validations
   test 'should allow nil weight' do
-    @stock.weight = nil
+    @stock.shipping_weight = nil
     assert @stock.valid?
   end
 
   test 'should require weight to be a number when present' do
-    @stock.weight = 'not a number'
+    @stock.shipping_weight = 'not a number'
     assert_not @stock.valid?
-    assert_includes @stock.errors[:weight], 'is not a number'
+    assert_includes @stock.errors[:shipping_weight], 'is not a number'
   end
 
   test 'should require weight to be greater than zero when present' do
-    @stock.weight = 0
+    @stock.shipping_weight = 0
     assert_not @stock.valid?
-    assert_includes @stock.errors[:weight], 'must be greater than 0'
+    assert_includes @stock.errors[:shipping_weight], 'must be greater than 0'
   end
 
   test 'should not allow negative weight' do
-    @stock.weight = -1
+    @stock.shipping_weight = -1
     assert_not @stock.valid?
-    assert_includes @stock.errors[:weight], 'must be greater than 0'
+    assert_includes @stock.errors[:shipping_weight], 'must be greater than 0'
   end
 
   test 'should require weight to be an integer' do
-    @stock.weight = 10.5
+    @stock.shipping_weight = 10.5
     assert_not @stock.valid?
-    assert_includes @stock.errors[:weight], 'must be an integer'
+    assert_includes @stock.errors[:shipping_weight], 'must be an integer'
   end
 
   test 'should allow valid weight' do
-    @stock.weight = 4000
+    @stock.shipping_weight = 4000
     assert @stock.valid?
   end
 
   # Length validations
   test 'should allow nil length' do
-    @stock.length = nil
+    @stock.shipping_length = nil
     assert @stock.valid?
   end
 
   test 'should require length to be a number when present' do
-    @stock.length = 'not a number'
+    @stock.shipping_length = 'not a number'
     assert_not @stock.valid?
-    assert_includes @stock.errors[:length], 'is not a number'
+    assert_includes @stock.errors[:shipping_length], 'is not a number'
   end
 
   test 'should require length to be greater than zero when present' do
-    @stock.length = 0
+    @stock.shipping_length = 0
     assert_not @stock.valid?
-    assert_includes @stock.errors[:length], 'must be greater than 0'
+    assert_includes @stock.errors[:shipping_length], 'must be greater than 0'
   end
 
   test 'should not allow negative length' do
-    @stock.length = -1
+    @stock.shipping_length = -1
     assert_not @stock.valid?
-    assert_includes @stock.errors[:length], 'must be greater than 0'
+    assert_includes @stock.errors[:shipping_length], 'must be greater than 0'
   end
 
   test 'should require length to be an integer' do
-    @stock.length = 10.5
+    @stock.shipping_length = 10.5
     assert_not @stock.valid?
-    assert_includes @stock.errors[:length], 'must be an integer'
+    assert_includes @stock.errors[:shipping_length], 'must be an integer'
   end
 
   test 'should allow valid length' do
-    @stock.length = 2000
+    @stock.shipping_length = 2000
     assert @stock.valid?
   end
 
   # Width validations
   test 'should allow nil width' do
-    @stock.width = nil
+    @stock.shipping_width = nil
     assert @stock.valid?
   end
 
   test 'should require width to be a number when present' do
-    @stock.width = 'not a number'
+    @stock.shipping_width = 'not a number'
     assert_not @stock.valid?
-    assert_includes @stock.errors[:width], 'is not a number'
+    assert_includes @stock.errors[:shipping_width], 'is not a number'
   end
 
   test 'should require width to be greater than zero when present' do
-    @stock.width = 0
+    @stock.shipping_width = 0
     assert_not @stock.valid?
-    assert_includes @stock.errors[:width], 'must be greater than 0'
+    assert_includes @stock.errors[:shipping_width], 'must be greater than 0'
   end
 
   test 'should not allow negative width' do
-    @stock.width = -1
+    @stock.shipping_width = -1
     assert_not @stock.valid?
-    assert_includes @stock.errors[:width], 'must be greater than 0'
+    assert_includes @stock.errors[:shipping_width], 'must be greater than 0'
   end
 
   test 'should require width to be an integer' do
-    @stock.width = 10.5
+    @stock.shipping_width = 10.5
     assert_not @stock.valid?
-    assert_includes @stock.errors[:width], 'must be an integer'
+    assert_includes @stock.errors[:shipping_width], 'must be an integer'
   end
 
   test 'should allow valid width' do
-    @stock.width = 150
+    @stock.shipping_width = 150
     assert @stock.valid?
   end
 
   # Height validations
   test 'should allow nil height' do
-    @stock.height = nil
+    @stock.shipping_height = nil
     assert @stock.valid?
   end
 
   test 'should require height to be a number when present' do
-    @stock.height = 'not a number'
+    @stock.shipping_height = 'not a number'
     assert_not @stock.valid?
-    assert_includes @stock.errors[:height], 'is not a number'
+    assert_includes @stock.errors[:shipping_height], 'is not a number'
   end
 
   test 'should require height to be greater than zero when present' do
-    @stock.height = 0
+    @stock.shipping_height = 0
     assert_not @stock.valid?
-    assert_includes @stock.errors[:height], 'must be greater than 0'
+    assert_includes @stock.errors[:shipping_height], 'must be greater than 0'
   end
 
   test 'should not allow negative height' do
-    @stock.height = -1
+    @stock.shipping_height = -1
     assert_not @stock.valid?
-    assert_includes @stock.errors[:height], 'must be greater than 0'
+    assert_includes @stock.errors[:shipping_height], 'must be greater than 0'
   end
 
   test 'should require height to be an integer' do
-    @stock.height = 10.5
+    @stock.shipping_height = 10.5
     assert_not @stock.valid?
-    assert_includes @stock.errors[:height], 'must be an integer'
+    assert_includes @stock.errors[:shipping_height], 'must be an integer'
   end
 
   test 'should allow valid height' do
-    @stock.height = 15
+    @stock.shipping_height = 15
     assert @stock.valid?
   end
 
