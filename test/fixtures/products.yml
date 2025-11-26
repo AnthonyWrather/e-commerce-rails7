@@ -7,10 +7,10 @@ product_one:
   category: category_one
   active: true
   stock_level: 100
-  weight: 300
-  length: 100
-  width: 100
-  height: 5
+  shipping_weight: 300
+  shipping_length: 100
+  shipping_width: 100
+  shipping_height: 5
 
 product_two:
   name: "450g Woven Roving"
@@ -19,10 +19,10 @@ product_two:
   category: category_two
   active: true
   stock_level: 50
-  weight: 450
-  length: 100
-  width: 100
-  height: 3
+  shipping_weight: 450
+  shipping_length: 100
+  shipping_width: 100
+  shipping_height: 3
 
 product_three:
   name: "600g Chopped Strand Mat"
@@ -31,7 +31,7 @@ product_three:
   category: category_one
   active: true
   stock_level: 75
-  weight: 600
-  length: 100
-  width: 100
-  height: 6
+  shipping_weight: 600
+  shipping_length: 100
+  shipping_width: 100
+  shipping_height: 6
