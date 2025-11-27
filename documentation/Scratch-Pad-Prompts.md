@@ -202,9 +202,22 @@ Analyse the exiting code and suggest any improvements to make the database more 
 
 --------------------------------
 
+Run "bin/rails test:system" and analyse the reason for the test failure.
+Identify a solution and fix the problem.
+
+Do not run the playwright tests.
+Run all "bin/rails test" and "bin/rails test:system" and "bin/rails test:all" and fix any errors.
+Run rubocop and fix any errors.
+Do not commit the code.
 
 --------------------------------
 
+Fix the layout of the /admin_users/sign_in, /admin_users/password/new and /admin_users/sign_up screens. They are not laid out correctly and have bad formatting.
+
+Do not run the playwright tests.
+Run all "bin/rails test" and "bin/rails test:system" and "bin/rails test:all" and fix any errors.
+Run rubocop and fix any errors.
+Do not commit the code.
 
 --------------------------------
 
