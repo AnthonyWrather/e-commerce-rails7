@@ -27,10 +27,14 @@ erDiagram
         datetime created_at
         datetime updated_at
         integer stock_level
-        integer weight "in grams"
-        integer length "in cm"
-        integer width "in cm"
-        integer height "in cm"
+        integer shipping_weight "in grams"
+        integer shipping_length "in cm"
+        integer shipping_width "in cm"
+        integer shipping_height "in cm"
+        boolean fiberglass_reinforcement "default: false"
+        integer min_resin_per_m2 "default: 0"
+        integer max_resin_per_m2 "default: 0"
+        integer avg_resin_per_m2 "default: 0"
     }
 
     stocks {
@@ -41,10 +45,14 @@ erDiagram
         datetime created_at
         datetime updated_at
         integer price "in pence"
-        integer weight "in grams"
-        integer length "in cm"
-        integer width "in cm"
-        integer height "in cm"
+        integer shipping_weight "in grams"
+        integer shipping_length "in cm"
+        integer shipping_width "in cm"
+        integer shipping_height "in cm"
+        boolean fiberglass_reinforcement "default: false"
+        integer min_resin_per_m2 "default: 0"
+        integer max_resin_per_m2 "default: 0"
+        integer avg_resin_per_m2 "default: 0"
     }
 
     orders {
@@ -142,12 +150,16 @@ The schema supports two pricing strategies:
 2. **Variant Pricing**: Product has multiple Stocks, each with their own `price` and `stock_level`
 
 ## Important Notes
+
 - All prices stored in **pence** (integer)
 - All weights in **grams** (integer)
-- All dimensions in **cm** (integer)
+- All dimensions (shipping_weight, shipping_length, shipping_width, shipping_height) in **cm** or **grams**
 - `order_products.price` captures the price at time of purchase (not calculated)
 - Orders created via Stripe webhook only (no direct user creation)
+- **fiberglass_reinforcement**: Boolean flag indicating if product/stock is a fiberglass material
+- **Resin estimation fields** (min_resin_per_m2, max_resin_per_m2, avg_resin_per_m2): Used for calculating material requirements for composite projects
 
 ## Schema Version
-Current schema version: `2025_11_24_215657` (PostgreSQL)
+
+Current schema version: `2025_11_26_204746` (PostgreSQL)
 
