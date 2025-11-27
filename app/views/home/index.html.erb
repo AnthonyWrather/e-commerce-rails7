@@ -27,7 +27,7 @@
     <%= link_to category_path(category) do %>
       <div class="flex flex-col mt-4 mb-4 bg-blue-400 border border-gray-detailBorder">
         <h2 class="mb-1 text-lg font-medium text-center text-white"><%= category.name %></h2>
-        <%= category.image.present? ? image_tag(category.image, class: "max-w-lg w-64 h-64") : image_tag("http://via.placeholder.com/512") %>
+        <%= category.image.attached? ? image_tag(category.image, class: "max-w-lg w-64 h-64 object-cover") : image_tag("http://via.placeholder.com/512", class: "max-w-lg w-64 h-64") %>
       </div>
     <% end %>
   <% end %>

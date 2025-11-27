@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Southcoast Fibreglass Supplies Ltd - Admin Login</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+    <%= favicon_link_tag %>
+  </head>
+
+  <body>
+    <main>
+      <% if flash.any? %>
+        <div class="fixed top-0 left-0 right-0 z-50 px-4 py-3">
+          <% flash.each do |type, msg| %>
+            <div class="max-w-md mx-auto <%= type == 'notice' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700' %> px-4 py-3 border rounded relative mb-2" role="alert">
+              <span class="block sm:inline"><%= msg %></span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+  </body>
+</html>
