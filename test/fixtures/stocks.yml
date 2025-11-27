@@ -5,17 +5,17 @@ stock_one:
   stock_level: 25
   price: 14000
   product: product_one
-  shipping_weight: 3000
-  shipping_length: 1000
-  shipping_width: 100
-  shipping_height: 10
+  weight: 3000
+  length: 1000
+  width: 100
+  height: 10
 
 stock_two:
   size: "1m x 5m Roll"
   stock_level: 40
   price: 9500
   product: product_two
-  shipping_weight: 2250
-  shipping_length: 500
-  shipping_width: 100
-  shipping_height: 8
+  weight: 2250
+  length: 500
+  width: 100
+  height: 8

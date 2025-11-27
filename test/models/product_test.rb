@@ -9,10 +9,10 @@ class ProductTest < ActiveSupport::TestCase
       name: 'Test Product',
       price: 1000,
       stock_level: 50,
-      shipping_weight: 300,
-      shipping_length: 100,
-      shipping_width: 100,
-      shipping_height: 5,
+      weight: 300,
+      length: 100,
+      width: 100,
+      height: 5,
       category: @category,
       active: true
     )
@@ -111,141 +111,141 @@ class ProductTest < ActiveSupport::TestCase
 
   # Weight validations
   test 'should allow nil weight' do
-    @product.shipping_weight = nil
+    @product.weight = nil
     assert @product.valid?
   end
 
   test 'should require weight to be a number when present' do
-    @product.shipping_weight = 'not a number'
+    @product.weight = 'not a number'
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_weight], 'is not a number'
+    assert_includes @product.errors[:weight], 'is not a number'
   end
 
   test 'should require weight to be greater than zero when present' do
-    @product.shipping_weight = 0
+    @product.weight = 0
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_weight], 'must be greater than 0'
+    assert_includes @product.errors[:weight], 'must be greater than 0'
   end
 
   test 'should not allow negative weight' do
-    @product.shipping_weight = -1
+    @product.weight = -1
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_weight], 'must be greater than 0'
+    assert_includes @product.errors[:weight], 'must be greater than 0'
   end
 
   test 'should require weight to be an integer' do
-    @product.shipping_weight = 10.5
+    @product.weight = 10.5
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_weight], 'must be an integer'
+    assert_includes @product.errors[:weight], 'must be an integer'
   end
 
   test 'should allow valid weight' do
-    @product.shipping_weight = 300
+    @product.weight = 300
     assert @product.valid?
   end
 
   # Length validations
   test 'should allow nil length' do
-    @product.shipping_length = nil
+    @product.length = nil
     assert @product.valid?
   end
 
   test 'should require length to be a number when present' do
-    @product.shipping_length = 'not a number'
+    @product.length = 'not a number'
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_length], 'is not a number'
+    assert_includes @product.errors[:length], 'is not a number'
   end
 
   test 'should require length to be greater than zero when present' do
-    @product.shipping_length = 0
+    @product.length = 0
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_length], 'must be greater than 0'
+    assert_includes @product.errors[:length], 'must be greater than 0'
   end
 
   test 'should not allow negative length' do
-    @product.shipping_length = -1
+    @product.length = -1
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_length], 'must be greater than 0'
+    assert_includes @product.errors[:length], 'must be greater than 0'
   end
 
   test 'should require length to be an integer' do
-    @product.shipping_length = 10.5
+    @product.length = 10.5
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_length], 'must be an integer'
+    assert_includes @product.errors[:length], 'must be an integer'
   end
 
   test 'should allow valid length' do
-    @product.shipping_length = 100
+    @product.length = 100
     assert @product.valid?
   end
 
   # Width validations
   test 'should allow nil width' do
-    @product.shipping_width = nil
+    @product.width = nil
     assert @product.valid?
   end
 
   test 'should require width to be a number when present' do
-    @product.shipping_width = 'not a number'
+    @product.width = 'not a number'
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_width], 'is not a number'
+    assert_includes @product.errors[:width], 'is not a number'
   end
 
   test 'should require width to be greater than zero when present' do
-    @product.shipping_width = 0
+    @product.width = 0
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_width], 'must be greater than 0'
+    assert_includes @product.errors[:width], 'must be greater than 0'
   end
 
   test 'should not allow negative width' do
-    @product.shipping_width = -1
+    @product.width = -1
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_width], 'must be greater than 0'
+    assert_includes @product.errors[:width], 'must be greater than 0'
   end
 
   test 'should require width to be an integer' do
-    @product.shipping_width = 10.5
+    @product.width = 10.5
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_width], 'must be an integer'
+    assert_includes @product.errors[:width], 'must be an integer'
   end
 
   test 'should allow valid width' do
-    @product.shipping_width = 100
+    @product.width = 100
     assert @product.valid?
   end
 
   # Height validations
   test 'should allow nil height' do
-    @product.shipping_height = nil
+    @product.height = nil
     assert @product.valid?
   end
 
   test 'should require height to be a number when present' do
-    @product.shipping_height = 'not a number'
+    @product.height = 'not a number'
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_height], 'is not a number'
+    assert_includes @product.errors[:height], 'is not a number'
   end
 
   test 'should require height to be greater than zero when present' do
-    @product.shipping_height = 0
+    @product.height = 0
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_height], 'must be greater than 0'
+    assert_includes @product.errors[:height], 'must be greater than 0'
   end
 
   test 'should not allow negative height' do
-    @product.shipping_height = -1
+    @product.height = -1
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_height], 'must be greater than 0'
+    assert_includes @product.errors[:height], 'must be greater than 0'
   end
 
   test 'should require height to be an integer' do
-    @product.shipping_height = 10.5
+    @product.height = 10.5
     assert_not @product.valid?
-    assert_includes @product.errors[:shipping_height], 'must be an integer'
+    assert_includes @product.errors[:height], 'must be an integer'
   end
 
   test 'should allow valid height' do
-    @product.shipping_height = 5
+    @product.height = 5
     assert @product.valid?
   end
 

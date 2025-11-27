@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_26_190528) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_26_235405) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -103,10 +103,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_26_190528) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "stock_level"
-    t.integer "shipping_weight"
-    t.integer "shipping_length"
-    t.integer "shipping_width"
-    t.integer "shipping_height"
+    t.integer "weight"
+    t.integer "length"
+    t.integer "width"
+    t.integer "height"
     t.index ["active", "price", "category_id"], name: "index_products_on_active_and_price_and_category_id"
     t.index ["active"], name: "index_products_on_active"
     t.index ["category_id"], name: "index_products_on_category_id"
@@ -121,10 +121,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_26_190528) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "price"
-    t.integer "shipping_weight"
-    t.integer "shipping_length"
-    t.integer "shipping_width"
-    t.integer "shipping_height"
+    t.integer "weight"
+    t.integer "length"
+    t.integer "width"
+    t.integer "height"
     t.index ["product_id"], name: "index_stocks_on_product_id"
   end
 
