@@ -46,6 +46,26 @@
     <%= form.number_field :shipping_width, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-50pc" %>
   </div>
 
+  <div class="my-5">
+    <%= form.label :fiberglass_reinforcement, "Fiberglass Reinforcement" %>
+    <%= form.check_box :fiberglass_reinforcement, class: "block mt-2 h-5 w-5" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :min_resin_per_m2, "Min Resin per m²" %><p class="text-xs text-gray-500">in grams</p>
+    <%= form.number_field :min_resin_per_m2, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-50pc" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :max_resin_per_m2, "Max Resin per m²" %><p class="text-xs text-gray-500">in grams</p>
+    <%= form.number_field :max_resin_per_m2, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-50pc" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :avg_resin_per_m2, "Avg Resin per m²" %><p class="text-xs text-gray-500">in grams</p>
+    <%= form.number_field :avg_resin_per_m2, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-50pc" %>
+  </div>
+
   <div class="inline">
     <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
   </div>

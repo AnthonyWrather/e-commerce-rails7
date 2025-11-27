@@ -44,6 +44,9 @@ class Admin::ProductsController < AdminController
   # PATCH/PUT /admin/products/1 or /admin/products/1.json
   def update
     @admin_product = Product.find(params[:id])
+    # if @admin_product.update(admin_product_params.except(:images))
+    #   if admin_product_params[:images]
+    #     admin_product_params[:images].each do |image|
     if @admin_product.update(admin_product_params.reject { |k| k['images'] })
       if admin_product_params['images']
         admin_product_params['images'].each do |image|
@@ -83,6 +86,8 @@ class Admin::ProductsController < AdminController
   # Only allow a list of trusted parameters through.
   def admin_product_params
     params.require(:product).permit(:name, :description, :price, :stock_level, :category_id, :active,
-                                    :shipping_weight, :shipping_length, :shipping_height, :shipping_width, images: [])
+                                    :shipping_weight, :shipping_length, :shipping_height, :shipping_width,
+                                    :fiberglass_reinforcement, :min_resin_per_m2, :max_resin_per_m2, :avg_resin_per_m2,
+                                    images: [])
   end
 end
