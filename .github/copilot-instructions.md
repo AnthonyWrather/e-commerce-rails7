@@ -42,11 +42,11 @@ Rails 7 e-commerce application for selling composite materials with variant pric
 - **Critical**: `price` captures the price at time of purchase (not a calculated field)
 - Foreign keys to both `products` and `orders` tables
 
-**Admin** (`app/models/admin.rb`)
-- Devise authentication model
+**AdminUser** (`app/models/admin_user.rb`)
+- Devise authentication model (migrated from `Admin` via `20251120215534_rename_admins_to_admin_users.rb`)
 - Modules: `:database_authenticatable`, `:registerable`, `:recoverable`, `:rememberable`, `:validatable`
 - Fields: `email`, `encrypted_password`, `reset_password_token`, `reset_password_sent_at`, `remember_created_at`
-- **Known conflict**: Class name conflicts with `Admin::` module namespace in controllers
+- **Table name**: `admin_users` (previously had namespace conflict when named `admins`)
 
 **ProductStock** (`app/models/product_stock.rb`)
 - `belongs_to :product`
@@ -176,7 +176,7 @@ Build output: `app/assets/builds/application.js` (762KB bundled)
 ### Create Admin Users
 ```bash
 bin/rails c
-Admin.create(email: "admin@example.com", password: "12345678")
+AdminUser.create(email: "admin@example.com", password: "12345678")
 ```
 
 ### Email Testing
@@ -206,12 +206,36 @@ All Ruby files start with `# frozen_string_literal: true` (enforced by RuboCop)
 ### Admin Namespace
 Admin controllers inherit from `AdminController` which:
 - Uses `layout 'admin'` for separate admin UI
-- Requires `authenticate_admin!` before all actions
+- Requires `authenticate_admin_user!` before all actions
 - See `app/controllers/admin/` for examples
+
+### Admin Authentication Views
+All admin authentication screens follow a consistent Tailwind design pattern:
+- **Layout**: Centered card (`max-w-md`) on gray background (`bg-gray-50`)
+- **Views**: `app/views/admin_users/sessions/new.html.erb`, `app/views/admin_users/passwords/new.html.erb`, `app/views/admin_users/registrations/new.html.erb`
+- **Error Messages**: Red alert styling in `app/views/admin_users/shared/_error_messages.html.erb`
+- **Styling Pattern**:
+  ```erb
+  <div class="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md space-y-8">
+      <div>
+        <h2 class="mt-6 text-3xl font-extrabold text-center text-gray-900">
+          Admin Login
+        </h2>
+      </div>
+      <%= form_for(resource, ..., html: { class: "mt-8 space-y-6" }) do |f| %>
+        <!-- Form fields with consistent input styling -->
+        <%= f.email_field :email,
+            class: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      <% end %>
+    </div>
+  </div>
+  ```
+- **Custom Devise Controllers**: `app/controllers/admin_users/sessions_controller.rb` uses `layout 'devise'` for authentication pages
 
 ### Routing Pattern
 - Admin namespace uses resourceful routes: `namespace :admin do resources :products`
-- Devise for admins only: `devise_for :admins`
+- Devise for admin users: `devise_for :admin_users, controllers: { sessions: 'admin_users/sessions' }`
 - Custom routes for cart/checkout: `get 'cart'`, `post 'checkout'`, etc.
 
 ## Database
@@ -253,14 +277,11 @@ bin/rails test:all          # Run everything
 - Controller tests use `ActionDispatch::IntegrationTest`
 - System tests use Selenium with Chrome (1400x1400 screen size)
 - Tests run in parallel (`parallelize(workers: :number_of_processors)`)
-- Admin controller tests reference `Admin::` namespaced models (e.g., `Admin::Product.count`)
+- Admin controller tests use `sign_in admin_users(:admin_user_one)` for authentication
 - Fixtures loaded for all tests via `fixtures :all`
 
 **Known Issue**:
-Tests currently failing due to namespace conflict - `Admin` model (Devise user) conflicts with `Admin::` module for controllers. This is a TypeError in test suite.
-
-**No Authentication in Tests**:
-Admin controller tests don't use `sign_in` - authentication bypassed or not properly configured in test environment.
+Previously had namespace conflict when admin model was named `Admin` (conflicted with `Admin::` module). Resolved via migration to `AdminUser` model.
 
 ### RuboCop
 Project uses `rubocop-rspec` gem but implements **Minitest**, not RSpec (likely leftover dependency).
@@ -626,11 +647,11 @@ Limited use - mainly for quantities calculators:
 ## Security & Authentication
 
 ### Devise (Admin Only)
-- Single model: `Admin` with email/password authentication
+- Single model: `AdminUser` with email/password authentication
 - Modules: database_authenticatable, registerable, recoverable, rememberable, validatable
-- Routes: `devise_for :admins`
+- Routes: `devise_for :admin_users`
 - **No public user accounts** - customers checkout as guests
-- Mailer sender: `please-change-me-at-config-initializers-devise@example.com` (TODO)
+- Mailer sender: `admin@e-commerce-rails7.com`
 
 ### CSRF Protection
 - Automatic via Rails
@@ -1040,7 +1061,7 @@ config.hosts << '54.187.216.72'
 **Recommendation**: Add seed data for:
 ```ruby
 # Create admin user
-Admin.find_or_create_by!(email: "admin@example.com") do |admin|
+AdminUser.find_or_create_by!(email: "admin@example.com") do |admin|
   admin.password = "password123"
 end
 
