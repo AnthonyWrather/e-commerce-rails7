@@ -58,6 +58,8 @@ group :development, :test do
 
   gem 'letter_opener'
   gem 'letter_opener_web', '~> 3.0'
+
+  gem 'stripe-ruby-mock'
 end
 
 group :development do
