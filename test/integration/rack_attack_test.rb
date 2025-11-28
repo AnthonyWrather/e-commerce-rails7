@@ -4,8 +4,9 @@ require 'test_helper'
 
 class RackAttackTest < ActionDispatch::IntegrationTest
   setup do
-    # Clear rate limiting cache between tests
+    # Configure and reset Rack::Attack cache for each test
     Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new
+    Rack::Attack.reset!
   end
 
   test 'throttles requests exceeding 300 per 5 minutes per IP' do
