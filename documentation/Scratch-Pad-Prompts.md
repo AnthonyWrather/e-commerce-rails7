@@ -221,14 +221,76 @@ Do not commit the code.
 
 --------------------------------
 
+[Trying plan mode?]
+Analyse the existing codebase and architecture and make a list of suggested improvements.
+
+--------------------------------
+
+Create a implementation plan for the next sprint?
+
+--------------------------------
+
+[Agent Mode]
+Create documentation/sprint-plan-01.md
+
+--------------------------------
+
+Create GitHub issues from these tasks
+
+--------------------------------
+
+use the existing /workspaces/e-commerce-rails7/documentation/sprint-plan-01.md and documentation/github-issues-sprint-01.md to create issues in AnthonyWrather/e-commerce-rails7
+
+--------------------------------
+
+Analyse .devcontainer/Dockerfile and add the installation of the GitHub CLI to the docker setup
 
 --------------------------------
 
 
+
 --------------------------------
 
 
+
 --------------------------------
+
+
+
+--------------------------------
+
+
+
+--------------------------------
+
+
+
+--------------------------------
+
+
+
+--------------------------------
+
+
+
+--------------------------------
+
+
+
+--------------------------------
+
+
+
+--------------------------------
+
+
+
+--------------------------------
+
+
+
+--------------------------------
+
 
 
 --------------------------------
