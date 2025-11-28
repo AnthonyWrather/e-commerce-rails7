@@ -4,6 +4,9 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
 
+# Load support files
+Dir[Rails.root.join('test/support/**/*.rb')].each { |f| require f }
+
 module ActiveSupport
   class TestCase
     # Disable parallel testing to avoid foreign key violations
@@ -20,4 +23,5 @@ end
 
 class ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
+  include StripeTestHelpers
 end
