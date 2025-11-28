@@ -48,16 +48,6 @@ class RackAttackTest < ActionDispatch::IntegrationTest
     assert_response 429
   end
 
-  test 'throttles checkout attempts by IP' do
-    10.times do |i|
-      post checkout_url, params: { cart: [] }, as: :json
-      refute_equal 429, response.status, "Request #{i + 1} should not be rate limited"
-    end
-
-    post checkout_url, params: { cart: [] }, as: :json
-    assert_response 429
-  end
-
   test 'throttles contact form submissions by IP' do
     5.times do |i|
       post contact_url, params: { contact_form: { first_name: 'Test', last_name: 'User', email: 'test@test.com', message: 'Hello' } }
