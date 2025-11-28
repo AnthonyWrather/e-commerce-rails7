@@ -94,7 +94,7 @@ class WebhooksControllerIntegrationTest < ActionDispatch::IntegrationTest
 
     # Test passes if we get OrderProcessor::ProcessingError instead of signature error
     # (signature errors return 400 without raising exceptions)
-  end  # ============================================================================
+  end
   # EVENT TYPE HANDLING TESTS
   # ============================================================================
 
@@ -137,7 +137,7 @@ class WebhooksControllerIntegrationTest < ActionDispatch::IntegrationTest
     end
 
     # Test passes if we get ProcessingError (not CSRF error)
-  end  # ============================================================================
+  end
   # ERROR HANDLING TESTS
   # ============================================================================
 
