@@ -41,6 +41,10 @@ Metrics/ClassLength:
   Exclude:
     - test/**/*
 
+Metrics/ModuleLength:
+  Exclude:
+    - test/**/*
+
 # Examine these changes to see what breaks.
 Style/ClassAndModuleChildren:
   Enabled: false
