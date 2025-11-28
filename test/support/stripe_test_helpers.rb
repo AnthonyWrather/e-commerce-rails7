@@ -89,12 +89,14 @@ module StripeTestHelpers
   # @option options [String] :payment_status payment status
   # @option options [String] :session_id Stripe session ID
   # @option options [String] :payment_intent_id Stripe payment intent ID
+  # @option options [Integer] :shipping_cost shipping cost in pence (default: 500)
   # @return [Hash] checkout session data
   #
   # Example:
   #   data = build_checkout_session_data(
   #     email: 'test@example.com',
-  #     amount_total: 5000
+  #     amount_total: 5000,
+  #     shipping_cost: 750
   #   )
   #
   def build_checkout_session_data(options = {})
