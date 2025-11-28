@@ -1,9 +1,9 @@
 # Composite Materials E-Commerce Platform
 
 [![Rails](https://img.shields.io/badge/Rails-7.1.2-red?style=flat-square&logo=rubyonrails)](https://rubyonrails.org)
-[![Ruby](https://img.shields.io/badge/Ruby-3.2.2-red?style=flat-square&logo=ruby)](https://www.ruby-lang.org)
+[![Ruby](https://img.shields.io/badge/Ruby-3.2.3-red?style=flat-square&logo=ruby)](https://www.ruby-lang.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-blue?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 A specialized B2B/B2C e-commerce platform for selling composite materials (fiberglass, resins, tools) with integrated **material quantity calculators** for precise project estimation. Built with Rails 7, TypeScript, and Stripe payments.
@@ -63,12 +63,14 @@ This platform serves the composite materials industry with a unique combination 
 
 **Technology Highlights:**
 
-- Ruby 3.2.2 + Rails 7.1.2 with PostgreSQL database
+- Ruby 3.2.3 + Rails 7.1.2 with PostgreSQL 17 database
 - TypeScript 5.3.3 (strict mode) with Stimulus controllers
 - Tailwind CSS for responsive UI
 - Stripe for secure payment processing (GBP currency)
 - Docker devcontainer for consistent development environment
 - AWS S3 for production image storage
+- Rack 3.2.4 with Rack::Attack rate limiting
+- Capybara 3.40.0 for system testing
 
 ## Why It's Useful
 
@@ -746,7 +748,7 @@ bin/rails test:system      # Run Capybara browser tests
 bin/rails test:all         # Run everything
 ```
 
-**Current Test Status:** All tests passing (231 runs, 563 assertions, 0 failures, 0 errors)
+**Current Test Status:** All tests passing (301 runs, 749 assertions, 0 failures, 0 errors, 8 skips)
 
 ### Testing Stripe Webhooks Locally
 
@@ -1169,8 +1171,10 @@ bin/rails db:rollback STEP=1
 
 ### Documentation
 
-- **[Copilot Instructions](.github/copilot-instructions.md)** - Comprehensive codebase guide for AI-assisted development
-- **[Database Schema](documentation/schema-diagram.md)** - Entity-relationship diagram
+- **[Copilot Instructions](.github/copilot-instructions.md)** - Comprehensive codebase guide for AI-assisted development (1222 lines)
+- **[Database Schema](documentation/schema-diagram.md)** - Entity-relationship diagram with model relationships
+- **[Test Suite Analysis](documentation/test-analysis.md)** - Complete testing strategy and coverage report (301 tests, 749 assertions)
+- **[Codebase Analysis](documentation/codebase-analysis.md)** - Detailed analysis of 10 areas for improvement
 - **[GitHub Copilot Collections](.github/AWESOME-COPILOT-README.md)** - 37 curated prompts, instructions, and chat modes
 
 ### Support Resources

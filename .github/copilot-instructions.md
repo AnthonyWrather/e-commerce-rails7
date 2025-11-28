@@ -14,26 +14,34 @@ Rails 7 e-commerce application for selling composite materials with variant pric
 - `has_many_attached :images` with variants:
   - `:thumb` - 50x50px
   - `:medium` - 250x250px
-- Fields: `name`, `description`, `price` (pence), `amount` (stock level), `active` (boolean), `weight`, `length`, `width`, `height`
-- No validations defined (relies on database constraints)
+- Fields: `name`, `description`, `price` (pence), `stock_level`, `active` (boolean)
+- Shipping fields: `shipping_weight`, `shipping_length`, `shipping_width`, `shipping_height` (grams/cm)
+- Fiberglass fields: `fiberglass_reinforcement` (boolean), `min_resin_per_m2`, `max_resin_per_m2`, `avg_resin_per_m2`
+- **Has validations**: name (required), price (required, integer, ≥0), stock_level (integer, ≥0, nullable), shipping dimensions (integer, >0, nullable)
+- **Scopes**: `active`, `in_price_range(min, max)`
 
 **Stock** (`app/models/stock.rb`)
 - `belongs_to :product`
-- Fields: `size`, `amount`, `price` (pence), `weight`, `length`, `width`, `height`
+- Fields: `size`, `stock_level`, `price` (pence)
+- Shipping fields: `shipping_weight`, `shipping_length`, `shipping_width`, `shipping_height` (grams/cm)
+- Fiberglass fields: `fiberglass_reinforcement` (boolean), `min_resin_per_m2`, `max_resin_per_m2`, `avg_resin_per_m2`
 - Represents size variants with individual pricing (e.g., "Small £10", "Large £15")
-- No validations defined
+- **Has validations**: size (required), price (required, integer, ≥0), stock_level (integer, ≥0, nullable), shipping dimensions (integer, >0, nullable)
 
 **Category** (`app/models/category.rb`)
 - `has_many :products, dependent: :destroy`
 - `has_one_attached :image` with `:thumb` variant (50x50px)
 - Fields: `name`, `description`
 - Cascade deletes products when category deleted
+- **Has validations**: name (required, unique case-insensitive)
 
 **Order** (`app/models/order.rb`)
 - `has_many :order_products`
 - Fields: `customer_email`, `fulfilled` (boolean), `total` (pence), `address`, `name`, `phone`, `billing_name`, `billing_address`, `payment_status`, `payment_id`, `shipping_cost`, `shipping_id`, `shipping_description`
 - Created exclusively via Stripe webhook (`WebhooksController#stripe`)
 - No direct user creation
+- **Scopes**: `unfulfilled`, `fulfilled`, `recent(limit=5)`, `for_month(date=Time.current)`
+- **Has validations**: customer_email (required, valid format), total (required, integer, ≥0), shipping_cost (integer, ≥0, nullable), address (required), name (required)
 
 **OrderProduct** (`app/models/order_product.rb`)
 - `belongs_to :product`
@@ -41,6 +49,7 @@ Rails 7 e-commerce application for selling composite materials with variant pric
 - Fields: `product_id`, `order_id`, `size`, `quantity`, `price`
 - **Critical**: `price` captures the price at time of purchase (not a calculated field)
 - Foreign keys to both `products` and `orders` tables
+- **Has validations**: quantity (required, integer, >0), price (required, integer, ≥0)
 
 **AdminUser** (`app/models/admin_user.rb`)
 - Devise authentication model (migrated from `Admin` via `20251120215534_rename_admins_to_admin_users.rb`)
@@ -54,21 +63,31 @@ Rails 7 e-commerce application for selling composite materials with variant pric
 
 ### Pricing Logic
 Products can have two pricing models:
-1. **Single price**: Product has `amount` and `price` fields directly
-2. **Variant pricing**: Product has Stocks with individual `price` and `amount` per size
+1. **Single price**: Product has `stock_level` and `price` fields directly
+2. **Variant pricing**: Product has Stocks with individual `price` and `stock_level` per size
 
 See `CheckoutsController#create` lines 13-23 for the logic that determines which price to use.
 
+### Shipping & Material Properties
+Both Product and Stock models include:
+- **Shipping Dimensions**: `shipping_weight` (grams), `shipping_length`, `shipping_width`, `shipping_height` (cm)
+- **Fiberglass Properties**: `fiberglass_reinforcement` flag and resin requirements (`min_resin_per_m2`, `max_resin_per_m2`, `avg_resin_per_m2`)
+
+These fields support material quantity calculators and shipping cost calculations.
+
 ### Model Patterns & Conventions
 
-**No Validations**:
-- Models have minimal/no validations defined
-- Relies on database constraints and NOT NULL columns
+**Validations**:
+- Models now have comprehensive validations (see individual model sections above)
 - Controllers handle validation errors via `save`/`update` return values
+- Database constraints provide additional safety layer
 
-**No Scopes or Custom Methods**:
-- Models are intentionally simple (no scopes, class methods, or instance methods)
-- Business logic lives in controllers (see `AdminController#index` for aggregation examples)
+**Scopes**:
+- Product: `active`, `in_price_range(min, max)`
+- Order: `unfulfilled`, `fulfilled`, `recent(limit)`, `for_month(date)`
+- Business logic for aggregations lives in controllers (see `AdminController#index`)
+
+**Concerns**:
 - No concerns defined (concerns directory exists but is empty)
 
 **Active Storage Integration**:
@@ -114,8 +133,8 @@ Fallback to ENV vars: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_KEY`
 
 ### Container Architecture
 Multi-service Docker Compose setup with 3 containers:
-1. **app**: Rails application (Ruby 3.2.2)
-2. **postgres**: PostgreSQL database
+1. **app**: Rails application (Ruby 3.2.3)
+2. **postgres**: PostgreSQL 17 database
 3. **pgadmin**: pgAdmin web interface for database management
 
 ### Network Configuration
@@ -193,6 +212,24 @@ Add host to `config/environments/development.rb`:
 config.hosts << "YOUR-SUBDOMAIN.ngrok-free.app"
 ```
 
+## Security
+
+### Rack::Attack Rate Limiting
+**Configuration**: `config/initializers/rack_attack.rb`
+- **Global throttle**: 300 requests per 5 minutes per IP (excludes `/assets`)
+- **Admin login**: 5 attempts per 20 seconds per IP and email (prevents credential stuffing)
+- **Checkout**: 10 attempts per minute per IP (prevents abuse)
+- **Contact form**: 5 submissions per minute per IP (prevents spam)
+- **Test environment**: Conditionally disabled via `config/application.rb` unless `ENV['RACK_ATTACK_ENABLED']=true`
+- Returns HTTP 429 with plain text message when throttled
+- See `test/integration/rack_attack_test.rb` for 6 test cases (skipped by default)
+
+### Strong Parameters
+All admin controllers use strong parameters:
+- Product: `:name, :description, :price, :stock_level, :category_id, :active, :shipping_weight, :shipping_length, :shipping_width, :shipping_height, :fiberglass_reinforcement, :min_resin_per_m2, :max_resin_per_m2, :avg_resin_per_m2, images: []`
+- Stock: similar pattern with size-variant fields
+- Unpermitted parameters logged but silently ignored
+
 ## Code Conventions
 
 ### Frozen String Literals
@@ -246,9 +283,12 @@ All admin authentication screens follow a consistent Tailwind design pattern:
 
 ### Migrations of Note
 - `AddPriceToStock` - variant pricing
-- `AddAmountToProduct` - single-item stock level
+- `RenameAmountToStockLevel` - renamed `amount` to `stock_level` in products and stocks tables
+- `RenameWeightFieldsToShipping` - prefixed physical dimensions with `shipping_`
+- `AddFiberglassFields` - added `fiberglass_reinforcement` and resin calculation fields
 - `AddPriceToOrderProducts` - capture price at purchase time
 - `AddNameToOrderOrders` - shipping name separate from billing
+- Latest schema version: `2025_11_27_015536`
 
 ### Schema Backup Tables
 `products_backup` and `stocks_backup` exist in schema - likely from data migration work
@@ -268,9 +308,9 @@ Uses **Minitest** (Rails default, not RSpec) with Capybara for system tests.
 
 **Running Tests**:
 ```bash
-bin/rails test              # Run all unit/integration tests
-bin/rails test:system       # Run Capybara system tests
-bin/rails test:all          # Run everything
+bin/rails test              # Run all unit/integration tests (285 runs, 730 assertions)
+bin/rails test:system       # Run Capybara system tests (16 runs, 19 assertions)
+bin/rails test:all          # Run everything (301 total runs, 749 assertions, 8 skips)
 ```
 
 **Test Patterns**:
@@ -279,8 +319,14 @@ bin/rails test:all          # Run everything
 - Tests run in parallel (`parallelize(workers: :number_of_processors)`)
 - Admin controller tests use `sign_in admin_users(:admin_user_one)` for authentication
 - Fixtures loaded for all tests via `fixtures :all`
+- Rack::Attack tests skipped by default (6 tests in `test/integration/rack_attack_test.rb`)
 
-**Known Issue**:
+**Rack 3.x Compatibility**:
+- Using Rack 3.2.4 and Capybara 3.40.0 (required for Rack 3.x support)
+- Capybara automatically handles Puma server setup
+- See `test/application_system_test_case.rb` for simple default configuration
+
+**Known Issue (Resolved)**:
 Previously had namespace conflict when admin model was named `Admin` (conflicted with `Admin::` module). Resolved via migration to `AdminUser` model.
 
 ### RuboCop
