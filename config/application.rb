@@ -25,5 +25,8 @@ module Ecomm
     #
     config.time_zone = 'London'
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Use Rack::Attack for rate limiting to protect against brute force and DDoS attacks
+    config.middleware.use Rack::Attack
   end
 end
