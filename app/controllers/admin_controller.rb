@@ -25,8 +25,8 @@ class AdminController < ApplicationController
     shipping_total = monthly_aggregates[3].to_i.round
 
     # Calculate month range for the OrderProduct query
-    current_month_start = Time.now.beginning_of_month
-    current_month_end = Time.now.end_of_month
+    current_month_start = Time.current.beginning_of_month
+    current_month_end = Time.current.end_of_month
 
     # Get total items sold in a single join query
     num_products_monthly = OrderProduct
