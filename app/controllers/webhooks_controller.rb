@@ -4,92 +4,40 @@ class WebhooksController < ApplicationController
   skip_forgery_protection
 
   def stripe
-    stripe_secret_key = ENV['STRIPE_SECRET_KEY'] || Rails.application.credentials.dig(:stripe, :secret_key)
-    Stripe.api_key = stripe_secret_key
+    event = construct_stripe_event
+    return if event.nil?
+
+    handle_event(event)
+    render json: { message: 'success' }
+  end
+
+  private
+
+  def construct_stripe_event
+    configure_stripe
     payload = request.body.read
     sig_header = request.env['HTTP_STRIPE_SIGNATURE']
     endpoint_secret = ENV['STRIPE_WEBHOOK_KEY'] || Rails.application.credentials.dig(:stripe, :webhook_key)
-    event = nil
+    Stripe::Webhook.construct_event(payload, sig_header, endpoint_secret)
+  rescue JSON::ParserError, Stripe::SignatureVerificationError => e
+    Rails.logger.warn("Webhook verification failed: #{e.class}")
+    head :bad_request
+    nil
+  end
 
-    begin
-      event = Stripe::Webhook.construct_event(payload, sig_header, endpoint_secret)
-    rescue JSON::ParserError
-      status 400
-      return
-    rescue Stripe::SignatureVerificationError
-      puts 'Webhook signature verification failed.'
-      status 400
-      return
-    end
+  def configure_stripe
+    Stripe.api_key = ENV['STRIPE_SECRET_KEY'] || Rails.application.credentials.dig(:stripe, :secret_key)
+  end
 
+  def handle_event(event)
     case event.type
     when 'checkout.session.completed'
-      session = event.data.object
-      collected_information = session['collected_information']
-      customer_details = session['customer_details']
-      puts '---------------------------------------------'
-      puts "Session: #{session}"
-      puts '---------------------------------------------'
-      if collected_information
-        address = "#{collected_information['shipping_details']['address']['line1']}, #{collected_information['shipping_details']['address']['line2']}, #{collected_information['shipping_details']['address']['city']}, #{collected_information['shipping_details']['address']['state']}, #{collected_information['shipping_details']['address']['postal_code']}, #{collected_information['shipping_details']['address']['country']}"
-      else
-        address = 'Address not found.'
-      end
-
-      phone = session['customer_details']['phone']
-      billing_address = "#{customer_details['address']['line1']}, #{customer_details['address']['line2']}, #{customer_details['address']['city']}, #{customer_details['address']['state']}, #{customer_details['address']['postal_code']}, #{customer_details['address']['country']}"
-      billing_name = session['customer_details']['name']
-      payment_status = session['payment_status']
-      payment_id = session['payment_intent']
-      shipping_cost = session['shipping_cost']['amount_total']
-      shipping_id = session['shipping_cost']['shipping_rate']
-      shipping_description = 'Collection'
-
-      if shipping_id
-        shipping_rate = Stripe::ShippingRate.retrieve(shipping_id)
-        # puts '---------------------------------------------'
-        # puts "shipping_rate: #{shipping_rate}"
-        # puts '---------------------------------------------'
-        shipping_description = shipping_rate['display_name'] if shipping_rate && shipping_rate['display_name']
-      end
-
-      order = Order.create!(customer_email: session['customer_details']['email'], total: session['amount_total'],
-                            address: address, fulfilled: false, name: collected_information['shipping_details']['name'],
-                            phone: phone, billing_name: billing_name, billing_address: billing_address,
-                            payment_status: payment_status, payment_id: payment_id, shipping_cost: shipping_cost,
-                            shipping_id: shipping_id, shipping_description: shipping_description)
-
-      full_session = Stripe::Checkout::Session.retrieve({
-                                                          id: session.id,
-                                                          expand: ['line_items']
-                                                        })
-
-      # puts '---------------------------------------------'
-      # puts "full_session: #{full_session}"
-      # puts '---------------------------------------------'
-
-      line_items = full_session.line_items
-      line_items['data'].each do |item|
-        product = Stripe::Product.retrieve(item['price']['product'])
-        product_id = product['metadata']['product_id'].to_i
-        # puts '---------------------------------------------'
-        # puts("product: #{product}")
-        # puts '---------------------------------------------'
-        OrderProduct.create!(order: order, product_id: product_id, quantity: item['quantity'],
-                             size: product['metadata']['size'], price: product['metadata']['product_price'].to_i)
-        if product['metadata']['size'] && product['metadata']['size'].length.positive?
-          Stock.find(product['metadata']['product_stock_id']).decrement!(:stock_level, item['quantity'])
-        else
-          Product.find(product['metadata']['product_id']).decrement!(:stock_level, item['quantity'])
-        end
-      end
-      OrderMailer.new_order_email(order).deliver_now
+      OrderProcessor.new(event.data.object).process
     else
-      puts '---------------------------------------------'
-      puts "Unhandled event type: #{event.type}"
-      puts '---------------------------------------------'
+      Rails.logger.info("Unhandled event type: #{event.type}")
     end
-
-    render json: { message: 'success' }
+  rescue OrderProcessor::ProcessingError => e
+    Rails.logger.error("Order processing failed: #{e.message}")
+    raise
   end
 end
