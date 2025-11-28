@@ -5,6 +5,7 @@ class OrderProcessor
 
   def initialize(stripe_session)
     @stripe_session = stripe_session
+    @stripe_products = {}
   end
 
   def process
@@ -34,13 +35,13 @@ class OrderProcessor
 
   def process_line_items
     line_items.each do |item|
-      create_order_product(item)
-      decrement_stock(item)
+      product = retrieve_stripe_product(item)
+      create_order_product(item, product)
+      decrement_stock(item, product)
     end
   end
 
-  def create_order_product(item)
-    product = retrieve_stripe_product(item)
+  def create_order_product(item, product)
     OrderProduct.create!(
       order: @order, product_id: product['metadata']['product_id'].to_i,
       quantity: item['quantity'], size: product['metadata']['size'],
@@ -48,8 +49,7 @@ class OrderProcessor
     )
   end
 
-  def decrement_stock(item)
-    product = retrieve_stripe_product(item)
+  def decrement_stock(item, product)
     size = product['metadata']['size']
     quantity = item['quantity']
 
@@ -73,7 +73,8 @@ class OrderProcessor
   end
 
   def retrieve_stripe_product(item)
-    Stripe::Product.retrieve(item['price']['product'])
+    product_id = item['price']['product']
+    @stripe_products[product_id] ||= Stripe::Product.retrieve(product_id)
   end
 
   def customer_email = @stripe_session['customer_details']['email']
@@ -81,14 +82,20 @@ class OrderProcessor
   def billing_name = @stripe_session['customer_details']['name']
 
   def billing_address
-    format_address(@stripe_session['customer_details']['address'])
+    address = @stripe_session.dig('customer_details', 'address')
+    return '' unless address
+
+    format_address(address)
   end
 
   def shipping_address
     collected_information = @stripe_session['collected_information']
     return 'Address not found.' unless collected_information
 
-    format_address(collected_information['shipping_details']['address'])
+    address = collected_information.dig('shipping_details', 'address')
+    return 'Address not found.' unless address
+
+    format_address(address)
   end
 
   def shipping_name
