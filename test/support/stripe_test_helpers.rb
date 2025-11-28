@@ -106,7 +106,7 @@ module StripeTestHelpers
       customer_details: {
         email: options[:email] || 'test@example.com',
         name: options[:name] || 'Test Customer',
-        phone: options[:phone] || '01onal234567890',
+        phone: options[:phone] || '01234567890',
         address: {
           line1: options.dig(:billing_address, :line1) || '123 Billing St',
           line2: options.dig(:billing_address, :line2) || 'Suite 100',
