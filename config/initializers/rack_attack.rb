@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Rack::Attack
-  RATE_LIMIT_RESPONSE = [429, { 'Content-Type' => 'text/plain' }, ['Too Many Requests. Please try again later.']].freeze
-
   # Throttle all requests by IP (300 requests per 5 minutes = 1 per second)
   # This protects against general DDoS and brute force attacks
   throttle('req/ip', limit: 300, period: 5.minutes) do |req|
@@ -42,6 +40,11 @@ class Rack::Attack
     end
   end
 
-  self.blocklisted_responder = ->(_req) { RATE_LIMIT_RESPONSE }
-  self.throttled_responder = ->(_req) { RATE_LIMIT_RESPONSE }
+  self.blocklisted_responder = lambda do |_req|
+    [429, { 'Content-Type' => 'text/plain' }, ['Too Many Requests. Please try again later.']]
+  end
+
+  self.throttled_responder = lambda do |_req|
+    [429, { 'Content-Type' => 'text/plain' }, ['Too Many Requests. Please try again later.']]
+  end
 end
