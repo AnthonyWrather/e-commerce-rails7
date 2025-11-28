@@ -53,7 +53,6 @@ Rails.application.routes.draw do
 
   post 'webhooks' => 'webhooks#stripe'
 
-  # TODO: Restrict access to LetterOpenerWeb in Production once Test env is configured.
-  # mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
-  mount LetterOpenerWeb::Engine, at: '/letter_opener'
+  # LetterOpenerWeb is restricted to development environment only for security
+  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 end
