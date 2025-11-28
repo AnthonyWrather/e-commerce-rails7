@@ -24,10 +24,10 @@ class AssociationsTest < ActiveSupport::TestCase
 
   test 'product can have multiple stocks with different sizes' do
     product = products(:product_one)
-    
+
     stock1 = Stock.create!(product: product, size: 'Small', price: 1000)
     stock2 = Stock.create!(product: product, size: 'Large', price: 2000)
-    
+
     assert_includes product.stocks.reload, stock1
     assert_includes product.stocks, stock2
     assert product.stocks.count >= 2
@@ -42,7 +42,7 @@ class AssociationsTest < ActiveSupport::TestCase
 
   test 'deleting category destroys associated products' do
     category = categories(:category_three)
-    
+
     # Create a product for this category
     product = Product.create!(
       name: 'Test Product for Deletion',
@@ -50,12 +50,12 @@ class AssociationsTest < ActiveSupport::TestCase
       category: category,
       active: true
     )
-    
+
     product_id = product.id
     category_id = category.id
-    
+
     category.destroy
-    
+
     assert_nil Category.find_by(id: category_id)
     assert_nil Product.find_by(id: product_id)
   end
@@ -77,7 +77,7 @@ class AssociationsTest < ActiveSupport::TestCase
   test 'order can access products through order_products' do
     order = orders(:order_one)
     order_product = order.order_products.first
-    
+
     if order_product
       assert_instance_of Product, order_product.product
     end
@@ -98,10 +98,10 @@ class AssociationsTest < ActiveSupport::TestCase
   test 'can traverse from category to orders through products and order_products' do
     category = categories(:category_one)
     product = category.products.first
-    
+
     if product
       order_product = product.order_products.first
-      
+
       if order_product
         order = order_product.order
         assert_instance_of Order, order

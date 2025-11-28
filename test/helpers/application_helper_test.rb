@@ -43,7 +43,7 @@ class ApplicationHelperTest < ActionView::TestCase
     # Common pattern: price includes VAT, calculate ex-VAT
     price_inc_vat = 1200 # £12.00
     price_ex_vat = price_inc_vat / 1.2
-    
+
     assert_equal '£10.00', formatted_price(price_ex_vat.to_i)
   end
 end

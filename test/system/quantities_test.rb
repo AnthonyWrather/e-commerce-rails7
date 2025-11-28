@@ -215,4 +215,3 @@ class QuantitiesTest < ApplicationSystemTestCase
     assert_text '1.6:1'
   end
 end
-
