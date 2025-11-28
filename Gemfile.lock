@@ -462,7 +462,7 @@ DEPENDENCIES
   aws-sdk-s3
   bootsnap
   breadcrumbs_on_rails
-  capybara
+  capybara (>= 3.40)
   debug
   devise (~> 4.9)
   erb_lint
