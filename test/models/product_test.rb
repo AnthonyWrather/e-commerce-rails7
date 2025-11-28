@@ -255,4 +255,52 @@ class ProductTest < ActiveSupport::TestCase
     assert_not @product.valid?
     assert_includes @product.errors[:category], 'must exist'
   end
+
+  # Scope tests
+  test 'active scope returns only active products' do
+    active_products = Product.active
+    assert active_products.all?(&:active)
+    assert active_products.include?(products(:product_one))
+  end
+
+  test 'in_price_range scope filters by min price' do
+    products_above_min = Product.in_price_range(1800, nil)
+    products_above_min.each do |product|
+      assert product.price >= 1800
+    end
+  end
+
+  test 'in_price_range scope filters by max price' do
+    products_below_max = Product.in_price_range(nil, 2000)
+    products_below_max.each do |product|
+      assert product.price <= 2000
+    end
+  end
+
+  test 'in_price_range scope filters by min and max price' do
+    products_in_range = Product.in_price_range(1500, 2000)
+    products_in_range.each do |product|
+      assert product.price >= 1500
+      assert product.price <= 2000
+    end
+  end
+
+  test 'in_price_range scope returns all products when no range specified' do
+    all_products = Product.in_price_range(nil, nil)
+    assert_equal Product.count, all_products.count
+  end
+
+  test 'in_price_range scope handles empty string parameters' do
+    all_products = Product.in_price_range('', '')
+    assert_equal Product.count, all_products.count
+  end
+
+  test 'active and in_price_range scopes can be chained' do
+    filtered_products = Product.active.in_price_range(1500, 2000)
+    filtered_products.each do |product|
+      assert product.active
+      assert product.price >= 1500
+      assert product.price <= 2000
+    end
+  end
 end
