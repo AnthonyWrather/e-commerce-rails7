@@ -16,9 +16,6 @@ gem 'pg', '~> 1.1'
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
 
-# Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem 'importmap-rails'
-
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem 'turbo-rails'
 
@@ -53,10 +50,14 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', platforms: %i[mri windows]
 
-  gem 'rubocop'
-  gem 'rubocop-capybara'
-  gem 'rubocop-rails'
-  gem 'rubocop-rspec'
+  gem 'rubocop', require: false
+  gem 'rubocop-capybara', require: false
+  gem 'rubocop-minitest', require: false
+  gem 'rubocop-performance', require: false
+  gem 'rubocop-rails', require: false
+
+  gem 'letter_opener'
+  gem 'letter_opener_web', '~> 3.0'
 end
 
 group :development do
@@ -76,10 +77,6 @@ group :development do
   gem 'ruby-lsp-rails'
   gem 'solargraph', '~> 0.57.0'
 end
-
-# TODO: These will need moving into the Dev and Test only groups when the Render deploy is set to Test
-gem 'letter_opener'
-gem 'letter_opener_web', '~> 3.0'
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]

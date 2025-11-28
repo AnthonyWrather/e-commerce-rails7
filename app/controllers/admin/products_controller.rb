@@ -52,7 +52,9 @@ class Admin::ProductsController < AdminController
         admin_product_params['images'].each do |image|
           next if image.blank?
 
-          if @admin_product.images.attached? && @admin_product.images.find { |img| img.filename == image.original_filename }
+          if @admin_product.images.attached? && @admin_product.images.find do |img|
+            img.filename == image.original_filename
+          end
             # Image with the same filename already exists, so delete and attach it.
             @admin_product.images.delete(@admin_product.images.find { |img| img.filename == image.original_filename })
           end

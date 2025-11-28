@@ -131,7 +131,8 @@ class CheckoutsController < ApplicationController
       price_data: {
         product_data: {
           name: item['name'],
-          metadata: { product_id: product.id, size: item['size'], product_stock_id: product_stock_id, product_price: price }
+          metadata: { product_id: product.id, size: item['size'], product_stock_id: product_stock_id,
+                      product_price: price }
         },
         currency: 'gbp',
         unit_amount: item['price'].to_i,
