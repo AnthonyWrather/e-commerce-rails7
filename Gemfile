@@ -83,7 +83,7 @@ gem 'letter_opener_web', '~> 3.0'
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem 'capybara'
+  gem 'capybara', '>= 3.40'
   gem 'selenium-webdriver'
 
   # Provides assigns() method for controller tests
