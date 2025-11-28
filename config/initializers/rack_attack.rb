@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# Skip rate limiting in test environment unless explicitly enabled
+# This allows most tests to run without rate limiting, but RackAttackTest can enable it
+return if Rails.env.test? && !ENV['RACK_ATTACK_ENABLED']
+
 class Rack::Attack
   # Throttle all requests by IP (300 requests per 5 minutes = 1 per second)
   # This protects against general DDoS and brute force attacks

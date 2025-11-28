@@ -7,11 +7,6 @@ class CategoriesController < ApplicationController
   def show
     @category = Category.find(params[:id])
     add_breadcrumb @category.name, :category_path
-    @products = @category.products.with_attached_images
-    @products = @products.where(active: true)
-    @products = @products.where('price <= ?', params[:max]) if params[:max].present?
-    return unless params[:min].present?
-
-    @products = @products.where('price >= ?', params[:min])
+    @products = @category.products.with_attached_images.active.in_price_range(params[:min], params[:max])
   end
 end
