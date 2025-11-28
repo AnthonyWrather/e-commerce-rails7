@@ -1,3 +1,5 @@
+inherit_from: .rubocop_todo.yml
+
 # The behavior of RuboCop can be controlled via the .rubocop.yml
 # configuration file. It makes it possible to enable/disable
 # certain cops (checks) and to alter their behavior if they accept
@@ -12,42 +14,88 @@
 AllCops:
   NewCops: enable
   SuggestExtensions: false
+  TargetRubyVersion: 3.2
   Exclude:
-    - db/schema.rb
-    - vendor/**/*
+    - 'db/schema.rb'
+    - 'db/migrate/*.rb'
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - 'bin/**/*'
+    - 'tmp/**/*'
+    - 'log/**/*'
+    - 'storage/**/*'
+    - 'public/**/*'
+    - 'app/assets/builds/**/*'
 
+# Style Configuration
 Style/Documentation:
-  Enabled: false
+  Enabled: false  # OK for non-library code
 
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact  # Allow Admin::ProductsController
+
+# Layout Configuration
 Layout/LineLength:
-  Enabled: false
+  Max: 120  # Set reasonable limit instead of disabling
+  Exclude:
+    - 'test/**/*'
+    - 'config/routes.rb'
+    - 'config/initializers/devise.rb'
+    - 'app/controllers/admin_controller.rb'
+    - 'app/controllers/admin/reports_controller.rb'
 
+# Metrics Configuration - Set reasonable limits instead of disabling
 Metrics/BlockLength:
-  Enabled: false
+  Exclude:
+    - 'test/**/*'
+    - 'config/routes.rb'
+    - 'config/environments/*.rb'
 
 Metrics/AbcSize:
-  Enabled: false
+  Max: 25  # Warn on complex methods
+  Exclude:
+    - 'test/**/*'
+    - 'db/migrate/*.rb'
+    - 'app/controllers/quantities_controller.rb'
+    - 'app/controllers/quantities/**/*'
+    - 'app/controllers/admin_controller.rb'
+    - 'app/controllers/admin/reports_controller.rb'
+    - 'app/controllers/admin/products_controller.rb'
 
 Metrics/MethodLength:
-  Enabled: false
-
-Metrics/PerceivedComplexity:
-  Enabled: false
-
-Metrics/CyclomaticComplexity:
-  Enabled: false
+  Max: 25  # Encourage shorter methods
+  Exclude:
+    - 'test/**/*'
+    - 'db/migrate/*.rb'
+    - 'app/controllers/admin_controller.rb'
+    - 'app/controllers/admin/reports_controller.rb'
 
 Metrics/ClassLength:
+  Max: 200
   Exclude:
-    - test/**/*
+    - 'test/**/*'
 
 Metrics/ModuleLength:
+  Max: 200
   Exclude:
-    - test/**/*
+    - 'test/**/*'
 
-# Examine these changes to see what breaks.
-Style/ClassAndModuleChildren:
-  Enabled: false
+Metrics/CyclomaticComplexity:
+  Max: 10
+  Exclude:
+    - 'test/**/*'
+    - 'app/controllers/admin/reports_controller.rb'
+
+Metrics/PerceivedComplexity:
+  Max: 10
+  Exclude:
+    - 'test/**/*'
+    - 'app/controllers/admin/products_controller.rb'
+    - 'app/controllers/admin/reports_controller.rb'
 
 Style/ConditionalAssignment:
   Enabled: false
@@ -61,6 +109,6 @@ Style/SafeNavigation:
 Style/SlicingWithRange:
   Enabled: false
 
+# Linting Configuration
 Lint/NonLocalExitFromIterator:
-  Enabled: false
-
+  Enabled: true  # This should be caught

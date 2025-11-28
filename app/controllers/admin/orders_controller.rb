@@ -68,7 +68,8 @@ class Admin::OrdersController < AdminController
 
   # Only allow a list of trusted parameters through.
   def admin_order_params
-    params.require(:order).permit(:customer_email, :fulfilled, :total, :address, :name, :phone, :billing_address, :billing_name,
-                                  :payment_status, :payment_id, :shipping_cost, :shipping_description, :shipping_id)
+    params.require(:order).permit(:customer_email, :fulfilled, :total, :address, :name, :phone, :billing_address,
+                                  :billing_name, :payment_status, :payment_id, :shipping_cost, :shipping_description,
+                                  :shipping_id)
   end
 end
