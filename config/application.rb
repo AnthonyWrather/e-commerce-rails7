@@ -27,6 +27,7 @@ module Ecomm
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Use Rack::Attack for rate limiting to protect against brute force and DDoS attacks
-    config.middleware.use Rack::Attack
+    # Disabled in test environment unless explicitly enabled for specific tests
+    config.middleware.use Rack::Attack unless Rails.env.test?
   end
 end
