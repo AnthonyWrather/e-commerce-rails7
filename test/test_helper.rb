@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 ENV['RAILS_ENV'] ||= 'test'
+# Ensure Rack::Attack is disabled by default in tests
+ENV.delete('RACK_ATTACK_ENABLED')
+
 require_relative '../config/environment'
 require 'rails/test_help'
 
