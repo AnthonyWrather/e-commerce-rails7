@@ -1,5 +1,5 @@
   <% flash.each do |key, value| %>
-    <div class="alert alert-<%= key %> bg-green-600 text-center">
+    <div class="alert alert-<%= key %> <%= key == 'error' ? 'bg-red-600' : 'bg-green-600' %> text-white text-center p-4">
       <%= value %>
     </div>
   <% end %>
