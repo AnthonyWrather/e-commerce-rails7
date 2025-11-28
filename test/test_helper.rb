@@ -1,5 +1,25 @@
 # frozen_string_literal: true
 
+# Start SimpleCov before loading Rails
+require 'simplecov'
+SimpleCov.start 'rails' do
+  add_filter '/test/'
+  add_filter '/config/'
+  add_filter '/vendor/'
+
+  add_group 'Controllers', 'app/controllers'
+  add_group 'Models', 'app/models'
+  add_group 'Helpers', 'app/helpers'
+  add_group 'Mailers', 'app/mailers'
+  add_group 'Services', 'app/services'
+
+  track_files '{app,lib}/**/*.rb'
+
+  # Set minimum coverage threshold (overall only - per-file disabled for now)
+  minimum_coverage 70
+  # minimum_coverage_by_file 60  # Disabled - many untested files need coverage improvements
+end
+
 ENV['RAILS_ENV'] ||= 'test'
 # Ensure Rack::Attack is disabled by default in tests
 ENV.delete('RACK_ATTACK_ENABLED')

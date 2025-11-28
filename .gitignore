@@ -44,3 +44,6 @@
 
 /test-results/*
 /playwright-report/*
+
+# Ignore SimpleCov coverage reports
+/coverage
