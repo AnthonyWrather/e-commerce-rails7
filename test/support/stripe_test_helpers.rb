@@ -60,13 +60,13 @@ module StripeTestHelpers
   #
   # @param event_type [String] Stripe event type (e.g., 'checkout.session.completed')
   # @param data [Hash] event data object
-  # @param endpoint [String] webhook endpoint path (default: '/webhooks/stripe')
+  # @param endpoint [String] webhook endpoint path (default: '/webhooks')
   # @return [void]
   #
   # Example:
   #   post_stripe_webhook('checkout.session.completed', session_data)
   #
-  def post_stripe_webhook(event_type, data, endpoint: '/webhooks/stripe')
+  def post_stripe_webhook(event_type, data, endpoint: '/webhooks')
     payload = build_stripe_event_payload(event_type, data)
     json_payload = payload.to_json
     signature = generate_stripe_signature(json_payload)
