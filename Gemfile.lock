@@ -274,6 +274,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.0.8)
+    rack-attack (6.8.0)
+      rack (>= 1.0, < 4)
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rack-test (2.1.0)
@@ -476,6 +478,7 @@ DEPENDENCIES
   pagy (~> 6.2)
   pg (~> 1.1)
   puma (>= 5.0)
+  rack-attack (~> 6.7)
   rails (~> 7.1.2)
   rails-controller-testing
   redis (>= 4.0.1)
