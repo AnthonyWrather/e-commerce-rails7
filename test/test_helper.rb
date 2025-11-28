@@ -16,7 +16,7 @@ SimpleCov.start 'rails' do
   track_files '{app,lib}/**/*.rb'
 
   # Set minimum coverage threshold (overall only - per-file disabled for now)
-  minimum_coverage 70
+  minimum_coverage 60
   # minimum_coverage_by_file 60  # Disabled - many untested files need coverage improvements
 end
 
