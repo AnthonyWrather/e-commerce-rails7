@@ -109,3 +109,5 @@ gem 'shipengine_sdk'
 gem 'jsbundling-rails', '~> 1.3'
 
 gem 'honeybadger', '~> 6.1'
+
+gem 'rack-attack', '~> 6.7'
