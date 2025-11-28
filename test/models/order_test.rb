@@ -185,4 +185,51 @@ class OrderTest < ActiveSupport::TestCase
     @order.fulfilled = nil
     assert @order.valid?
   end
+
+  # Scope tests
+  test 'unfulfilled scope returns only unfulfilled orders' do
+    unfulfilled_orders = Order.unfulfilled
+    assert(unfulfilled_orders.all? { |order| order.fulfilled == false })
+    assert unfulfilled_orders.include?(orders(:order_one))
+    assert_not unfulfilled_orders.include?(orders(:order_two))
+  end
+
+  test 'fulfilled scope returns only fulfilled orders' do
+    fulfilled_orders = Order.fulfilled
+    assert fulfilled_orders.all?(&:fulfilled)
+    assert fulfilled_orders.include?(orders(:order_two))
+    assert_not fulfilled_orders.include?(orders(:order_one))
+  end
+
+  test 'recent scope returns orders in descending creation order' do
+    recent_orders = Order.recent(2)
+    assert_equal 2, recent_orders.count
+    assert recent_orders.first.created_at >= recent_orders.last.created_at
+  end
+
+  test 'recent scope defaults to 5 orders' do
+    recent_orders = Order.recent
+    assert recent_orders.count <= 5
+  end
+
+  test 'for_month scope returns orders for current month' do
+    orders_this_month = Order.for_month
+    current_month_start = Time.current.beginning_of_month
+    current_month_end = Time.current.end_of_month
+    orders_this_month.each do |order|
+      assert order.created_at >= current_month_start
+      assert order.created_at <= current_month_end
+    end
+  end
+
+  test 'for_month scope accepts a custom date' do
+    custom_date = 1.month.ago
+    orders_for_custom_month = Order.for_month(custom_date)
+    month_start = custom_date.beginning_of_month
+    month_end = custom_date.end_of_month
+    orders_for_custom_month.each do |order|
+      assert order.created_at >= month_start
+      assert order.created_at <= month_end
+    end
+  end
 end

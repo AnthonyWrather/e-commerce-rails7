@@ -6,16 +6,12 @@ class AdminController < ApplicationController
 
   def index
     # Use indexed column for better query performance
-    @orders = Order.where(fulfilled: false).order(created_at: :desc).limit(5)
-
-    # Calculate month range once to avoid repeated calculations
-    current_month_start = Time.now.beginning_of_month
-    current_month_end = Time.now.end_of_month
+    @orders = Order.unfulfilled.recent(5)
 
     # Combine all Order aggregations into a single efficient query
     # This reduces 5 separate queries to 1 query
     monthly_aggregates = Order
-                         .where(created_at: current_month_start..current_month_end)
+                         .for_month
                          .pluck(
                            Arel.sql('COUNT(*)'),
                            Arel.sql('COALESCE(SUM(total), 0)'),
@@ -27,6 +23,10 @@ class AdminController < ApplicationController
     revenue_total = monthly_aggregates[1].to_i.round
     avg_sale = monthly_aggregates[2].to_i.round
     shipping_total = monthly_aggregates[3].to_i.round
+
+    # Calculate month range for the OrderProduct query
+    current_month_start = Time.now.beginning_of_month
+    current_month_end = Time.now.end_of_month
 
     # Get total items sold in a single join query
     num_products_monthly = OrderProduct
@@ -53,7 +53,7 @@ class AdminController < ApplicationController
     # Optimize daily revenue breakdown using database-level GROUP BY
     # This replaces loading all orders into memory and grouping in Ruby
     daily_revenue = Order
-                    .where(created_at: current_month_start..current_month_end)
+                    .for_month
                     .group(Arel.sql('DATE(created_at)'))
                     .pluck(Arel.sql('DATE(created_at)'), Arel.sql('SUM(total)'))
                     .to_h
