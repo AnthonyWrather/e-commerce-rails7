@@ -1171,8 +1171,10 @@ bin/rails db:rollback STEP=1
 
 ### Documentation
 
-- **[Copilot Instructions](.github/copilot-instructions.md)** - Comprehensive codebase guide for AI-assisted development
-- **[Database Schema](documentation/schema-diagram.md)** - Entity-relationship diagram
+- **[Copilot Instructions](.github/copilot-instructions.md)** - Comprehensive codebase guide for AI-assisted development (1222 lines)
+- **[Database Schema](documentation/schema-diagram.md)** - Entity-relationship diagram with model relationships
+- **[Test Suite Analysis](documentation/test-analysis.md)** - Complete testing strategy and coverage report (301 tests, 749 assertions)
+- **[Codebase Analysis](documentation/codebase-analysis.md)** - Detailed analysis of 10 areas for improvement
 - **[GitHub Copilot Collections](.github/AWESOME-COPILOT-README.md)** - 37 curated prompts, instructions, and chat modes
 
 ### Support Resources
