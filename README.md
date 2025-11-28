@@ -314,6 +314,16 @@ interface CartItem {
 - **Admin Panel**: Devise-based authentication (AdminUser model)
 - **Public Shop**: No authentication required (guest checkout)
 
+**Rate Limiting:**
+
+- **Implementation**: Rack::Attack middleware for protection against brute force and DDoS attacks
+- **Global Limit**: 300 requests per 5 minutes per IP (excludes asset requests)
+- **Admin Login**: 5 attempts per 20 seconds per IP and email (prevents credential stuffing)
+- **Checkout**: 10 attempts per minute per IP (prevents checkout abuse)
+- **Contact Form**: 5 submissions per minute per IP (prevents spam)
+- **Throttled Response**: HTTP 429 "Too Many Requests" status with plain text message
+- **Configuration**: `config/initializers/rack_attack.rb`
+
 **Payment Security:**
 
 - **Stripe Integration**: PCI-compliant payment processing
