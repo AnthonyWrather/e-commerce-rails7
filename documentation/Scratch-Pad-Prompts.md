@@ -247,7 +247,12 @@ Analyse .devcontainer/Dockerfile and add the installation of the GitHub CLI to t
 
 --------------------------------
 
+Bump rack-session from 2.0.0 to 2.1.1 and Bump rack from 3.0.8 to 3.1.18
 
+Do not run the playwright tests.
+Run all "bin/rails test" and "bin/rails test:system" and "bin/rails test:all" and fix any errors.
+Run rubocop and fix any errors.
+Do not commit the code.
 
 --------------------------------
 
