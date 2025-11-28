@@ -10,6 +10,15 @@ class Product < ApplicationRecord
   has_many :stocks
   has_many :order_products
 
+  # Scopes for filtering products
+  scope :active, -> { where(active: true) }
+  scope :in_price_range, lambda { |min, max|
+    relation = all
+    relation = relation.where('price >= ?', min) if min.present?
+    relation = relation.where('price <= ?', max) if max.present?
+    relation
+  }
+
   # Validations
   validates :name, presence: true
   validates :price, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
