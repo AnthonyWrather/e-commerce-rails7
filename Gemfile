@@ -58,6 +58,8 @@ group :development, :test do
 
   gem 'letter_opener'
   gem 'letter_opener_web', '~> 3.0'
+
+  gem 'stripe-ruby-mock'
 end
 
 group :development do
@@ -85,6 +87,9 @@ group :test do
 
   # Provides assigns() method for controller tests
   gem 'rails-controller-testing'
+
+  # Code coverage reporting
+  gem 'simplecov', require: false
 end
 
 gem 'devise', '~> 4.9'
