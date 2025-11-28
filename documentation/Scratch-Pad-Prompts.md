@@ -256,7 +256,7 @@ Do not commit the code.
 
 --------------------------------
 
-
+Follow instructions in suggest-awesome-github-copilot-collections.prompt.md
 
 --------------------------------
 
