@@ -75,7 +75,7 @@ module StripeTestHelpers
          params: json_payload,
          headers: {
            'Content-Type' => 'application/json',
-           'HTTP_STRIPE_SIGNATURE' => signature
+           'Stripe-Signature' => signature
          }
   end
 
@@ -138,7 +138,7 @@ module StripeTestHelpers
       metadata: options[:metadata] || {}
     }
 
-    defaults.deep_merge(options.slice(:customer_details, :collected_information, :shipping_cost, :metadata))
+    defaults.deep_merge(options.slice(:customer_details, :collected_information, :metadata))
   end
 
   # Build line items for a checkout session with product metadata.
