@@ -26,7 +26,9 @@ class ErrorsController < ApplicationController
     Honeybadger.context(error_id: @error_id, error_type: 'internal_server_error')
     respond_to do |format|
       format.html { render :internal_server_error, status: :internal_server_error }
-      format.json { render json: { error: 'Internal Server Error', error_id: @error_id }, status: :internal_server_error }
+      format.json do
+        render json: { error: 'Internal Server Error', error_id: @error_id }, status: :internal_server_error
+      end
     end
   end
 
