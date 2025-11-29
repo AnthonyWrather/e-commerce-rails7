@@ -1,5 +1,8 @@
 # Database Schema Diagram
 
+Last updated: 2025-11-29
+Schema version: 2025_11_27_015536
+
 ```mermaid
 erDiagram
     categories ||--o{ products : "has many"

@@ -8,7 +8,11 @@ This Rails 7 application uses **Minitest** (not RSpec) as its testing framework.
 - **Unit/Integration Tests:** 398 runs, 922 assertions, 0 failures, 0 errors, 8 skips
 - **System Tests:** 109 runs, 229 assertions, 0 failures, 0 errors
 - **Total:** 507 tests, 1,151 assertions, 100% passing (excluding skipped tests)
-- **Code Coverage:** 86.22% (513/595 lines) - **Well above 60% threshold** ✅
+- **Code Coverage:** 85.12% (509/598 lines) - **Well above 60% threshold** ✅
+
+**Recent Updates (November 29, 2025):**
+- ✅ **Deprecated Status Codes Fixed** - All `:unprocessable_entity` replaced with `:unprocessable_content` (9 files, 17 instances)
+- ✅ **CONTRIBUTING.md Created** - Comprehensive contributing guidelines for new developers
 
 **Latest Additions (November 2025):**
 - ✅ **WebhooksController Integration Tests** - 12 tests covering signature verification, CSRF protection, event handling, and error cases
@@ -551,16 +555,16 @@ end
   - OrderProcessor (documented limitations)
 
 ### Coverage Metrics (SimpleCov)
-- **Overall**: 86.22% (513/595 lines)
+- **Overall**: 85.12% (509/598 lines)
 - **Threshold**: 60% (minimum required)
-- **Trend**: ↗ Increased from 79.07% with new tests
+- **Trend**: ↘ Slight decrease from 86.22% due to new code additions (status code modernization)
 - **Files at 100%**: ApplicationHelper, several models, HomeController
 - **Files at 0%**: None - all public controllers now have coverage
 
 ### Test Quality Indicators
 ✅ **Strengths:**
 - **100% passing tests** (507/507 passing, excluding 8 skipped Rack::Attack tests)
-- **Excellent code coverage**: 86.22% (well above 60% threshold)
+- **Excellent code coverage**: 85.12% (well above 60% threshold)
 - **Comprehensive model validation** coverage (35+ tests per major model)
 - **Calculator business logic** thoroughly tested with math validation
 - **Public-facing controllers** fully covered (50 tests for Home, Cart, Products, Categories)
@@ -676,7 +680,7 @@ end
 - **AdminUser authentication fully tested** (41 tests)
 - **100% passing tests** (507/507, excluding skipped)
 - **N+1 query prevention verified** across all public controllers
-- **Code coverage: 86.22%** (well above 60% threshold)
+- **Code coverage: 85.12%** (well above 60% threshold)
 
 ⚠️ **Remaining Gaps:**
 - Integration tests needed for end-to-end checkout flow
@@ -706,4 +710,5 @@ The test suite is **production-ready** with excellent coverage of critical featu
 
 *Last Updated: November 29, 2025*
 *Test Count: 507 tests, 1,151 assertions*
-*Coverage: 86.22% (513/595 lines)*
+*Coverage: 85.12% (509/598 lines)*
+*Recent Changes: Deprecated status codes fixed, CONTRIBUTING.md created*

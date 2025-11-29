@@ -28,8 +28,8 @@ class Admin::CategoriesController < AdminController
         format.html { redirect_to admin_category_url(@admin_category), notice: 'Category was successfully created.' }
         format.json { render :show, status: :created, location: @admin_category }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @admin_category.errors, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
+        format.json { render json: @admin_category.errors, status: :unprocessable_content }
       end
     end
   end
@@ -41,8 +41,8 @@ class Admin::CategoriesController < AdminController
         format.html { redirect_to admin_category_url(@admin_category), notice: 'Category was successfully updated.' }
         format.json { render :show, status: :ok, location: @admin_category }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @admin_category.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @admin_category.errors, status: :unprocessable_content }
       end
     end
   end

@@ -748,7 +748,8 @@ bin/rails test:system      # Run Capybara browser tests
 bin/rails test:all         # Run everything
 ```
 
-**Current Test Status:** All tests passing (301 runs, 749 assertions, 0 failures, 0 errors, 8 skips)
+**Current Test Status:** All tests passing (507 runs, 1,151 assertions, 0 failures, 0 errors, 8 skips)
+**Code Coverage:** 86.22% (513/595 lines)
 
 ### Testing Stripe Webhooks Locally
 

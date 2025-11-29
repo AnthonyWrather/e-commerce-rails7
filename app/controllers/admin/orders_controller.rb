@@ -30,8 +30,8 @@ class Admin::OrdersController < AdminController
         format.html { redirect_to admin_order_url(@admin_order), notice: 'Order was successfully created.' }
         format.json { render :show, status: :created, location: @admin_order }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @admin_order.errors, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
+        format.json { render json: @admin_order.errors, status: :unprocessable_content }
       end
     end
   end
@@ -43,8 +43,8 @@ class Admin::OrdersController < AdminController
         format.html { redirect_to admin_order_url(@admin_order), notice: 'Order was successfully updated.' }
         format.json { render :show, status: :ok, location: @admin_order }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @admin_order.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @admin_order.errors, status: :unprocessable_content }
       end
     end
   end
