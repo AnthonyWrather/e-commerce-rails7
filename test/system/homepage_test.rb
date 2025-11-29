@@ -36,4 +36,48 @@ class HomepageTest < ApplicationSystemTestCase
     assert_link 'Contact Us'
     assert_link 'Cart'
   end
+
+  test 'homepage displays category images' do
+    visit root_url
+
+    # Check that category images are displayed (if they have images)
+    assert_selector 'img', minimum: 1
+  end
+
+  test 'homepage has proper meta title' do
+    visit root_url
+
+    # Check that page has a title
+    assert_title(/Southcoast|Fibreglass|E-?Commerce|Home|Store/i)
+  end
+
+  test 'homepage newsletter form is present' do
+    visit root_url
+
+    # Newsletter signup should be available
+    assert_selector 'input[type="email"]', minimum: 1
+  end
+
+  test 'can navigate to contact page from homepage' do
+    visit root_url
+
+    click_on 'Contact Us'
+
+    assert_current_path contact_path
+  end
+
+  test 'category cards are clickable' do
+    visit root_url
+
+    # Find a category card and verify it's a link
+    category_link = find('a', text: 'Chop Strand Mat', match: :first)
+    assert category_link.present?
+  end
+
+  test 'homepage displays multiple categories' do
+    visit root_url
+
+    # Should display at least 2 categories
+    assert_selector 'a[href^="/categories/"]', minimum: 2
+  end
 end

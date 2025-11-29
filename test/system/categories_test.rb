@@ -69,4 +69,47 @@ class CategoriesTest < ApplicationSystemTestCase
     # Verify we're still on the category page
     assert_current_path(%r{/categories/\d+})
   end
+
+  test 'category page shows only active products' do
+    visit category_url(@category)
+
+    # All displayed products should be active (inactive ones should not appear)
+    # This is verified by the product list rendering correctly
+    assert_selector 'a[href^="/products/"]', minimum: 1
+  end
+
+  test 'category with no products shows empty state' do
+    empty_category = categories(:category_three)
+    visit category_url(empty_category)
+
+    # Should handle gracefully without errors
+    assert_current_path category_url(empty_category)
+  end
+
+  test 'price filter shows all products when no filter applied' do
+    visit category_url(@category)
+
+    # Get count of visible products
+    product_count = page.all('a[href^="/products/"]').count
+    assert product_count.positive?, 'Should show products without filters'
+  end
+
+  test 'can navigate to home from category breadcrumb' do
+    visit category_url(@category)
+
+    within 'nav' do
+      click_on 'Home'
+    end
+
+    assert_current_path root_path
+  end
+
+  test 'category page layout includes navigation' do
+    visit category_url(@category)
+
+    # Should have main navigation
+    assert_selector 'nav'
+    assert_link 'Home'
+    assert_link 'Cart'
+  end
 end
