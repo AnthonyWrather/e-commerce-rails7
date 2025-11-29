@@ -272,16 +272,16 @@ app/controllers/admin/*.rb
 ```
 
 **Code Smells Identified:**
-1. **Quantities controllers** - Business logic in controllers
+1. ✅ **Quantities controllers** - Business logic extracted to `QuantityCalculatorService`
 2. **Admin namespace** - Inconsistent variable naming (`@admin_product` vs `Product`)
-3. **Duplicate code** - Calculator formulas repeated
-4. **Magic numbers** - `0.95`, `1.6`, `1.15` not constants
+3. ✅ **Duplicate code** - Calculator formulas consolidated in service
+4. ✅ **Magic numbers** - Constants defined in `QuantityCalculatorConstants` module
 5. **Long methods** - Some controller actions too complex
 
 **Recommendations:**
-1. Extract calculator logic to service objects
-2. Create QuantityCalculator service class
-3. Define constants for magic numbers
+1. ✅ Extract calculator logic to service objects - DONE
+2. ✅ Create QuantityCalculator service class - DONE (`app/services/quantity_calculator_service.rb`)
+3. ✅ Define constants for magic numbers - DONE (`app/services/quantity_calculator_constants.rb`)
 4. Refactor long methods
 5. Add Reek for code smell detection
 
@@ -668,7 +668,7 @@ app/javascript/application.ts
 5. Add cart persistence
 
 ### Medium-term (Quarter 1)
-1. Refactor calculator logic to services
+1. ✅ Refactor calculator logic to services - DONE
 2. Implement order state machine
 3. Add performance monitoring
 4. Implement PWA features
