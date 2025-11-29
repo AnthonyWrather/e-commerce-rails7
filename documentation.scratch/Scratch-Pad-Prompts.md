@@ -293,18 +293,12 @@ Generate or update `.github/copilot-instructions.md` and `.github/AGENTS.md` for
 --------------------------------
 
 Analyse the existing codebase and architecture and make a list of suggested improvements.
-Create a implementation plan for the next sprint and create documentation/sprint-plan-02.md
-create issues in AnthonyWrather/e-commerce-rails7
-
-
---------------------------------
-
-Examine the documentation in `documentation/*.md` and analyse the codebase and make any updates, then ask for feedback on any unclear or incomplete sections to iterate.
+Create or update the implementation plan for the next sprint and create documentation.scratch/sprint-plan-02.md
+Create the issues in AnthonyWrather/e-commerce-rails7 and create a new kanban board for this sprint.
 
 --------------------------------
 
 Examine the documentation in `documentation/*.md` and analyse the codebase and then update the documentation, then ask for feedback on any unclear or incomplete sections to iterate.
-
 
 --------------------------------
 
