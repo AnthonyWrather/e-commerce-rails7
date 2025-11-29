@@ -53,6 +53,11 @@ Rails.application.routes.draw do
 
   post 'webhooks' => 'webhooks#stripe'
 
+  # Custom error pages with error tracking IDs
+  match '/404', to: 'errors#not_found', via: :all
+  match '/422', to: 'errors#unprocessable_entity', via: :all
+  match '/500', to: 'errors#internal_server_error', via: :all
+
   # LetterOpenerWeb is restricted to development environment only for security
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 end

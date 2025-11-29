@@ -29,5 +29,9 @@ module Ecomm
     # Use Rack::Attack for rate limiting to protect against brute force and DDoS attacks
     # Disabled in test environment unless explicitly enabled for specific tests
     config.middleware.use Rack::Attack unless Rails.env.test?
+
+    # Use custom error pages via ErrorsController for better user experience
+    # Error pages include error tracking IDs from Honeybadger
+    config.exceptions_app = routes
   end
 end

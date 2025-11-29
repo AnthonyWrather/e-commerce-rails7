@@ -3,19 +3,7 @@
 class ApplicationController < ActionController::Base
   include Pagy::Backend
 
-  before_action do
-    if defined?(current_user)
-      Honeybadger.context({
-                            user_id: current_user.id.exists? ? current_user.id : 'Guest',
-                            user_email: current_user.email.exists? ? current_user.email : 'none@guest.com'
-                          })
-    else
-      Honeybadger.context({
-                            user_id: 'Guest',
-                            user_email: 'none@guest.com'
-                          })
-    end
-  end
+  before_action :set_honeybadger_context
 
   protected
 
@@ -25,5 +13,16 @@ class ApplicationController < ActionController::Base
     else
       root_path
     end
+  end
+
+  private
+
+  def set_honeybadger_context
+    context = if defined?(current_admin_user) && current_admin_user.present?
+                { user_id: current_admin_user.id, user_email: current_admin_user.email, user_type: 'admin' }
+              else
+                { user_id: 'guest', user_email: 'none', user_type: 'guest' }
+              end
+    Honeybadger.context(context)
   end
 end
