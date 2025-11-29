@@ -308,7 +308,7 @@ class ProductTest < ActiveSupport::TestCase
   test 'search_by_text scope searches by product name' do
     results = Product.search_by_text('Chopped')
     assert results.any?, 'Should find products by name'
-    assert results.all? { |p| p.name.downcase.include?('chopped') || p.description.downcase.include?('chopped') }
+    assert(results.all? { |p| p.name.downcase.include?('chopped') || p.description.downcase.include?('chopped') })
   end
 
   test 'search_by_text scope searches by product description' do

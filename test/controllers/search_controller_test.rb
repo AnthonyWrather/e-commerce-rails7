@@ -38,7 +38,7 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     products = assigns(:products)
     assert products.any?, 'Should find products matching name'
-    assert products.all? { |p| p.name.downcase.include?('chopped') || p.name.downcase.include?('strand') }
+    assert(products.all? { |p| p.name.downcase.include?('chopped') || p.name.downcase.include?('strand') })
   end
 
   test 'should search products by description' do
