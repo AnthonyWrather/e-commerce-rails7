@@ -100,6 +100,8 @@ gem 'stripe', '~> 10.3'
 
 gem 'pagy', '~> 6.2'
 
+gem 'pg_search', '~> 2.3'
+
 gem 'aws-sdk-s3', require: false
 
 # gem "securerandom"

@@ -303,4 +303,46 @@ class ProductTest < ActiveSupport::TestCase
       assert product.price <= 2000
     end
   end
+
+  # PgSearch tests
+  test 'search_by_text scope searches by product name' do
+    results = Product.search_by_text('Chopped')
+    assert results.any?, 'Should find products by name'
+    assert results.all? { |p| p.name.downcase.include?('chopped') || p.description.downcase.include?('chopped') }
+  end
+
+  test 'search_by_text scope searches by product description' do
+    results = Product.search_by_text('square meter')
+    assert results.any?, 'Should find products by description'
+  end
+
+  test 'search_by_text scope searches by category name' do
+    results = Product.search_by_text('Woven Roving')
+    assert results.any?, 'Should find products by category name'
+  end
+
+  test 'search_by_text scope is case insensitive' do
+    upper_results = Product.search_by_text('CHOPPED')
+    lower_results = Product.search_by_text('chopped')
+    assert_equal upper_results.pluck(:id).sort, lower_results.pluck(:id).sort, 'Search should be case insensitive'
+  end
+
+  test 'search_by_text scope supports prefix matching' do
+    results = Product.search_by_text('Chop')
+    assert results.any?, 'Prefix search should return results'
+  end
+
+  test 'search_by_text returns empty relation for non-matching query' do
+    results = Product.search_by_text('xyznonexistent123')
+    assert results.empty?, 'Should return empty relation for non-matching query'
+  end
+
+  test 'search_by_text can be chained with other scopes' do
+    results = Product.search_by_text('Mat').active.in_price_range(1000, 3000)
+    assert results.is_a?(ActiveRecord::Relation), 'Should be chainable'
+    results.each do |product|
+      assert product.active?, 'Product should be active'
+      assert product.price.between?(1000, 3000), 'Product should be in price range'
+    end
+  end
 end
