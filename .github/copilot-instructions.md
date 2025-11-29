@@ -1,7 +1,11 @@
 # Copilot Instructions for E-Commerce Rails 7
 
+> **Quick Reference**: Rails 7.1.2 | Ruby 3.2.3 | PostgreSQL 17 | TypeScript 5.3.3 | Minitest | Deployed on Render
+
 ## Project Overview
-Rails 7 e-commerce application for selling composite materials with variant pricing (stock sizes). Uses Stripe for payments, Active Storage for images, and Devise for admin authentication. Deployed on Render with PostgreSQL.
+B2B/B2C composite materials e-commerce platform with **material quantity calculators** for fiberglass project estimation. Features variant pricing, guest checkout, Stripe payments (GBP), and admin dashboard with revenue analytics.
+
+**Key Architecture**: Rails MVC + Hotwire (Turbo/Stimulus) + TypeScript + Tailwind CSS + PostgreSQL
 
 ## Architecture & Data Flow
 

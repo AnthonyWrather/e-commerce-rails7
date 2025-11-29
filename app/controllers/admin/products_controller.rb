@@ -35,8 +35,8 @@ class Admin::ProductsController < AdminController
         format.html { redirect_to admin_product_url(@admin_product), notice: 'Product was successfully created.' }
         format.json { render :show, status: :created, location: @admin_product }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @admin_product.errors, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
+        format.json { render json: @admin_product.errors, status: :unprocessable_content }
       end
     end
   end
@@ -62,9 +62,9 @@ class Admin::ProductsController < AdminController
           @admin_product.images.attach(image)
         end
       end
-      redirect_to edit_admin_product_path(@admin_product), notice: 'Product updated successfully'
+      redirect_to edit_admin_product_url(@admin_product), notice: 'Product was successfully updated.'
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
