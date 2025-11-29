@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Product < ApplicationRecord
+  has_paper_trail
   include PgSearch::Model
 
   has_many_attached :images do |attachable|

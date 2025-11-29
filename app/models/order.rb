@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
+  has_paper_trail
+
   has_many :order_products
 
   # Scopes for filtering orders

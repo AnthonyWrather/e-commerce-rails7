@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Stock < ApplicationRecord
+  has_paper_trail
+
   belongs_to :product
 
   # Validations
