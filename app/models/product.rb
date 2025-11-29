@@ -46,6 +46,35 @@ class Product < ApplicationRecord
     relation
   }
 
+  # Fiberglass reinforcement filter
+  scope :fiberglass_reinforcement, ->(value) { value.nil? ? all : where(fiberglass_reinforcement: value) }
+
+  # Weight range filter (shipping_weight in grams)
+  scope :in_weight_range, lambda { |min, max|
+    relation = all
+    relation = relation.where('shipping_weight >= ?', min) if min.present?
+    relation = relation.where('shipping_weight <= ?', max) if max.present?
+    relation
+  }
+
+  # Sorting scopes
+  SORT_OPTIONS = {
+    'name_asc' => { column: :name, direction: :asc },
+    'name_desc' => { column: :name, direction: :desc },
+    'price_asc' => { column: :price, direction: :asc },
+    'price_desc' => { column: :price, direction: :desc },
+    'newest' => { column: :created_at, direction: :desc }
+  }.freeze
+
+  scope :sorted_by, lambda { |sort_option|
+    return order(name: :asc) if sort_option.blank?
+
+    sort_config = SORT_OPTIONS[sort_option]
+    return order(name: :asc) unless sort_config
+
+    order(sort_config[:column] => sort_config[:direction])
+  }
+
   # Validations
   validates :name, presence: true
   validates :price, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }

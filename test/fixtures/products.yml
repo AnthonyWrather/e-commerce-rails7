@@ -11,6 +11,7 @@ product_one:
   shipping_length: 100
   shipping_width: 100
   shipping_height: 5
+  fiberglass_reinforcement: true
 
 product_two:
   name: "450g Woven Roving"
@@ -23,6 +24,7 @@ product_two:
   shipping_length: 100
   shipping_width: 100
   shipping_height: 3
+  fiberglass_reinforcement: false
 
 product_three:
   name: "600g Chopped Strand Mat"
@@ -35,3 +37,17 @@ product_three:
   shipping_length: 100
   shipping_width: 100
   shipping_height: 6
+  fiberglass_reinforcement: true
+
+product_four:
+  name: "Acrylic Resin"
+  description: "High quality acrylic resin for fiberglass layup"
+  price: 1000
+  category: category_four
+  active: true
+  stock_level: 200
+  shipping_weight: 100
+  shipping_length: 50
+  shipping_width: 50
+  shipping_height: 10
+  fiberglass_reinforcement: false

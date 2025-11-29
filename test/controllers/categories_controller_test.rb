@@ -154,4 +154,174 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert assigns(:products).empty?, 'Should handle empty product list'
   end
+
+  # Sorting tests
+  test 'should sort products by name ascending' do
+    get category_url(@category), params: { sort: 'name_asc' }
+    assert_response :success
+    products = assigns(:products)
+    names = products.pluck(:name)
+    assert_equal names.sort, names, 'Products should be sorted A-Z'
+  end
+
+  test 'should sort products by name descending' do
+    get category_url(@category), params: { sort: 'name_desc' }
+    assert_response :success
+    products = assigns(:products)
+    names = products.pluck(:name)
+    assert_equal names.sort.reverse, names, 'Products should be sorted Z-A'
+  end
+
+  test 'should sort products by price ascending' do
+    get category_url(@category), params: { sort: 'price_asc' }
+    assert_response :success
+    products = assigns(:products)
+    prices = products.pluck(:price)
+    assert_equal prices.sort, prices, 'Products should be sorted by price low to high'
+  end
+
+  test 'should sort products by price descending' do
+    get category_url(@category), params: { sort: 'price_desc' }
+    assert_response :success
+    products = assigns(:products)
+    prices = products.pluck(:price)
+    assert_equal prices.sort.reverse, prices, 'Products should be sorted by price high to low'
+  end
+
+  test 'should sort products by newest' do
+    get category_url(@category), params: { sort: 'newest' }
+    assert_response :success
+    products = assigns(:products)
+    dates = products.pluck(:created_at)
+    assert_equal dates.sort.reverse, dates, 'Products should be sorted newest first'
+  end
+
+  # Fiberglass filter tests
+  test 'should filter products by fiberglass reinforcement' do
+    get category_url(@category), params: { fiberglass: '1' }
+    assert_response :success
+    products = assigns(:products)
+    assert products.all?(&:fiberglass_reinforcement), 'All products should have fiberglass reinforcement'
+  end
+
+  test 'should not filter fiberglass when param is 0' do
+    get category_url(@category), params: { fiberglass: '0' }
+    assert_response :success
+    products = assigns(:products)
+    assert products.any?, 'Should return products'
+  end
+
+  # Weight range filter tests
+  test 'should filter products by minimum weight' do
+    min_weight = 500
+    get category_url(@category), params: { weight_min: min_weight }
+    assert_response :success
+    products = assigns(:products)
+    assert products.all? { |p| p.shipping_weight >= min_weight }, 'All products should be >= min weight'
+  end
+
+  test 'should filter products by maximum weight' do
+    max_weight = 400
+    get category_url(@category), params: { weight_max: max_weight }
+    assert_response :success
+    products = assigns(:products)
+    assert products.all? { |p| p.shipping_weight <= max_weight }, 'All products should be <= max weight'
+  end
+
+  test 'should filter products by weight range' do
+    min_weight = 200
+    max_weight = 400
+    get category_url(@category), params: { weight_min: min_weight, weight_max: max_weight }
+    assert_response :success
+    products = assigns(:products)
+    assert products.all? { |p| p.shipping_weight.between?(min_weight, max_weight) },
+           'All products should be within weight range'
+  end
+
+  # Product count tests
+  test 'should return product count' do
+    get category_url(@category)
+    assert_response :success
+    assert_not_nil assigns(:product_count), 'Product count should be assigned'
+    assert_equal assigns(:products).count, assigns(:product_count), 'Product count should match products'
+  end
+
+  test 'should display product count in view' do
+    get category_url(@category)
+    assert_response :success
+    assert_select '[data-testid="product-count"]', /\d+ products? found/
+  end
+
+  # Combined filters tests
+  test 'should combine sorting with price filter' do
+    get category_url(@category), params: { sort: 'price_desc', min: 1000, max: 2000 }
+    assert_response :success
+    products = assigns(:products)
+    prices = products.pluck(:price)
+    assert products.all? { |p| p.price.between?(1000, 2000) }, 'All products should be in price range'
+    assert_equal prices.sort.reverse, prices, 'Products should be sorted by price desc'
+  end
+
+  test 'should combine sorting with fiberglass filter' do
+    get category_url(@category), params: { sort: 'name_asc', fiberglass: '1' }
+    assert_response :success
+    products = assigns(:products)
+    names = products.pluck(:name)
+    assert products.all?(&:fiberglass_reinforcement), 'All products should have fiberglass'
+    assert_equal names.sort, names, 'Products should be sorted by name'
+  end
+
+  test 'should combine all filters' do
+    get category_url(@category), params: {
+      sort: 'price_asc',
+      min: 1000,
+      max: 3000,
+      weight_min: 200,
+      weight_max: 700,
+      fiberglass: '1'
+    }
+    assert_response :success
+    products = assigns(:products)
+    assert products.all? { |p| p.price.between?(1000, 3000) }, 'Price filter should be applied'
+    assert products.all? { |p| p.shipping_weight.between?(200, 700) }, 'Weight filter should be applied'
+    assert products.all?(&:fiberglass_reinforcement), 'Fiberglass filter should be applied'
+    prices = products.pluck(:price)
+    assert_equal prices.sort, prices, 'Sort should be applied'
+  end
+
+  # URL persistence tests
+  test 'filters should persist in URL as GET params' do
+    get category_url(@category), params: { sort: 'price_desc', min: 1000, fiberglass: '1' }
+    assert_response :success
+    # Form should contain current filter values
+    assert_select 'select[name=sort] option[selected][value=price_desc]'
+    assert_select 'input[name=min][value="1000"]'
+    assert_select 'input[name=fiberglass][checked]'
+  end
+
+  test 'should include clear filters link' do
+    get category_url(@category), params: { sort: 'price_desc', min: 1000 }
+    assert_response :success
+    assert_select '[data-testid="clear-filters"]', text: 'Clear Filters'
+  end
+
+  test 'should include sort dropdown' do
+    get category_url(@category)
+    assert_response :success
+    assert_select 'select[name=sort]'
+    assert_select 'select[name=sort] option', count: 6 # 5 options + blank
+  end
+
+  test 'should include weight filter inputs' do
+    get category_url(@category)
+    assert_response :success
+    assert_select 'input[name=weight_min]'
+    assert_select 'input[name=weight_max]'
+  end
+
+  test 'should include fiberglass checkbox' do
+    get category_url(@category)
+    assert_response :success
+    assert_select 'input[name=fiberglass][type=checkbox]'
+  end
 end
