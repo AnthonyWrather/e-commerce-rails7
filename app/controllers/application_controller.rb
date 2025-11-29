@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
   private
 
   def set_honeybadger_context
-    context = if defined?(current_admin_user) && current_admin_user.present?
+    context = if respond_to?(:current_admin_user, true) && current_admin_user.present?
                 { user_id: current_admin_user.id, user_email: current_admin_user.email, user_type: 'admin' }
               else
                 { user_id: 'guest', user_email: 'none', user_type: 'guest' }
