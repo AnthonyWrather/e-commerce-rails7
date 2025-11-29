@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Category < ApplicationRecord
+  has_paper_trail
+
   has_one_attached :image do |attachable|
     attachable.variant :thumb, resize_to_limit: [50, 50]
   end

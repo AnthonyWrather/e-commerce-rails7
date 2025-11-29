@@ -3,6 +3,8 @@
 class ApplicationController < ActionController::Base
   include Pagy::Backend
 
+  before_action :set_paper_trail_whodunnit
+
   before_action do
     if defined?(current_user)
       Honeybadger.context({
@@ -15,6 +17,10 @@ class ApplicationController < ActionController::Base
                             user_email: 'none@guest.com'
                           })
     end
+  end
+
+  def user_for_paper_trail
+    current_admin_user&.email || 'System'
   end
 
   protected
