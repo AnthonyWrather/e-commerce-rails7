@@ -357,7 +357,12 @@ Environment variables:
 ## Notable Custom Features
 
 ### Quantities Calculator
-Custom controllers under `app/controllers/quantities/` for composite material calculations with complex business logic.
+Controllers under `app/controllers/quantities/` delegate to `QuantityCalculatorService` for composite material calculations.
+
+**Service Architecture**:
+- **Service**: `app/services/quantity_calculator_service.rb` - Contains all calculation logic
+- **Constants**: `app/services/quantity_calculator_constants.rb` - Defines MATERIAL_WIDTH, RESIN_TO_GLASS_RATIO, WASTAGE_FACTOR
+- **Controllers**: Thin controllers that delegate to service and expose results as instance variables
 
 **Material Types** (14 options):
 - Chop Strand: 300g, 450g, 600g
@@ -367,44 +372,38 @@ Custom controllers under `app/controllers/quantities/` for composite material ca
 - Biaxial: 400g, 800g
 - Gel Coat
 
-**Core Constants**:
-- `@material_width` = 0.95m (standard roll width)
-- `@ratio` = 1.6:1 (resin to glass ratio)
-- Wastage factor: 15% (multiply by 1.15)
+**Core Constants** (in `QuantityCalculatorConstants`):
+- `MATERIAL_WIDTH` = 0.95m (standard roll width)
+- `RESIN_TO_GLASS_RATIO` = 1.6:1 (resin to glass ratio)
+- `WASTAGE_FACTOR` = 1.15 (15% wastage)
 
-**Calculator Types**:
+**Calculator Methods**:
 
-1. **Area Calculator** (`quantities/area_controller.rb`):
+1. **calculate_area**:
    - Input: Area (m²), layers, material type, catalyst percentage
-   - Formulas:
-     ```ruby
-     @mat = ((@area * @layers) / @material_width).round(2)  # Linear meters needed
-     @mat_total = (@mat * 1.15).round(2)  # With 15% wastage
+   - Returns Result struct with all calculated values
 
-     @material_weight = @material.to_i / 1000.0  # Convert g/m² to kg
-     @mat_kg = ((@area * @layers) * @material_weight).round(2)
-     @mat_total_kg = (@mat_kg * 1.15).round(2)
+2. **calculate_dimensions**:
+   - Input: Length, width, layers, material, catalyst
+   - Calculates area: `(length * width)` (depth is always 0)
+   - Then applies same formulas
 
-     @resin = ((@area * @layers) * @ratio).round(2)  # Litres of resin
-     @resin_total = (@resin * 1.15).round(2)
+3. **calculate_mould_rectangle**:
+   - Input: Length, width, depth, layers, material, catalyst
+   - Calculates surface area: `(length * width) + (2 * length * depth) + (2 * width * depth)`
+   - Then applies same formulas
 
-     @catalyst_ml = (((@resin_total / 10) * @catalyst) * 100).round(2)
-
-     @total_weight = (@mat_total_kg + @resin_total + (@catalyst_ml / 1000)).round(2)
-     ```
-
-2. **Dimensions Calculator** (`quantities/dimensions_controller.rb`):
-   - Input: Length, width, depth (not currently used), layers, material, catalyst
-   - First calculates area: `@area = ((@length * @width) + (2 * (@length * @depth)) + (2 * (@width * @depth)))`
-   - Then uses same formulas as Area Calculator
-
-3. **Mould Rectangle Calculator** (`quantities/mould_rectangle_controller.rb`):
-   - Input: Length, width, depth (all used), layers, material, catalyst
-   - Calculates surface area of rectangular mould (all 6 faces)
-   - Same calculation logic as Dimensions Calculator
+**Service Usage**:
+```ruby
+result = QuantityCalculatorService.new(params.permit(:area, :catalyst, :material, :layers)).calculate_area
+@mat = result.mat
+@resin_total = result.resin_total
+# ... other results
+```
 
 **Key Patterns**:
-- All calculations performed in controller `index` action (no model layer)
+- Service returns `Result` struct with all calculated values
+- Controllers extract values from Result to instance variables for views
 - Results displayed in Turbo Frame tables with blue-themed styling
 - Form submits via GET (params in URL, bookmarkable results)
 - No persistence - pure calculation engine
