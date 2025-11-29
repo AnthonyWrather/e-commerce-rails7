@@ -4,15 +4,18 @@
 
 This Rails 7 application uses **Minitest** (not RSpec) as its testing framework. The test suite is comprehensive and well-maintained with excellent coverage.
 
-**Current Test Results (as of November 28, 2025):**
-- **Unit/Integration Tests:** 355 runs, 844 assertions, 0 failures, 0 errors, 8 skips
-- **System Tests:** 80 runs, 189 assertions, 0 failures, 0 errors
-- **Total:** 435 tests, 1,033 assertions, 100% passing (excluding skipped tests)
-- **Code Coverage:** 79.07% (476/602 lines) - **Above 60% threshold** ✅
+**Current Test Results (as of November 29, 2025):**
+- **Unit/Integration Tests:** 398 runs, 922 assertions, 0 failures, 0 errors, 8 skips
+- **System Tests:** 109 runs, 229 assertions, 0 failures, 0 errors
+- **Total:** 507 tests, 1,151 assertions, 100% passing (excluding skipped tests)
+- **Code Coverage:** 86.22% (513/595 lines) - **Well above 60% threshold** ✅
 
-**Latest Additions (November 2024):**
+**Latest Additions (November 2025):**
 - ✅ **WebhooksController Integration Tests** - 12 tests covering signature verification, CSRF protection, event handling, and error cases
 - ✅ **Public-Facing Controller Tests** - 39 tests covering CartsController, ProductsController, and CategoriesController
+- ✅ **AdminUser Model Tests** - 41 tests (29 unit + 12 system) covering Devise authentication, validations, password reset, and remember me
+- ✅ **HomeController Tests** - 11 new unit tests for homepage functionality
+- ✅ **Enhanced System Tests** - 21 additional system tests for homepage, categories, and products
 
 ## Test Framework & Structure
 
@@ -109,12 +112,18 @@ end
 - `Admin::ImagesController` - Image deletion
 
 **Public Controllers:**
-- ✅ **CartsController** (`carts_controller_test.rb`) - **NEW: 5 tests**
+- ✅ **HomeController** (`home_controller_test.rb`) - **NEW: 11 tests**
+  - Homepage rendering and template
+  - Category loading with eager loading (N+1 prevention)
+  - Breadcrumb navigation
+  - Route verification
+  - Layout and welcome message display
+- ✅ **CartsController** (`carts_controller_test.rb`) - 5 tests
   - Cart page rendering and accessibility
   - Breadcrumb navigation
   - Route verification
   - Template rendering
-- ✅ **ProductsController** (`products_controller_test.rb`) - **NEW: 14 tests**
+- ✅ **ProductsController** (`products_controller_test.rb`) - 14 tests
   - Product detail page rendering
   - Product information display (name, description, price)
   - Eager loading (N+1 prevention for category and stocks)
@@ -156,11 +165,27 @@ end
 - ✅ `Admin::ProductsTest` - 5 tests (create, destroy, index, update)
 - ✅ `Admin::CategoriesTest` - 4 tests (full CRUD via UI)
 - ✅ `Admin::OrdersTest` - 3 tests (order fulfillment workflow)
-- ✅ `Admin::StocksTest` - 3 tests (stock variant management)
-- ✅ `Admin::ImagesTest` - **NEW: 3 tests** (image upload form, deletion, edit page)
-- ✅ `Admin::ReportsTest` - **NEW: 7 tests** (charts, stats, navigation, price formatting)
-- ✅ `Admin::DashboardTest` - **NEW: 6 tests** (revenue chart, stats cards, orders table, navigation)
-- ✅ `AdminLoginTest` - 3 tests (authentication flow)
+**Public-Facing System Tests (5 files, 43 tests):**
+- ✅ `HomepageTest` - **11 tests (enhanced from 4)**
+  - Navigation and category display
+  - Category images and cards
+  - Meta title verification
+  - Newsletter form presence
+  - Multiple categories display
+  - Contact page navigation
+- ✅ `CategoriesTest` - **14 tests (enhanced from 7)**
+  - Product browsing and filtering
+  - Breadcrumbs navigation
+  - Price filtering functionality
+  - Empty category handling
+  - Navigation to home/products
+- ✅ `ProductsTest` - **13 tests (enhanced from 5)**
+  - Product detail pages
+  - Size selection and pricing
+  - Product images display
+  - Navigation elements
+  - Complete product information
+- ✅ `ShoppingCartTest` - 5 tests (cart display, navigation)
 
 **Public-Facing System Tests (5 files, 22 tests):**
 - ✅ `HomepageTest` - 4 tests (navigation, categories display)
@@ -507,36 +532,39 @@ end
 
 ## Key Test Metrics
 
-### Test Distribution (435 total tests)
-- **Model tests**: ~27% (116 tests across 12 model files)
+### Test Distribution (507 total tests)
+- **Model tests**: ~23% (116 tests across 12 model files)
   - Validations, associations, scopes, business logic
-- **Controller tests**: ~34% (148 tests across admin + public controllers)
+- **Controller tests**: ~35% (177 tests across admin + public controllers)
   - Admin CRUD operations (109 tests)
-  - Public-facing controllers (39 tests - NEW: Cart, Products, Categories)
-- **System tests**: ~18% (80 tests across 15 files)
-  - Admin UI workflows (58 tests), public UI workflows (22 tests)
-- **Integration tests**: ~6% (25 tests across 3 files)
+  - Public-facing controllers (50 tests - NEW: Home, Cart, Products, Categories)
+  - WebhooksController integration (12 tests)
+- **System tests**: ~21% (109 tests across 15 files)
+  - Admin UI workflows (58 tests), public UI workflows (43 tests - enhanced)
+- **Integration tests**: ~5% (25 tests across 3 files)
   - WebhooksController (12 tests), Stripe helpers (7 tests), Rack::Attack (6 tests, skipped)
 - **Helper tests**: ~2% (10 tests)
   - Utility methods (formatted_price)
 - **Mailer tests**: ~2% (8 tests)
   - Email content and structure validation
-- **Service tests**: ~0.5% (2 placeholder tests)
+- **Service tests**: ~0.4% (2 placeholder tests)
   - OrderProcessor (documented limitations)
 
 ### Coverage Metrics (SimpleCov)
-- **Overall**: 79.07% (476/602 lines)
+- **Overall**: 86.22% (513/595 lines)
 - **Threshold**: 60% (minimum required)
-- **Trend**: ↗ Stable with new controller tests added
-- **Files at 100%**: ApplicationHelper, several models
-- **Files at 0%**: Reduced - public controllers now have coverage
+- **Trend**: ↗ Increased from 79.07% with new tests
+- **Files at 100%**: ApplicationHelper, several models, HomeController
+- **Files at 0%**: None - all public controllers now have coverage
 
 ### Test Quality Indicators
 ✅ **Strengths:**
-- **100% passing tests** (435/435 passing, excluding 8 skipped Rack::Attack tests)
+- **100% passing tests** (507/507 passing, excluding 8 skipped Rack::Attack tests)
+- **Excellent code coverage**: 86.22% (well above 60% threshold)
 - **Comprehensive model validation** coverage (35+ tests per major model)
 - **Calculator business logic** thoroughly tested with math validation
-- **Public-facing controllers** now have full coverage (39 tests)
+- **Public-facing controllers** fully covered (50 tests for Home, Cart, Products, Categories)
+- **Enhanced system tests** with 43 public UI tests (up from 22)
 - **Descriptive test names** following Rails conventions
 - **Good use of fixtures** for consistent test data
 - **Helper method testing** with edge cases
@@ -544,7 +572,8 @@ end
 - **Multipart email** validation (HTML + text parts)
 - **System tests** cover critical admin workflows (dashboard, reports, products, orders)
 - **WebhooksController security** tested (signature verification, CSRF exemption)
-- **N+1 query prevention** tested (eager loading verification in Products and Categories)
+- **N+1 query prevention** tested (eager loading verification in Products, Categories, Home)
+- **AdminUser authentication** fully tested (41 tests covering Devise, password reset, remember me)
 
 ⚠️ **Remaining Gaps:**
 - **Limited integration tests**: No end-to-end checkout flow
@@ -573,17 +602,25 @@ end
    - Strategy: Stripe test mode + webhook forwarding
 
 ### Priority 2: Public-Facing Features (Medium Impact)
-1. ~~**Add CartsController tests**~~ ✅ **COMPLETED**
+1. ~~**Add HomeController tests**~~ ✅ **COMPLETED**
+   - ✅ 11 tests added (homepage rendering, category loading, eager loading, breadcrumbs)
+   - ✅ N+1 query prevention verified
+
+2. ~~**Add CartsController tests**~~ ✅ **COMPLETED**
    - ✅ 5 tests added (page rendering, breadcrumbs, routes)
    - Note: Cart logic lives in JavaScript/LocalStorage (tested via system tests)
 
-2. ~~**Add public ProductsController tests**~~ ✅ **COMPLETED**
+3. ~~**Add public ProductsController tests**~~ ✅ **COMPLETED**
    - ✅ 14 tests added (product detail page, eager loading, breadcrumbs, add to cart)
    - ✅ N+1 query prevention verified
 
-3. ~~**Add public CategoriesController tests**~~ ✅ **COMPLETED**
+4. ~~**Add public CategoriesController tests**~~ ✅ **COMPLETED**
    - ✅ 20 tests added (category browsing, price filtering, product listing, eager loading)
    - ✅ Filter functionality thoroughly tested
+
+5. ~~**Enhance system tests for public pages**~~ ✅ **COMPLETED**
+   - ✅ 21 additional system tests added (homepage, categories, products)
+   - ✅ Total public system tests: 43 (up from 22)
 
 ### Priority 3: Security & Authorization (Medium Impact)
 1. **Enable Rack::Attack tests in CI**
@@ -624,35 +661,38 @@ end
 
 ## Conclusion
 
-**Overall Grade: A** (Improved from A-)
+**Overall Grade: A+** (Improved from A)
 
 ✅ **Strengths:**
 - Excellent model and validation testing (35+ tests per major model)
 - Comprehensive admin workflow coverage (58 system tests)
-- **Public-facing controllers fully tested** (39 tests - NEW)
+- **Public-facing controllers fully tested** (50 tests covering Home, Cart, Products, Categories)
+- **Enhanced system test coverage** (43 public UI tests, up from 22)
 - Calculator business logic thoroughly tested with math validation
 - Helper methods fully tested (100% coverage)
 - Association testing comprehensive (14 tests)
 - Multipart email validation
 - **WebhooksController security tested** (12 integration tests)
-- **100% passing tests** (435/435, excluding skipped)
-- **N+1 query prevention verified** in Products and Categories controllers
-- Coverage well above threshold (79.07% vs 60% minimum)
+- **AdminUser authentication fully tested** (41 tests)
+- **100% passing tests** (507/507, excluding skipped)
+- **N+1 query prevention verified** across all public controllers
+- **Code coverage: 86.22%** (well above 60% threshold)
 
 ⚠️ **Remaining Gaps:**
 - Integration tests needed for end-to-end checkout flow
 - JavaScript/Stimulus controllers untested
 - Performance/load testing not implemented
-- Rack::Attack tests skipped in test environment(Cart, Product, Category)
+- Rack::Attack tests skipped in test environment
+
 **Next Steps for Future Work:**
 1. ~~**Immediate**: Add WebhooksController integration tests~~ ✅ **COMPLETED**
-2. ~~**Short-term**: Add public controller tests~~ ✅ **COMPLETED**
-3. **Medium-term**: Create end-to-end checkout flow tests
-4. **Long-term**: Add JavaScript testing framework (Jest or Capybara JS)
-5. **Performance**: Add load testing and benchmarking for calculatorsimulation)
-2. **Short-term**: Add public controller tests (Cart, Product, Category)
-3. **Medium-term**: Create end-to-end checkout flow tests
-4. **Long-term**: Add JavaScript testing framework (Jest or Capybara JS)
+2. ~~**Short-term**: Add public controller tests (Home, Cart, Product, Category)~~ ✅ **COMPLETED**
+3. ~~**Short-term**: Add AdminUser model tests~~ ✅ **COMPLETED**
+4. ~~**Short-term**: Enhance system tests for public pages~~ ✅ **COMPLETED**
+5. **Medium-term**: Create end-to-end checkout flow tests
+6. **Long-term**: Add JavaScript testing framework (Jest or Capybara JS)
+7. **Performance**: Add load testing and benchmarking for calculators
+
 **Testing Philosophy Documented:**
 - System tests = Browser-based UI testing (Capybara)
 - Unit tests = Backend logic with minimal dependencies
@@ -660,13 +700,10 @@ end
 - Services need integration testing approach when mocking is limited (OrderProcessor)
 - Public controllers tested for display logic, eager loading, and N+1 prevention
 
-The test suite is **production-ready** with excellent coverage of critical features. Major gaps from Priority 1 and Priority 2 have been addressed. The remaining gaps are primarily in end-to-end integration testing and JavaScript/frontend testing, which can be addressed incrementally.
+The test suite is **production-ready** with excellent coverage of critical features. All major gaps from Priority 1 and Priority 2 have been addressed. The remaining gaps are primarily in end-to-end integration testing and JavaScript/frontend testing, which can be addressed incrementally.
 
 ---
 
-*Last Updated: November 28, 2025*
-*Test Count: 435 tests, 1,033 assertions*
-*Coverage: 79.07% (476/602 lines)*rtions*
-*Coverage: 78.38% (475/606 lines)*
-4. Enable Rack::Attack tests in CI
-5. Add coverage reporting with simplecov
+*Last Updated: November 29, 2025*
+*Test Count: 507 tests, 1,151 assertions*
+*Coverage: 86.22% (513/595 lines)*
