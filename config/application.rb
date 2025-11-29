@@ -29,5 +29,9 @@ module Ecomm
     # Use Rack::Attack for rate limiting to protect against brute force and DDoS attacks
     # Disabled in test environment unless explicitly enabled for specific tests
     config.middleware.use Rack::Attack unless Rails.env.test?
+
+    # Enable Gzip compression for responses (Brotli typically handled by CDN/reverse proxy)
+    # This reduces bandwidth and improves load times for all text-based responses
+    config.middleware.use Rack::Deflater
   end
 end
