@@ -5,7 +5,9 @@ class Product < ApplicationRecord
 
   has_many_attached :images do |attachable|
     attachable.variant :thumb, resize_to_limit: [50, 50]
+    attachable.variant :thumb_webp, resize_to_limit: [50, 50], format: :webp
     attachable.variant :medium, resize_to_limit: [250, 250]
+    attachable.variant :medium_webp, resize_to_limit: [250, 250], format: :webp
   end
 
   belongs_to :category
