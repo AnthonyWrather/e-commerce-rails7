@@ -9,6 +9,11 @@ Rails.application.routes.draw do
       resources :images, only: [:destroy]
     end
     resources :categories
+    resources :audit_logs, only: [:index] do
+      collection do
+        get :export
+      end
+    end
   end
 
   # namespace :quantities do

@@ -1,0 +1,107 @@
+<div class="w-full">
+  <div class="flex items-center justify-between">
+    <h1 class="text-4xl font-bold">Audit Logs</h1>
+    <%= link_to "Export CSV", export_admin_audit_logs_path(format: :csv, item_type: params[:item_type], event: params[:event], user: params[:user], start_date: params[:start_date], end_date: params[:end_date]), class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
+  </div>
+
+  <div class="p-4 mt-4 bg-gray-100 rounded-lg">
+    <%= form_with url: admin_audit_logs_path, method: :get, class: "flex flex-wrap gap-4 items-end" do |form| %>
+      <div>
+        <%= form.label :item_type, "Model", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.select :item_type, options_for_select(@item_types.map { |t| [t, t] }, params[:item_type]), { include_blank: "All Models" }, class: "mt-1 rounded border-gray-300" %>
+      </div>
+
+      <div>
+        <%= form.label :event, "Event", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.select :event, options_for_select(@events.map { |e| [e.titleize, e] }, params[:event]), { include_blank: "All Events" }, class: "mt-1 rounded border-gray-300" %>
+      </div>
+
+      <div>
+        <%= form.label :user, "User", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.select :user, options_for_select(@users.map { |u| [u, u] }, params[:user]), { include_blank: "All Users" }, class: "mt-1 rounded border-gray-300" %>
+      </div>
+
+      <div>
+        <%= form.label :start_date, "From", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.date_field :start_date, value: params[:start_date], class: "mt-1 rounded border-gray-300" %>
+      </div>
+
+      <div>
+        <%= form.label :end_date, "To", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.date_field :end_date, value: params[:end_date], class: "mt-1 rounded border-gray-300" %>
+      </div>
+
+      <div class="flex gap-2">
+        <%= form.submit "Filter", class: "cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded" %>
+        <%= link_to "Clear", admin_audit_logs_path, class: "cursor-pointer bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="flex flex-col w-full mt-4">
+    <div class="overflow-x-auto">
+      <div class="inline-block min-w-full py-2">
+        <div class="overflow-x-auto">
+          <table class="min-w-full overflow-x-scroll">
+            <thead class="bg-white border-b">
+              <tr>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Timestamp
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  User
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Event
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Model
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Item ID
+                </th>
+                <th scope="col" class="px-6 py-4 text-sm font-medium text-left text-gray-800">
+                  Changes
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @versions.each do |version| %>
+                <tr class="border-b bg-gray-50">
+                  <td class="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                    <%= version.created_at.strftime('%Y-%m-%d %H:%M:%S') %>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                    <%= version.whodunnit || 'System' %>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full <%= event_badge_class(version.event) %>">
+                      <%= version.event.titleize %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                    <%= version.item_type %>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                    <%= version.item_id %>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-800">
+                    <%= render_version_changes(version) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+
+          <% if @versions.empty? %>
+            <div class="p-8 text-center text-gray-500">
+              No audit log entries found.
+            </div>
+          <% end %>
+
+          <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

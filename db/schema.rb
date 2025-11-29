@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_27_015536) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_29_172918) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -134,6 +134,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_27_015536) do
     t.integer "max_resin_per_m2", default: 0, null: false
     t.integer "avg_resin_per_m2", default: 0, null: false
     t.index ["product_id"], name: "index_stocks_on_product_id"
+  end
+
+  create_table "versions", force: :cascade do |t|
+    t.string "whodunnit"
+    t.datetime "created_at"
+    t.bigint "item_id", null: false
+    t.string "item_type", null: false
+    t.string "event", null: false
+    t.text "object"
+    t.text "object_changes"
+    t.index ["created_at"], name: "index_versions_on_created_at"
+    t.index ["event"], name: "index_versions_on_event"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
+    t.index ["whodunnit"], name: "index_versions_on_whodunnit"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
