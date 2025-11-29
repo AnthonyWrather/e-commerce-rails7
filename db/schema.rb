@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_29_172918) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_29_234306) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,6 +52,30 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_29_172918) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
+  end
+
+  create_table "cart_items", force: :cascade do |t|
+    t.bigint "cart_id", null: false
+    t.bigint "product_id", null: false
+    t.bigint "stock_id"
+    t.string "size"
+    t.integer "quantity", null: false
+    t.integer "price", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cart_id", "product_id", "size"], name: "index_cart_items_on_cart_id_and_product_id_and_size", unique: true
+    t.index ["cart_id"], name: "index_cart_items_on_cart_id"
+    t.index ["product_id"], name: "index_cart_items_on_product_id"
+    t.index ["stock_id"], name: "index_cart_items_on_stock_id"
+  end
+
+  create_table "carts", force: :cascade do |t|
+    t.string "session_token", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_carts_on_expires_at"
+    t.index ["session_token"], name: "index_carts_on_session_token", unique: true
   end
 
   create_table "categories", force: :cascade do |t|
@@ -152,6 +176,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_29_172918) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "cart_items", "carts", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "cart_items", "products", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "cart_items", "stocks", on_update: :cascade, on_delete: :cascade
   add_foreign_key "order_products", "orders"
   add_foreign_key "order_products", "products"
   add_foreign_key "products", "categories"
