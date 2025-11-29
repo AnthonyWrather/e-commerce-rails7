@@ -17,7 +17,7 @@
       <% @products.each do |product| %>
         <%= link_to product_path(product) do %>
           <div class="flex flex-col items-center justify-center max-w-xs p-4">
-            <%= product.images.first ? image_tag(product.images.first.variant(:medium), class: "rounded") : image_tag("http://via.placeholder.com/250", class: "rounded") %>
+            <%= product.images.first ? lazy_image_tag(product.images.first.variant(:medium), class: "rounded") : lazy_image_tag("http://via.placeholder.com/250", class: "rounded") %>
             <p class="mt-6 font-medium text-gray-800"><%= product.name %></p>
           </div>
         <% end %>

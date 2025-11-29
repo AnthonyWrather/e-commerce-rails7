@@ -6,32 +6,26 @@ class Quantities::MouldRectangleController < ApplicationController
   add_breadcrumb 'Calculate a Rectangle Mould', :quantities_mould_rectangle_path
 
   def index
+    permitted_params = params.permit(:length, :width, :depth, :catalyst, :material, :layers)
+    result = QuantityCalculatorService.new(permitted_params).calculate_mould_rectangle
+
     @length = (params[:length].presence || '1.0').to_f
     @width = (params[:width].presence || '1.0').to_f
     @depth = (params[:depth].presence || '1.0').to_f
-    @catalyst = (params[:catalyst].presence || '1').to_i
-    @material = params[:material].presence || ''
-    # @material_width = params[:material_width].presence.to_f || 0.95
-    @material_width = 0.95
-    # @ratio =  params[:ratio].presence.to_f || 1.6
-    @ratio = 1.6
-
-    @area = ((@length * @width) + (2 * (@length * @depth)) + (2 * (@width * @depth))).round(2)
-    @layers = params[:layers].to_i
-
-    @mat = ((@area * @layers) / @material_width).round(2)
-    @mat_total = (@mat * 1.15).round(2)
-
-    @material_weight = @material.to_i / 1000.0
-
-    @mat_kg = ((@area * @layers) * @material_weight).round(2)
-    @mat_total_kg = (@mat_kg * 1.15).round(2)
-
-    @resin = ((@area * @layers) * @ratio).round(2)
-    @resin_total = (@resin * 1.15).round(2)
-
-    @catalyst_ml = (((@resin_total / 10) * @catalyst) * 100).round(2)
-
-    @total_weight = (@mat_total_kg + @resin_total + (@catalyst_ml / 1000)).round(2)
+    @area = result.area
+    @catalyst = result.catalyst
+    @material = result.material
+    @material_width = result.material_width
+    @ratio = result.ratio
+    @layers = result.layers
+    @mat = result.mat
+    @mat_total = result.mat_total
+    @material_weight = result.material_weight
+    @mat_kg = result.mat_kg
+    @mat_total_kg = result.mat_total_kg
+    @resin = result.resin
+    @resin_total = result.resin_total
+    @catalyst_ml = result.catalyst_ml
+    @total_weight = result.total_weight
   end
 end
