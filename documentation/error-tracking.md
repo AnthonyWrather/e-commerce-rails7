@@ -47,6 +47,8 @@ The Honeybadger API key should be configured via:
 - Captures unhandled promise rejections
 - Configuration is passed via meta tags in layouts
 
+**Note on API Key Security**: Honeybadger API keys are designed to be used in frontend JavaScript code. They are write-only tokens that can only submit error reports - they cannot read data from your Honeybadger account. The keys are also rate-limited to prevent abuse. This is the recommended approach per Honeybadger's official documentation.
+
 ### Custom Error Pages
 
 Custom error pages are served instead of static HTML files:

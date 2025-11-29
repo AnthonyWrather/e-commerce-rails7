@@ -4,7 +4,7 @@
 # API key should be set via environment variable or Rails credentials for security
 # Environment variable: HONEYBADGER_API_KEY
 # Rails credentials: honeybadger.api_key
-api_key: "<%= ENV.fetch('HONEYBADGER_API_KEY') { Rails.application.credentials.dig(:honeybadger, :api_key) } %>"
+api_key: "<%= ENV['HONEYBADGER_API_KEY'] || Rails.application.credentials.dig(:honeybadger, :api_key) %>"
 
 # The environment your app is running in.
 env: "<%= Rails.env %>"
