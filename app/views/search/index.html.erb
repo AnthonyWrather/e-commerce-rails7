@@ -1,0 +1,118 @@
+<div class="py-10 bg-blue-600 border border-gray-detailBorder">
+  <div class="container px-6 mx-auto">
+    <h2 class="mb-4 text-3xl font-bold text-center text-white">
+      <% if @query.present? %>
+        Search Results for "<%= @query %>"
+      <% else %>
+        Search Products
+      <% end %>
+    </h2>
+  </div>
+</div>
+
+<div class="flex justify-center min-h-screen">
+  <!-- Filters Sidebar -->
+  <div class="flex flex-col flex-wrap p-6 mt-6">
+    <h2 class="mb-4 text-lg font-semibold text-gray-800">Filters</h2>
+
+    <%= form_with url: search_path, method: :get, class: "flex flex-col gap-4", data: { turbo: false } do |form| %>
+      <!-- Keep search query -->
+      <%= form.hidden_field :q, value: @query %>
+
+      <!-- Price Range -->
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Price Range (pence)</label>
+        <%= form.number_field :min, value: @min_price, placeholder: "Min Price", class: "border border-gray-300 rounded-md p-2 w-36 focus:ring-2 focus:ring-blue-400 focus:border-transparent" %>
+        <%= form.number_field :max, value: @max_price, placeholder: "Max Price", class: "border border-gray-300 rounded-md p-2 w-36 focus:ring-2 focus:ring-blue-400 focus:border-transparent" %>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Category</label>
+        <%= form.select :category_id,
+              options_from_collection_for_select(@categories, :id, :name, @category_id),
+              { include_blank: "All Categories" },
+              class: "border border-gray-300 rounded-md p-2 w-36 focus:ring-2 focus:ring-blue-400 focus:border-transparent" %>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <%= form.submit "Apply Filters", class: "bg-blue-600 hover:bg-blue-700 text-white rounded-md p-2 cursor-pointer transition-colors" %>
+      </div>
+    <% end %>
+
+    <!-- Clear Filters -->
+    <% if @min_price.present? || @max_price.present? || @category_id.present? %>
+      <%= link_to search_path(q: @query), class: "mt-2 text-center text-blue-600 hover:underline text-sm" do %>
+        Clear Filters
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Search Results -->
+  <div class="flex flex-col items-center flex-grow p-6 mt-6">
+    <% if @query.blank? %>
+      <!-- Empty state for no query -->
+      <div class="flex flex-col items-center justify-center py-16">
+        <div class="mb-6 text-6xl text-gray-300">
+          <%= icon 'fa-solid', 'magnifying-glass' %>
+        </div>
+        <h3 class="mb-2 text-xl font-semibold text-gray-700">Start Your Search</h3>
+        <p class="text-gray-500">Enter a search term to find products</p>
+      </div>
+    <% elsif @products.empty? %>
+      <!-- Empty state for no results -->
+      <div class="flex flex-col items-center justify-center py-16">
+        <div class="mb-6 text-6xl text-gray-300">
+          <%= icon 'fa-solid', 'box-open' %>
+        </div>
+        <h3 class="mb-2 text-xl font-semibold text-gray-700">No Products Found</h3>
+        <p class="mb-4 text-gray-500">We couldn't find any products matching "<%= @query %>"</p>
+        <div class="flex flex-col gap-2 text-sm text-gray-500">
+          <p>Try:</p>
+          <ul class="ml-4 list-disc">
+            <li>Checking your spelling</li>
+            <li>Using more general terms</li>
+            <li>Removing filters</li>
+          </ul>
+        </div>
+        <%= link_to "Clear Search", search_path, class: "mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" %>
+      </div>
+    <% else %>
+      <!-- Results count -->
+      <div class="w-full mb-4">
+        <p class="text-sm text-gray-600">
+          Found <%= @pagy.count %> product<%= @pagy.count == 1 ? '' : 's' %>
+          <% if @min_price.present? || @max_price.present? || @category_id.present? %>
+            (filtered)
+          <% end %>
+        </p>
+      </div>
+
+      <!-- Product Grid -->
+      <div class="flex flex-wrap justify-center gap-6">
+        <% @products.each do |product| %>
+          <%= link_to product_path(product), class: "group" do %>
+            <div class="flex flex-col items-center justify-start max-w-xs p-4 transition-shadow bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md">
+              <%= product.images.first ? image_tag(product.images.first.variant(:medium), class: "rounded w-48 h-48 object-cover") : image_tag("http://via.placeholder.com/250", class: "rounded w-48 h-48 object-cover") %>
+              <div class="mt-4 text-center">
+                <p class="font-medium text-gray-800 group-hover:text-blue-600"><%= product.name %></p>
+                <p class="text-sm text-gray-500"><%= product.category.name %></p>
+                <p class="mt-2 font-semibold text-blue-600"><%= formatted_price(product.price) %></p>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+
+      <!-- Pagination -->
+      <% if @pagy && @pagy.pages > 1 %>
+        <div class="flex justify-center mt-8">
+          <%== pagy_nav(@pagy) %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<div class="py-5 my-10 text-center text-white bg-blue-600">
+</div>
