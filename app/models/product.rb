@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Product < ApplicationRecord
+  include PgSearch::Model
+
   has_many_attached :images do |attachable|
     attachable.variant :thumb, resize_to_limit: [50, 50]
     attachable.variant :thumb_webp, resize_to_limit: [50, 50], format: :webp
@@ -11,6 +13,28 @@ class Product < ApplicationRecord
   belongs_to :category
   has_many :stocks
   has_many :order_products
+
+  # Full-text search scope using pg_search
+  pg_search_scope :search_by_text,
+                  against: {
+                    name: 'A',
+                    description: 'B'
+                  },
+                  associated_against: {
+                    category: [:name]
+                  },
+                  using: {
+                    tsearch: {
+                      prefix: true,
+                      dictionary: 'english',
+                      highlight: {
+                        StartSel: '<mark>',
+                        StopSel: '</mark>',
+                        MaxWords: 35,
+                        MinWords: 15
+                      }
+                    }
+                  }
 
   # Scopes for filtering products
   scope :active, -> { where(active: true) }
