@@ -131,12 +131,22 @@ For production deployments, we recommend using Cloudflare CDN:
 
 ### Rails Configuration
 
-Set the asset host in production:
+Set the asset host in production to serve assets from the CDN:
 
 ```ruby
 # config/environments/production.rb
-config.asset_host = ENV['CDN_HOST'] # e.g., 'cdn.example.com'
+# CDN_HOST should be the full URL without trailing slash
+# Example: 'https://cdn.example.com' or '//cdn.example.com'
+# Using '//' allows the browser to choose http or https based on the page protocol
+config.asset_host = ENV['CDN_HOST'] # e.g., 'https://cdn.example.com'
 ```
+
+**Environment Variable Setup:**
+- In Render: Add `CDN_HOST` in Environment Variables
+- In Heroku: `heroku config:set CDN_HOST=https://cdn.example.com`
+- Include the protocol (https://) or use protocol-relative (//)
+
+**Note:** If using Cloudflare as a proxy (orange cloud), you may not need to set `asset_host` as Cloudflare will automatically proxy and cache assets.
 
 ## Performance Budget
 
