@@ -82,20 +82,10 @@ Rails.application.configure do
   config.hosts << '54.187.216.72'
   config.web_console.permissions = '54.187.216.72'
 
-  # config.action_mailer.delivery_method = :letter_opener_web
+  config.action_mailer.delivery_method = :letter_opener_web
   #  config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true
   # LetterOpenerWeb.configure do |config|
   #   config.letters_location = Rails.root.join('your', 'new', 'path')
   # end
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: 'smtp.mailersend.net',
-    port: 587,
-    domain: Rails.application.credentials.mailersend.domain,
-    user_name: Rails.application.credentials.mailersend.username,
-    password: Rails.application.credentials.mailersend.password,
-    authentication: 'plain',
-    enable_starttls: true
-  }
 end
