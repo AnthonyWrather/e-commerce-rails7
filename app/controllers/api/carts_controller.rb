@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 class Api::CartsController < ApplicationController
-  skip_forgery_protection
+  # CSRF protection is handled via cart session tokens instead of traditional CSRF tokens.
+  # This API endpoint requires a valid cart token (X-Cart-Token header or session_token param)
+  # which provides protection against CSRF attacks since attackers cannot guess the token.
+  # The JSON-only Content-Type also prevents traditional form-based CSRF attacks.
+  protect_from_forgery with: :null_session
 
   before_action :set_cart_service
 

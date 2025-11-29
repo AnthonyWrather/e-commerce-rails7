@@ -27,16 +27,12 @@ class CartTest < ActiveSupport::TestCase
   end
 
   test 'should require expires_at' do
-    cart = Cart.new(session_token: 'new_token')
-    # Skip setting default by clearing it after initialization
-    cart.instance_variable_set(:@skip_defaults, true)
-    cart.expires_at = nil
-    # Manually clear the expires_at to test the validation
-    # since before_validation sets it, we need to check differently
+    # The before_validation callback sets expires_at, so we test that behavior
     cart = Cart.new(session_token: 'requires_expires_token')
-    cart.save # triggers before_validation that sets expires_at
+    cart.save
     # After saving, the expires_at should be set by callback
     assert_not_nil cart.expires_at
+    assert cart.expires_at > Time.current
   end
 
   test 'should set default expires_at on create' do
