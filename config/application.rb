@@ -30,6 +30,9 @@ module Ecomm
     # Disabled in test environment unless explicitly enabled for specific tests
     config.middleware.use Rack::Attack unless Rails.env.test?
 
+    # Use custom error pages via ErrorsController for better user experience
+    # Error pages include error tracking IDs from Honeybadger
+    config.exceptions_app = routes
     # Enable Gzip compression for responses (Brotli typically handled by CDN/reverse proxy)
     # This reduces bandwidth and improves load times for all text-based responses
     config.middleware.use Rack::Deflater
