@@ -3,6 +3,10 @@
 require 'test_helper'
 
 class CartTest < ActiveSupport::TestCase
+  # Test constants for clarity
+  NONEXISTENT_PRODUCT_ID = 999_999
+  ARBITRARY_OUTDATED_PRICE = 99_999
+
   def setup
     @cart = carts(:cart_one)
     @expired_cart = carts(:expired_cart)
@@ -181,7 +185,7 @@ class CartTest < ActiveSupport::TestCase
     new_cart = Cart.create!(session_token: 'merge_invalid_product_token')
 
     new_cart.merge_items!([
-                            { 'product_id' => 999_999, 'size' => '', 'quantity' => 1 }
+                            { 'product_id' => NONEXISTENT_PRODUCT_ID, 'size' => '', 'quantity' => 1 }
                           ])
 
     assert_equal 0, new_cart.cart_items.count
@@ -265,13 +269,14 @@ class CartTest < ActiveSupport::TestCase
 
     # Merging with a known size should use stock price
     new_cart.merge_items!([
-                            { 'product_id' => @product.id, 'size' => stock.size, 'quantity' => 1, 'price' => 99_999 }
+                            { 'product_id' => @product.id, 'size' => stock.size, 'quantity' => 1,
+                              'price' => ARBITRARY_OUTDATED_PRICE }
                           ])
 
     item = new_cart.cart_items.first
     assert_equal stock.id, item.stock_id
     # Price from incoming data is used when provided
-    assert_equal 99_999, item.price
+    assert_equal ARBITRARY_OUTDATED_PRICE, item.price
   end
 
   # ============================================================================

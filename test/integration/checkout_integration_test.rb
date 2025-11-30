@@ -12,6 +12,9 @@ require 'test_helper'
 class CheckoutIntegrationTest < ActionDispatch::IntegrationTest
   include StripeTestHelpers
 
+  # Test constant for high-value product pricing (in pence)
+  HIGH_VALUE_PRODUCT_PRICE_IN_PENCE = 100_000_00 # £100,000
+
   setup do
     @product = products(:product_one)
     @product.update(price: 1500, stock_level: 100)
@@ -296,7 +299,7 @@ class CheckoutIntegrationTest < ActionDispatch::IntegrationTest
   end
 
   test 'checkout handles high value products' do
-    @product.update(price: 100_000_00) # £100,000
+    @product.update(price: HIGH_VALUE_PRODUCT_PRICE_IN_PENCE)
 
     controller = CheckoutsController.new
     controller.define_singleton_method(:request) { nil }
@@ -308,6 +311,6 @@ class CheckoutIntegrationTest < ActionDispatch::IntegrationTest
 
     line_items = controller.send(:build_line_items, cart)
 
-    assert_equal 100_000_00, line_items.first[:price_data][:unit_amount]
+    assert_equal HIGH_VALUE_PRODUCT_PRICE_IN_PENCE, line_items.first[:price_data][:unit_amount]
   end
 end
