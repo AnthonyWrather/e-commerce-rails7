@@ -4,7 +4,8 @@
 [![Ruby](https://img.shields.io/badge/Ruby-3.2.3-red?style=flat-square&logo=ruby)](https://www.ruby-lang.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/License-Unlicense-green?style=flat-square)](LICENSE)
+[![CI](https://github.com/AnthonyWrather/e-commerce-rails7/actions/workflows/ci.yml/badge.svg)](https://github.com/AnthonyWrather/e-commerce-rails7/actions/workflows/ci.yml)
 
 A specialized B2B/B2C e-commerce platform for selling composite materials (fiberglass, resins, tools) with integrated **material quantity calculators** for precise project estimation. Built with Rails 7, TypeScript, and Stripe payments.
 
