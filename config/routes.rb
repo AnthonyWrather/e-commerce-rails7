@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  # User authentication routes - currently skipped, will be enabled in future sprint
+  # when customer accounts are implemented
   devise_for :users, skip: :all
+
   namespace :admin do
     resources :reports
     resources :orders
