@@ -25,12 +25,17 @@ class OrderProcessor
 
   def create_order
     Order.create!(
+      user: find_user_by_email,
       customer_email: customer_email, total: @stripe_session['amount_total'],
       address: shipping_address, fulfilled: false, name: shipping_name,
       phone: phone, billing_name: billing_name, billing_address: billing_address,
       payment_status: @stripe_session['payment_status'], payment_id: @stripe_session['payment_intent'],
       shipping_cost: shipping_cost, shipping_id: shipping_id, shipping_description: shipping_description
     )
+  end
+
+  def find_user_by_email
+    User.find_by(email: customer_email)
   end
 
   def process_line_items

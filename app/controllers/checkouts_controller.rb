@@ -148,7 +148,7 @@ class CheckoutsController < ApplicationController
   end
 
   def create_stripe_session(line_items)
-    Stripe::Checkout::Session.create(
+    session_options = {
       mode: 'payment',
       line_items: line_items,
       success_url: "#{request.protocol}#{request.host_with_port}/success",
@@ -159,7 +159,11 @@ class CheckoutsController < ApplicationController
       phone_number_collection: { enabled: true },
       billing_address_collection: 'required',
       shipping_options: SHIPPING_OPTIONS
-    )
+    }
+
+    session_options[:customer_email] = current_user.email if user_signed_in?
+
+    Stripe::Checkout::Session.create(session_options)
   end
 end
 # rubocop:enable Metrics/ClassLength
