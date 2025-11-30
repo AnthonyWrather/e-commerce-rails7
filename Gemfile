@@ -117,3 +117,7 @@ gem 'honeybadger', '~> 6.1'
 gem 'rack-attack', '~> 6.7'
 
 gem 'paper_trail', '~> 15.1'
+
+# Two-factor authentication for admin users
+gem 'devise-two-factor', '~> 6.1'
+gem 'rqrcode', '~> 2.2'

@@ -34,6 +34,15 @@ Rails.application.routes.draw do
   devise_for :admin_users, controllers: {
     sessions: 'admin_users/sessions'
   }
+
+  # Two-factor authentication routes for admin users
+  namespace :admin_users do
+    resource :two_factor, only: %i[new create edit destroy], controller: 'two_factor' do
+      post :regenerate_backup_codes
+    end
+    resource :two_factor_verification, only: %i[new create], controller: 'two_factor_verification'
+  end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

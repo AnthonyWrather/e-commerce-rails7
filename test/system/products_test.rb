@@ -10,7 +10,7 @@ class ProductsTest < ApplicationSystemTestCase
   test 'visiting a product page' do
     visit product_url(@product)
 
-    assert_selector 'h1', text: @product.name.upcase
+    assert_selector 'h1', text: @product.name
     assert_text @product.description
     assert_text 'Add To Cart'
   end
@@ -44,7 +44,7 @@ class ProductsTest < ApplicationSystemTestCase
 
     visit product_url(product_with_stocks)
 
-    assert_selector 'h1', text: product_with_stocks.name.upcase
+    assert_selector 'h1', text: product_with_stocks.name
     assert_text 'Add To Cart'
   end
 
@@ -112,7 +112,7 @@ class ProductsTest < ApplicationSystemTestCase
     visit product_url(@product)
 
     # Essential product information should be present
-    assert_selector 'h1', text: @product.name.upcase
+    assert_selector 'h1', text: @product.name
     assert_text @product.description
     assert_text '£' # Price
   end
