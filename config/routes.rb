@@ -9,6 +9,17 @@ Rails.application.routes.draw do
     confirmations: 'users/confirmations'
   }
 
+  # User dashboard routes (requires authentication)
+  authenticated :user do
+    resource :account, only: %i[show edit update], controller: 'users/accounts'
+    resources :addresses, controller: 'users/addresses' do
+      member do
+        patch :set_primary
+      end
+    end
+    resources :orders, only: %i[index show], controller: 'users/orders'
+  end
+
   namespace :admin do
     resources :reports
     resources :orders
