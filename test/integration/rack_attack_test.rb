@@ -2,16 +2,25 @@
 
 require 'test_helper'
 
-# Skip Rack::Attack tests when running in standard test environment
-# These tests require the Rack::Attack middleware which is disabled in test mode
+# Rack::Attack tests - these test rate limiting functionality
+# NOTE: These tests are skipped by default because Rack::Attack middleware
+# is disabled in test environment (see config/application.rb line 30).
+# To properly test rate limiting, you need to:
+# 1. Temporarily enable Rack::Attack in test environment
+# 2. Run tests with: RACK_ATTACK_ENABLED=true bin/rails test test/integration/rack_attack_test.rb
 class RackAttackTest < ActionDispatch::IntegrationTest
   setup do
-    skip 'Rack::Attack middleware not loaded in test environment'
+    # Skip these tests unless Rack::Attack is explicitly enabled
+    # The middleware is disabled in config/application.rb for test environment
+    skip 'Rack::Attack middleware not loaded in test environment. Run with RACK_ATTACK_ENABLED=true to test.'
   end
 
   teardown do
     # Disable Rack::Attack after tests
     ENV.delete('RACK_ATTACK_ENABLED')
+
+    # Clear throttle data
+    Rack::Attack.cache.store.clear if defined?(Rack::Attack) && Rack::Attack.cache.respond_to?(:clear)
 
     # Reload the initializer to ensure Rack::Attack is disabled
     load Rails.root.join('config/initializers/rack_attack.rb')

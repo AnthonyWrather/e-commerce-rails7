@@ -350,6 +350,49 @@ Create or update the implementation plan for the next sprint and create document
 Create the issues in AnthonyWrather/e-commerce-rails7
 Add the issues to the e-commerce-rails7 Kanban Board (https://github.com/users/AnthonyWrather/projects/3/views/2)
 
+--------------------------------
+
+Examine the sprint plan document "documentation.scratch/sprint-plan-add-a-chat-feature.md"
+Remember to run "rubocop", "rails test", "rails test:system"
+Fix any test failures and continue.
+Update any relevant documentation.
+
+--------------------------------
+
+Please analyse
+Create an issue in AnthonyWrather/e-commerce-rails7
+Add any labels needed
+Add the issue to the e-commerce-rails7 Kanban Board (https://github.com/users/AnthonyWrather/projects/3/views/2)
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
 
 --------------------------------
 

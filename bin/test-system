@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Script to run system tests without asset recompilation
+# This prevents intermittent hangs caused by Tailwind CSS and JavaScript builds
+
+# Ensure assets are built once before running tests
+echo "Building assets once before tests..."
+bundle exec rails tailwindcss:build > /dev/null 2>&1
+SKIP_JS_BUILD=1 bundle exec rails javascript:build > /dev/null 2>&1
+
+# Skip asset builds during test execution
+export SKIP_JS_BUILD=1
+export DISABLE_ASSET_BUILDS_IN_TESTS=1
+
+# Run the tests with assets already built
+exec bundle exec rails test:system "$@"
