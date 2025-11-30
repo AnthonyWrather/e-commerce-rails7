@@ -59,6 +59,18 @@
               <% end %>
             </li>
             <li>
+              <% unread_count = Conversation.unresolved.count %>
+              <%= link_to admin_conversations_path, class: "block px-4 py-2 hover:rounded hover:bg-gray-700 relative" do %>
+                <%= icon('fa-solid', 'comments', class: 'mr-2') %>
+                <span class="hidden md:inline-block">Chat</span>
+                <% if unread_count > 0 %>
+                  <span class="absolute top-1 left-6 md:relative md:top-auto md:left-auto md:ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                    <%= unread_count %>
+                  </span>
+                <% end %>
+              <% end %>
+            </li>
+            <li>
               <% if current_admin_user.two_factor_enabled? %>
                 <%= link_to edit_admin_users_two_factor_path, class: "block px-4 py-2 hover:rounded hover:bg-gray-700" do %>
                   <%= icon('fa-solid', 'shield-halved', class: 'mr-2') %> <span class="hidden md:inline-block">2FA Settings</span>
