@@ -69,7 +69,7 @@ class AdminUsers::TwoFactorControllerTest < ActionDispatch::IntegrationTest
 
     @admin_user.reload
     assert_not @admin_user.two_factor_enabled?
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 
   # GET /admin_users/two_factor/edit tests
@@ -107,7 +107,7 @@ class AdminUsers::TwoFactorControllerTest < ActionDispatch::IntegrationTest
 
     admin_with_2fa.reload
     assert admin_with_2fa.two_factor_enabled?
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 
   # POST /admin_users/two_factor/regenerate_backup_codes tests

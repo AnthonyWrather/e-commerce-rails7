@@ -19,8 +19,10 @@ class ErrorsController < ApplicationController
     @error_id = generate_error_id
     Honeybadger.context(error_id: @error_id, error_type: 'unprocessable_entity')
     respond_to do |format|
-      format.html { render :unprocessable_entity, status: 422 }
-      format.json { render json: { error: 'Unprocessable Entity', error_id: @error_id }, status: 422 }
+      format.html { render :unprocessable_entity, status: :unprocessable_content }
+      format.json do
+        render json: { error: 'Unprocessable Entity', error_id: @error_id }, status: :unprocessable_content
+      end
     end
   end
 

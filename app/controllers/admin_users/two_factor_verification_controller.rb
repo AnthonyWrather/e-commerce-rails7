@@ -26,7 +26,7 @@ class AdminUsers::TwoFactorVerificationController < ApplicationController
     else
       flash.now[:alert] = 'Invalid verification code. Please try again.'
       @user_id = session[:otp_user_id]
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 

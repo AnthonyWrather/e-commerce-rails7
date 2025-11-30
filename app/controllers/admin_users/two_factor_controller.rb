@@ -29,7 +29,7 @@ class AdminUsers::TwoFactorController < ApplicationController
       @qr_code = generate_qr_code
       @otp_secret = format_otp_secret(current_admin_user.otp_secret)
       flash.now[:alert] = 'Invalid verification code. Please try again.'
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -50,7 +50,7 @@ class AdminUsers::TwoFactorController < ApplicationController
     else
       @backup_codes_count = current_admin_user.otp_backup_codes&.count || 0
       flash.now[:alert] = 'Invalid password. Please try again.'
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

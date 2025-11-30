@@ -53,9 +53,9 @@ class AdminUsers::TwoFactorVerificationControllerTest < ActionDispatch::Integrat
     }
     follow_redirect!
 
-    post admin_users_two_factor_verification_path, params: { otp_attempt: '000000' }
+    post admin_users_two_factor_verification_url, params: { otp_attempt: '000000' }
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 
   test 'should sign in with valid backup code' do

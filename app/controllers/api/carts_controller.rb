@@ -19,7 +19,7 @@ class Api::CartsController < ApplicationController
     cart_data = @cart_service.to_local_storage_format
     render json: { items: cart_data, expires_at: @cart_service.cart.expires_at }
   rescue CartPersistenceService::PersistenceError => e
-    render json: { error: e.message }, status: :unprocessable_entity
+    render json: { error: e.message }, status: :unprocessable_content
   end
 
   def merge
@@ -27,7 +27,7 @@ class Api::CartsController < ApplicationController
     cart_data = @cart_service.to_local_storage_format
     render json: { items: cart_data, expires_at: @cart_service.cart.expires_at }
   rescue CartPersistenceService::PersistenceError => e
-    render json: { error: e.message }, status: :unprocessable_entity
+    render json: { error: e.message }, status: :unprocessable_content
   rescue ActiveRecord::RecordNotFound => e
     render json: { error: e.message }, status: :not_found
   end
