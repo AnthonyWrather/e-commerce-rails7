@@ -45,4 +45,20 @@ module ApplicationHelper
   def placeholder_thumb(options = {})
     image_tag(PLACEHOLDER_THUMB_URL, options.merge(alt: 'Image placeholder'))
   end
+
+  # Returns the CSS class for conversation status badges
+  def status_badge_class(status)
+    case status.to_s
+    when 'open'
+      'bg-blue-100 text-blue-800'
+    when 'active'
+      'bg-green-100 text-green-800'
+    when 'resolved', 'unknown'
+      'bg-gray-100 text-gray-800'
+    when 'closed'
+      'bg-red-100 text-red-800'
+    else
+      'bg-yellow-100 text-yellow-800'
+    end
+  end
 end
