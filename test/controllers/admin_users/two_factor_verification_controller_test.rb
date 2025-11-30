@@ -97,19 +97,5 @@ class AdminUsers::TwoFactorVerificationControllerTest < ActionDispatch::Integrat
 
     assert_redirected_to new_admin_user_session_path
   end
-
-  private
-
-  def create_admin_with_2fa
-    admin = AdminUser.create!(
-      email: "admin_2fa_#{SecureRandom.hex(4)}@example.com",
-      password: 'password123',
-      password_confirmation: 'password123'
-    )
-    admin.otp_secret = AdminUser.generate_otp_secret
-    admin.otp_required_for_login = true
-    admin.generate_otp_backup_codes!
-    admin.save!
-    admin
-  end
+  # Helper method is now provided by TwoFactorTestHelpers in test/support/
 end

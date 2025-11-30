@@ -11,6 +11,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   end
 
   include Devise::Test::IntegrationHelpers
+  include TwoFactorTestHelpers
 
   def sign_in_admin(admin = nil)
     admin ||= admin_users(:admin_user_one)

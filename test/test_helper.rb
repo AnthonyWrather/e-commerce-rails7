@@ -47,4 +47,11 @@ end
 class ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
   include StripeTestHelpers
+  include TwoFactorTestHelpers
+end
+
+module ActiveSupport
+  class TestCase
+    include TwoFactorTestHelpers
+  end
 end
