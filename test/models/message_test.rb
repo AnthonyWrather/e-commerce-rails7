@@ -124,7 +124,6 @@ class MessageTest < ActiveSupport::TestCase
 
   # Callbacks
   test 'should update conversation last_message_at on create' do
-    @conversation.last_message_at
     new_message = @conversation.messages.create!(
       sender: @user,
       content: 'New message'
