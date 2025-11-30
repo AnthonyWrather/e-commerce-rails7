@@ -16,6 +16,15 @@ Rails.application.routes.draw do
     end
   end
 
+  # API endpoints for cart persistence
+  namespace :api do
+    resource :cart, only: [:show] do
+      post :sync
+      post :merge
+      delete :clear
+    end
+  end
+
   # namespace :quantities do
   #   resources :mould_rectangle, only: [:index]
   #   resources :area, only: [:index]

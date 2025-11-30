@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+cart_item_one:
+  cart: cart_one
+  product: product_one
+  stock: stock_one
+  size: "1m x 10m Roll"
+  quantity: 2
+  price: 14000
+
+cart_item_two:
+  cart: cart_one
+  product: product_two
+  size: ""
+  quantity: 1
+  price: 2000
+
+cart_item_expired:
+  cart: expired_cart
+  product: product_three
+  size: ""
+  quantity: 3
+  price: 2500
