@@ -4,6 +4,7 @@ class CategoriesController < ApplicationController
   # Setup the breadcrumbs.
   add_breadcrumb 'Home', :root_path
 
+  # rubocop:disable Metrics/AbcSize
   def show
     @category = Category.find(params[:id])
     add_breadcrumb @category.name, :category_path
@@ -16,4 +17,5 @@ class CategoriesController < ApplicationController
     @products = @products.sorted_by(params[:sort])
     @product_count = @products.count
   end
+  # rubocop:enable Metrics/AbcSize
 end
