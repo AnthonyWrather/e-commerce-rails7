@@ -265,8 +265,6 @@ Update documentation.
 /awesome-copilot create-readme
 Follow instructions in suggest-awesome-github-copilot-collections.prompt.md
 
-Follow instructions in [create-readme.prompt.md]
-
 Analyse the models, schema.rb, etc and update the existing schema-diagram.md
 
 Analyze this codebase to generate or update `.github/copilot-instructions.md` and `.github/AGENTS.md` for guiding AI coding agents.
@@ -289,6 +287,8 @@ Guidelines (read more at https://aka.ms/vscode-instructions-docs):
 - Reference key files/directories that exemplify important patterns
 
 Generate or update `.github/copilot-instructions.md` and `.github/AGENTS.md` for the user, then ask for feedback on any unclear or incomplete sections to iterate.
+
+Follow instructions in [create-readme.prompt.md]
 
 --------------------------------
 
@@ -349,6 +349,49 @@ Analyse issue [#176](https://github.com/AnthonyWrather/e-commerce-rails7/issues/
 Create or update the implementation plan for the next sprint and create documentation.scratch/sprint-plan-add-a-chat-feature.md
 Create the issues in AnthonyWrather/e-commerce-rails7
 Add the issues to the e-commerce-rails7 Kanban Board (https://github.com/users/AnthonyWrather/projects/3/views/2)
+
+--------------------------------
+
+Examine the sprint plan document "documentation.scratch/sprint-plan-add-a-chat-feature.md"
+Remember to run "rubocop", "rails test", "rails test:system"
+Fix any test failures and continue.
+Update any relevant documentation.
+
+--------------------------------
+
+Please analyse
+Create an issue in AnthonyWrather/e-commerce-rails7
+Add any labels needed
+Add the issue to the e-commerce-rails7 Kanban Board (https://github.com/users/AnthonyWrather/projects/3/views/2)
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
+
+
+--------------------------------
 
 
 --------------------------------
