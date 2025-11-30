@@ -112,8 +112,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_30_153340) do
   end
 
   create_table "order_products", force: :cascade do |t|
-    t.integer "product_id", null: false
-    t.integer "order_id", null: false
+    t.bigint "product_id", null: false
+    t.bigint "order_id", null: false
     t.string "size"
     t.integer "quantity"
     t.datetime "created_at", null: false
@@ -150,7 +150,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_30_153340) do
     t.string "name"
     t.text "description"
     t.integer "price"
-    t.integer "category_id", null: false
+    t.bigint "category_id", null: false
     t.boolean "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -173,7 +173,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_30_153340) do
   create_table "stocks", force: :cascade do |t|
     t.string "size"
     t.integer "stock_level"
-    t.integer "product_id", null: false
+    t.bigint "product_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "price"
