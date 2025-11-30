@@ -9,6 +9,12 @@ class AdminUser < ApplicationRecord
          otp_secret_encryption_key: ENV.fetch('OTP_SECRET_ENCRYPTION_KEY',
                                               Rails.application.credentials.secret_key_base)
 
+  # Chat associations
+  has_many :conversation_participants, dependent: :destroy
+  has_many :conversations, through: :conversation_participants
+  has_many :messages, as: :sender, dependent: :destroy
+  has_one :admin_presence, dependent: :destroy
+
   # Serialization for backup codes stored as JSON array
   serialize :otp_backup_codes, coder: JSON
 

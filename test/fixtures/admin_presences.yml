@@ -1,0 +1,12 @@
+# Test fixtures for admin presences
+# Tracks admin online/offline status for chat
+
+admin_presence_one:
+  admin_user: admin_user_one
+  status: "online"
+  last_seen_at: <%= Time.current %>
+
+admin_presence_two:
+  admin_user: admin_user_two
+  status: "offline"
+  last_seen_at: <%= 1.hour.ago %>
