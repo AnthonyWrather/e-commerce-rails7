@@ -316,4 +316,94 @@ class CartTest < ActiveSupport::TestCase
     almost_expired = Cart.create!(session_token: 'almost_expired_token', expires_at: 1.second.from_now)
     assert_not almost_expired.expired?
   end
+
+  # ============================================================================
+  # USER OWNERSHIP TESTS
+  # ============================================================================
+
+  test 'should allow optional user association' do
+    cart = Cart.create!(session_token: 'guest_cart_token')
+    assert_nil cart.user
+    assert cart.valid?
+  end
+
+  test 'should allow cart with user' do
+    user = users(:user_one)
+    cart = Cart.create!(session_token: 'user_cart_token', user: user)
+    assert_equal user, cart.user
+    assert cart.valid?
+  end
+
+  test 'guest? returns true for cart without user' do
+    cart = Cart.create!(session_token: 'guest_check_token')
+    assert cart.guest?
+  end
+
+  test 'guest? returns false for cart with user' do
+    user_cart = carts(:user_one_cart)
+    assert_not user_cart.guest?
+  end
+
+  test 'guest_carts scope returns only carts without users' do
+    guest_carts = Cart.guest_carts
+    assert guest_carts.all?(&:guest?)
+    assert_not guest_carts.include?(carts(:user_one_cart))
+  end
+
+  test 'user_carts scope returns only carts with users' do
+    user_carts = Cart.user_carts
+    assert user_carts.none?(&:guest?)
+    assert user_carts.include?(carts(:user_one_cart))
+  end
+
+  test 'for_user scope returns carts for specific user' do
+    user = users(:user_one)
+    user_carts = Cart.for_user(user)
+    assert(user_carts.all? { |c| c.user == user })
+  end
+
+  test 'find_or_create_for_user finds existing user cart' do
+    user = users(:user_one)
+    existing_cart = carts(:user_one_cart)
+
+    cart = Cart.find_or_create_for_user(user)
+    assert_equal existing_cart.id, cart.id
+  end
+
+  test 'find_or_create_for_user creates new cart if none exists' do
+    user = users(:unconfirmed_user)
+
+    cart = Cart.find_or_create_for_user(user)
+    assert cart.persisted?
+    assert_equal user, cart.user
+  end
+
+  test 'find_or_create_for_user converts guest cart to user cart' do
+    user = users(:unconfirmed_user)
+    guest_cart = Cart.create!(session_token: 'convert_guest_token')
+
+    cart = Cart.find_or_create_for_user(user, session_token: guest_cart.session_token)
+    assert_equal guest_cart.id, cart.id
+    assert_equal user, cart.user
+  end
+
+  test 'assign_to_user! assigns cart to user' do
+    user = users(:unconfirmed_user)
+    cart = Cart.create!(session_token: 'assign_test_token')
+
+    cart.assign_to_user!(user)
+    assert_equal user, cart.user
+  end
+
+  test 'assign_to_user! merges with existing user cart' do
+    user = users(:user_one)
+    existing_cart = carts(:user_one_cart)
+    guest_cart = Cart.create!(session_token: 'merge_assign_token')
+    guest_cart.cart_items.create!(product: @product, size: 'test', quantity: 5, price: @product.price)
+
+    result_cart = guest_cart.assign_to_user!(user)
+
+    assert_equal existing_cart.id, result_cart.id
+    assert_not Cart.exists?(guest_cart.id)
+  end
 end
