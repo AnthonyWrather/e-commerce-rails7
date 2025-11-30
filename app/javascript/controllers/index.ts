@@ -8,8 +8,12 @@ import CartController from "./cart_controller"
 import ProductsController from "./products_controller"
 import DashboardController from "./dashboard_controller"
 import QuantitiesController from "./quantities_controller"
+import ChatController from "./chat_controller"
+import PresenceController from "./presence_controller"
 
 application.register("cart", CartController)
 application.register("products", ProductsController)
 application.register("dashboard", DashboardController)
 application.register("quantities", QuantitiesController)
+application.register("chat", ChatController)
+application.register("presence", PresenceController)

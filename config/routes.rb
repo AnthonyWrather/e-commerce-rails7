@@ -18,6 +18,9 @@ Rails.application.routes.draw do
       end
     end
     resources :orders, only: %i[index show], controller: 'users/orders'
+    resources :conversations, only: %i[index show new create], controller: 'users/conversations' do
+      resources :messages, only: [:create], controller: 'users/messages'
+    end
   end
 
   namespace :admin do
