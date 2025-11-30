@@ -89,7 +89,7 @@ class Admin::ConversationsControllerTest < ActionDispatch::IntegrationTest
   test 'should toggle availability to online' do
     AdminPresence.where(admin_user: @admin_user).destroy_all
 
-    post toggle_availability_admin_conversations_url
+    post admin_toggle_availability_conversations_url
 
     assert_redirected_to admin_conversations_path
     assert_match(/Status updated to/, flash[:notice])
@@ -104,7 +104,7 @@ class Admin::ConversationsControllerTest < ActionDispatch::IntegrationTest
       p.last_seen_at = Time.current
     end
 
-    post toggle_availability_admin_conversations_url
+    post admin_toggle_availability_conversations_url
 
     assert_redirected_to admin_conversations_path
     presence = AdminPresence.find_by(admin_user: @admin_user)

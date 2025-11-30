@@ -19,16 +19,16 @@
       <!-- Action Buttons -->
       <div class="flex items-center space-x-2">
         <% if @conversation.open? || @conversation.active? %>
-          <%= link_to resolve_admin_conversation_path(@conversation), method: :patch, data: { turbo_method: :patch, turbo_confirm: 'Mark this conversation as resolved?' }, class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+          <%= link_to resolve_admin_conversation_path(@conversation), data: { turbo_method: :patch, turbo_confirm: 'Mark this conversation as resolved?' }, class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
             <%= icon('fa-solid', 'check', class: 'mr-2') %>
             Resolve
           <% end %>
-          <%= link_to close_admin_conversation_path(@conversation), method: :patch, data: { turbo_method: :patch, turbo_confirm: 'Close this conversation permanently? The customer will not be able to reopen it.' }, class: "inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50" do %>
+          <%= link_to close_admin_conversation_path(@conversation), data: { turbo_method: :patch, turbo_confirm: 'Close this conversation permanently? The customer will not be able to reopen it.' }, class: "inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50" do %>
             <%= icon('fa-solid', 'xmark', class: 'mr-2') %>
             Close
           <% end %>
         <% elsif @conversation.resolved? %>
-          <%= link_to assign_admin_conversation_path(@conversation), method: :post, data: { turbo_method: :post }, class: "inline-flex items-center px-3 py-2 border border-green-300 shadow-sm text-sm font-medium rounded-md text-green-700 bg-white hover:bg-green-50" do %>
+          <%= link_to assign_admin_conversation_path(@conversation), data: { turbo_method: :post }, class: "inline-flex items-center px-3 py-2 border border-green-300 shadow-sm text-sm font-medium rounded-md text-green-700 bg-white hover:bg-green-50" do %>
             <%= icon('fa-solid', 'rotate-left', class: 'mr-2') %>
             Reopen
           <% end %>
@@ -135,7 +135,7 @@
         <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Quick Actions</label>
         <div class="space-y-2">
           <% unless @conversation.conversation_participants.exists?(admin_user: current_admin_user) %>
-            <%= link_to assign_admin_conversation_path(@conversation), method: :post, data: { turbo_method: :post }, class: "block w-full text-center px-3 py-2 border border-blue-300 text-sm font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50" do %>
+            <%= link_to assign_admin_conversation_path(@conversation), data: { turbo_method: :post }, class: "block w-full text-center px-3 py-2 border border-blue-300 text-sm font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50" do %>
               <%= icon('fa-solid', 'user-plus', class: 'mr-2') %>
               Assign to Me
             <% end %>

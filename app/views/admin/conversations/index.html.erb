@@ -5,7 +5,7 @@
       <!-- Availability Toggle -->
       <div class="flex items-center">
         <span class="mr-2 text-sm text-gray-600">Status:</span>
-        <%= link_to toggle_availability_admin_conversations_path, method: :post, data: { turbo_method: :post }, class: "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium #{@current_admin_presence&.status == 'online' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}" do %>
+        <%= link_to admin_toggle_availability_conversations_path, method: :post, data: { turbo_method: :post }, class: "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium #{@current_admin_presence&.status == 'online' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}" do %>
           <span class="w-2 h-2 rounded-full mr-2 <%= @current_admin_presence&.status == 'online' ? 'bg-green-500' : 'bg-gray-400' %>"></span>
           <%= @current_admin_presence&.status&.capitalize || 'Offline' %>
         <% end %>
@@ -165,7 +165,7 @@
                 <td class="px-4 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                   <%= link_to 'View', admin_conversation_path(conversation), class: 'text-blue-600 hover:text-blue-900' %>
                   <% unless conversation.conversation_participants.exists?(admin_user: current_admin_user) %>
-                    <%= link_to 'Assign', assign_admin_conversation_path(conversation), method: :post, data: { turbo_method: :post }, class: 'text-green-600 hover:text-green-900' %>
+                    <%= link_to 'Assign', assign_admin_conversation_path(conversation), data: { turbo_method: :post }, class: 'text-green-600 hover:text-green-900' %>
                   <% end %>
                 </td>
               </tr>
