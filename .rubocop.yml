@@ -116,3 +116,8 @@ Style/SlicingWithRange:
 # Linting Configuration
 Lint/NonLocalExitFromIterator:
   Enabled: true  # This should be caught
+
+# Naming Configuration
+Naming/PredicateMethod:
+  Exclude:
+    - 'app/models/admin_user.rb'  # enable_two_factor!, disable_two_factor!, validate_backup_code are action methods not predicates

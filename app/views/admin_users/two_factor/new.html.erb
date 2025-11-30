@@ -1,0 +1,57 @@
+<div class="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50 sm:px-6 lg:px-8">
+  <div class="w-full max-w-md space-y-8">
+    <div>
+      <h2 class="mt-6 text-3xl font-extrabold text-center text-gray-900">
+        Set Up Two-Factor Authentication
+      </h2>
+      <p class="mt-2 text-sm text-center text-gray-600">
+        Scan the QR code with your authenticator app (Google Authenticator, Authy, etc.)
+      </p>
+    </div>
+
+    <div class="p-6 bg-white rounded-lg shadow">
+      <%# QR Code Display %>
+      <div class="flex justify-center mb-6">
+        <div class="p-4 bg-white border-2 border-gray-200 rounded-lg">
+          <%= raw @qr_code %>
+        </div>
+      </div>
+
+      <%# Manual Entry Secret %>
+      <div class="mb-6">
+        <p class="mb-2 text-sm font-medium text-gray-700 text-center">
+          Can't scan the QR code? Enter this key manually:
+        </p>
+        <div class="p-3 font-mono text-sm text-center bg-gray-100 rounded-md select-all">
+          <%= @otp_secret %>
+        </div>
+      </div>
+
+      <%# Verification Form %>
+      <%= form_tag admin_users_two_factor_path, method: :post, class: "space-y-6" do %>
+        <div>
+          <%= label_tag :otp_attempt, "Verification Code", class: "block text-sm font-medium text-gray-700" %>
+          <p class="text-xs text-gray-500 mt-1">
+            Enter the 6-digit code from your authenticator app
+          </p>
+          <%= text_field_tag :otp_attempt, nil,
+              autofocus: true,
+              autocomplete: "one-time-code",
+              inputmode: "numeric",
+              pattern: "[0-9]*",
+              maxlength: 6,
+              class: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-center tracking-widest font-mono text-lg" %>
+        </div>
+
+        <div>
+          <%= submit_tag "Verify and Enable 2FA",
+              class: "relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md group hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+        </div>
+      <% end %>
+
+      <div class="mt-4 text-center">
+        <%= link_to "Cancel", admin_root_path, class: "text-sm text-gray-600 hover:text-gray-900" %>
+      </div>
+    </div>
+  </div>
+</div>

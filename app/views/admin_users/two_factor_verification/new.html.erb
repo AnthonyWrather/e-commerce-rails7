@@ -1,0 +1,60 @@
+<div class="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50 sm:px-6 lg:px-8">
+  <div class="w-full max-w-md space-y-8">
+    <div>
+      <h2 class="mt-6 text-3xl font-extrabold text-center text-gray-900">
+        Two-Factor Verification
+      </h2>
+      <p class="mt-2 text-sm text-center text-gray-600">
+        Enter the 6-digit code from your authenticator app
+      </p>
+    </div>
+
+    <div class="p-6 bg-white rounded-lg shadow">
+      <%= form_tag admin_users_two_factor_verification_path, method: :post, class: "space-y-6" do %>
+        <div>
+          <%= label_tag :otp_attempt, "Verification Code", class: "block text-sm font-medium text-gray-700" %>
+          <%= text_field_tag :otp_attempt, nil,
+              autofocus: true,
+              autocomplete: "one-time-code",
+              inputmode: "numeric",
+              pattern: "[0-9]*",
+              maxlength: 6,
+              class: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-center tracking-widest font-mono text-lg" %>
+        </div>
+
+        <div>
+          <%= submit_tag "Verify",
+              class: "relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md group hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+        </div>
+      <% end %>
+
+      <div class="mt-6 border-t border-gray-200 pt-4">
+        <p class="text-sm text-center text-gray-600 mb-2">
+          Lost access to your authenticator app?
+        </p>
+        <details class="text-sm text-gray-600">
+          <summary class="cursor-pointer text-blue-600 hover:text-blue-700 text-center">
+            Use a backup code instead
+          </summary>
+          <div class="mt-4">
+            <p class="text-xs text-gray-500 mb-2 text-center">
+              Enter one of your backup codes. Each code can only be used once.
+            </p>
+            <%= form_tag admin_users_two_factor_verification_path, method: :post, class: "space-y-4" do %>
+              <%= text_field_tag :otp_attempt, nil,
+                  placeholder: "Enter backup code",
+                  autocomplete: "off",
+                  class: "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-center font-mono" %>
+              <%= submit_tag "Use Backup Code",
+                  class: "w-full px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+            <% end %>
+          </div>
+        </details>
+      </div>
+
+      <div class="mt-4 text-center">
+        <%= link_to "Back to Sign In", new_admin_user_session_path, class: "text-sm text-gray-600 hover:text-gray-900" %>
+      </div>
+    </div>
+  </div>
+</div>

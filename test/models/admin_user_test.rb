@@ -198,4 +198,121 @@ class AdminUserTest < ActiveSupport::TestCase
     @admin_user.save!
     assert @admin_user.updated_at > original_updated_at
   end
+
+  # Two-Factor Authentication Tests
+
+  test 'should have two_factor_authenticatable module' do
+    assert AdminUser.devise_modules.include?(:two_factor_authenticatable)
+  end
+
+  test 'should have two_factor_backupable module' do
+    assert AdminUser.devise_modules.include?(:two_factor_backupable)
+  end
+
+  test 'two_factor_enabled? returns false when otp_required_for_login is false' do
+    assert_not @admin_user.two_factor_enabled?
+  end
+
+  test 'two_factor_enabled? returns true when otp_required_for_login is true' do
+    admin_with_2fa = create_admin_with_2fa
+    assert admin_with_2fa.two_factor_enabled?
+  end
+
+  test 'setup_two_factor! generates an otp_secret' do
+    @admin_user.setup_two_factor!
+    assert @admin_user.otp_secret.present?
+  end
+
+  test 'two_factor_pending? returns true when secret exists but not enabled' do
+    @admin_user.setup_two_factor!
+    @admin_user.otp_required_for_login = false
+    @admin_user.save!
+    assert @admin_user.two_factor_pending?
+  end
+
+  test 'two_factor_pending? returns false when 2FA is enabled' do
+    admin_with_2fa = create_admin_with_2fa
+    assert_not admin_with_2fa.two_factor_pending?
+  end
+
+  test 'disable_two_factor! clears 2FA fields with correct password' do
+    admin_with_2fa = create_admin_with_2fa
+    result = admin_with_2fa.disable_two_factor!('password123')
+
+    assert result
+    assert_not admin_with_2fa.otp_required_for_login
+    assert_nil admin_with_2fa.otp_secret
+    assert_nil admin_with_2fa.otp_backup_codes
+  end
+
+  test 'disable_two_factor! fails with incorrect password' do
+    admin_with_2fa = create_admin_with_2fa
+    result = admin_with_2fa.disable_two_factor!('wrongpassword')
+
+    assert_not result
+    assert admin_with_2fa.otp_required_for_login
+    assert admin_with_2fa.otp_secret.present?
+  end
+
+  test 'validate_backup_code consumes valid code' do
+    admin_with_2fa = create_admin_with_2fa
+    original_count = admin_with_2fa.otp_backup_codes.count
+    first_code = admin_with_2fa.otp_backup_codes.first
+
+    result = admin_with_2fa.validate_backup_code(first_code)
+
+    assert result
+    assert_equal original_count - 1, admin_with_2fa.otp_backup_codes.count
+    assert_not admin_with_2fa.otp_backup_codes.include?(first_code)
+  end
+
+  test 'validate_backup_code rejects invalid code' do
+    admin_with_2fa = create_admin_with_2fa
+    original_count = admin_with_2fa.otp_backup_codes.count
+
+    result = admin_with_2fa.validate_backup_code('INVALIDCODE')
+
+    assert_not result
+    assert_equal original_count, admin_with_2fa.otp_backup_codes.count
+  end
+
+  test 'validate_backup_code returns false for blank code' do
+    admin_with_2fa = create_admin_with_2fa
+    assert_not admin_with_2fa.validate_backup_code('')
+    assert_not admin_with_2fa.validate_backup_code(nil)
+  end
+
+  test 'otp_provisioning_uri includes email and issuer' do
+    @admin_user.setup_two_factor!
+    uri = @admin_user.otp_provisioning_uri
+
+    assert_match(/Southcoast/, uri)
+    assert_match(@admin_user.email.gsub('@', '%40'), uri)
+  end
+
+  test 'regenerate_backup_codes! creates new backup codes' do
+    admin_with_2fa = create_admin_with_2fa
+    old_codes = admin_with_2fa.otp_backup_codes.dup
+
+    admin_with_2fa.regenerate_backup_codes!
+
+    assert_not_equal old_codes, admin_with_2fa.otp_backup_codes
+    assert admin_with_2fa.otp_backup_codes.present?
+  end
+
+  private
+
+  # Helper to create an admin user with 2FA enabled
+  def create_admin_with_2fa
+    admin = AdminUser.create!(
+      email: "admin_2fa_#{SecureRandom.hex(4)}@example.com",
+      password: 'password123',
+      password_confirmation: 'password123'
+    )
+    admin.otp_secret = AdminUser.generate_otp_secret
+    admin.otp_required_for_login = true
+    admin.generate_otp_backup_codes!
+    admin.save!
+    admin
+  end
 end
