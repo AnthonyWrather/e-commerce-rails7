@@ -10,10 +10,25 @@ erDiagram
     products ||--o{ order_products : "has many"
     products ||--o{ cart_items : "has many"
     orders ||--o{ order_products : "has many"
+    orders }o--|| users : "belongs to (optional)"
     carts ||--o{ cart_items : "has many"
+    carts }o--|| users : "belongs to (optional)"
     stocks ||--o{ cart_items : "has many (optional)"
     active_storage_blobs ||--o{ active_storage_attachments : "has many"
     active_storage_blobs ||--o{ active_storage_variant_records : "has many"
+    users ||--o{ conversations : "has many"
+    users ||--o{ messages : "has many (as sender)"
+    users ||--o{ addresses : "has many"
+    users ||--o{ carts : "has many"
+    users ||--o{ orders : "has many"
+    conversations ||--o{ messages : "has many"
+    conversations ||--o{ conversation_participants : "has many"
+    conversations }o--|| users : "belongs to"
+    conversation_participants }o--|| conversations : "belongs to"
+    conversation_participants }o--|| admin_users : "belongs to"
+    admin_users ||--o{ messages : "has many (as sender)"
+    admin_users ||--o{ conversation_participants : "has many"
+    admin_users ||--|| admin_presences : "has one"
 
     categories {
         bigint id PK
@@ -112,6 +127,7 @@ erDiagram
         datetime expires_at "cart expiration time"
         datetime created_at
         datetime updated_at
+        bigint user_id FK "optional, for logged-in users"
     }
 
     cart_items {
@@ -122,6 +138,80 @@ erDiagram
         string size "product size variant"
         integer quantity "item quantity"
         integer price "in pence, captured at add"
+        datetime created_at
+        datetime updated_at
+    }
+
+    users {
+        bigint id PK
+        string email UK
+        string encrypted_password
+        string reset_password_token UK
+        datetime reset_password_sent_at
+        datetime remember_created_at
+        string confirmation_token UK
+        datetime confirmed_at
+        datetime confirmation_sent_at
+        string unconfirmed_email
+        string full_name "required"
+        string phone "optional"
+        datetime created_at
+        datetime updated_at
+    }
+
+    addresses {
+        bigint id PK
+        bigint user_id FK
+        string label "default: Home"
+        string full_name "required"
+        string line1 "required"
+        string line2 "optional"
+        string city "required"
+        string county "optional"
+        string postcode "required"
+        string country "default: United Kingdom"
+        string phone "optional"
+        boolean primary "default: false"
+        datetime created_at
+        datetime updated_at
+    }
+
+    conversations {
+        bigint id PK
+        bigint user_id FK
+        integer status "enum: open(0), active(1), resolved(2), closed(3)"
+        string subject "optional"
+        datetime last_message_at "updated on new message"
+        datetime created_at
+        datetime updated_at
+    }
+
+    messages {
+        bigint id PK
+        bigint conversation_id FK
+        string sender_type "User or AdminUser"
+        bigint sender_id "polymorphic sender"
+        text content "max 5000 chars"
+        datetime read_at "nullable"
+        datetime created_at
+        datetime updated_at
+    }
+
+    conversation_participants {
+        bigint id PK
+        bigint conversation_id FK
+        bigint admin_user_id FK
+        datetime last_read_at "track read status"
+        boolean active "default: true"
+        datetime created_at
+        datetime updated_at
+    }
+
+    admin_presences {
+        bigint id PK
+        bigint admin_user_id FK UK
+        string status "online or offline"
+        datetime last_seen_at "nullable"
         datetime created_at
         datetime updated_at
     }
@@ -316,6 +406,137 @@ The schema supports two pricing strategies:
 - `total` - Calculate total for this item (price × quantity)
 - `stock_available?` - Check if sufficient stock is available
 
+### User Model
+**Associations:**
+- `has_many :carts`
+- `has_many :addresses`
+- `has_many :orders`
+- `has_many :conversations`
+- `has_many :messages` (polymorphic as sender)
+
+**Authentication:** Devise modules
+- `database_authenticatable`
+- `registerable`
+- `recoverable`
+- `rememberable`
+- `validatable`
+- `confirmable`
+
+**Validations:**
+- `email`: required, unique, valid email format
+- `full_name`: required, 2-100 characters
+- `phone`: optional, format validation (numbers/spaces/+/-)
+
+**Methods:**
+- `display_name` - Returns full_name or email prefix
+- `primary_address` - Returns the primary shipping address
+
+**Note:** PaperTrail audit logging enabled
+
+### Address Model
+**Associations:**
+- `belongs_to :user` (dependent: destroy)
+
+**Validations:**
+- `full_name`: required
+- `line1`: required (address line 1)
+- `city`: required
+- `postcode`: required, format validation
+- `country`: default "United Kingdom"
+- `primary`: boolean, default false
+
+**Indexes:**
+- `user_id`
+- `postcode`
+- Composite: `user_id` + `primary`
+
+**Methods:**
+- `display_name` - Returns label or "Home"
+- `to_s` - Returns formatted multi-line address
+
+### Conversation Model
+**Associations:**
+- `belongs_to :user` (customer who initiated)
+- `has_many :messages`
+- `has_many :conversation_participants`
+- `has_many :admin_users, through: :conversation_participants`
+
+**Status Enum:**
+- `open` (0) - Newly created, awaiting admin assignment
+- `active` (1) - Admin assigned and responding
+- `resolved` (2) - Issue resolved, may be reopened
+- `closed` (3) - Permanently closed
+
+**Scopes:**
+- `recent` - Ordered by last_message_at desc
+- `unresolved` - Status is open or active
+- `for_user(user_id)` - Conversations for specific user
+- `for_admin(admin_user_id)` - Conversations assigned to admin
+
+**Methods:**
+- `unread_messages_for(participant)` - Count unread messages
+- `latest_message` - Returns most recent message
+- `participant_for(admin_user)` - Returns participant record for admin
+
+**Note:** PaperTrail audit logging enabled
+
+### Message Model
+**Associations:**
+- `belongs_to :conversation` (touches last_message_at on create)
+- `belongs_to :sender` (polymorphic: User or AdminUser)
+
+**Validations:**
+- `content`: required, max 5000 characters
+- `sender_type`: must be 'User' or 'AdminUser'
+
+**Scopes:**
+- `recent` - Ordered by created_at asc
+- `unread_for(participant)` - Messages with read_at nil after participant's last_read_at
+
+**Callbacks:**
+- `after_create_commit :update_conversation_timestamp` - Updates conversation.last_message_at
+
+**Methods:**
+- `sender_name` - Returns sender's display name
+- `sender_type_class` - Returns 'admin' or 'user' for CSS classes
+
+### ConversationParticipant Model
+**Associations:**
+- `belongs_to :conversation`
+- `belongs_to :admin_user`
+
+**Validations:**
+- Unique constraint: conversation_id + admin_user_id (enforces one admin per conversation)
+
+**Fields:**
+- `last_read_at` - Timestamp for read status tracking
+- `active` - Boolean, default true (for soft deletion)
+
+**Indexes:**
+- Unique composite: conversation_id + admin_user_id
+
+### AdminPresence Model
+**Associations:**
+- `belongs_to :admin_user`
+
+**Validations:**
+- `admin_user_id`: unique (one presence record per admin)
+- `status`: required, values 'online' or 'offline'
+
+**Indexes:**
+- Unique: `admin_user_id`
+- `status` - For filtering online admins
+- `last_seen_at` - For cleanup queries
+
+**Broadcasting:**
+- Status changes broadcast to PresenceChannel (Action Cable)
+- Customers see real-time admin availability
+
+**Methods:**
+- `update_status!(status)` - Updates status and broadcasts change
+- `online?` - Returns true if status is 'online'
+- `offline?` - Returns true if status is 'offline'
+
 ### AdminUser Model
 **Authentication:** Devise modules
 - `database_authenticatable`
@@ -373,6 +594,36 @@ The schema supports two pricing strategies:
 - `index_admin_users_on_email` (unique)
 - `index_admin_users_on_reset_password_token` (unique)
 
+### Users Table
+- `index_users_on_email` (unique)
+- `index_users_on_reset_password_token` (unique)
+- `index_users_on_confirmation_token` (unique)
+
+### Addresses Table
+- `index_addresses_on_user_id`
+- `index_addresses_on_postcode`
+- `index_addresses_on_user_id_and_primary` (composite)
+
+### Conversations Table
+- `index_conversations_on_user_id`
+- `index_conversations_on_status`
+- `index_conversations_on_last_message_at`
+- `index_conversations_on_user_id_and_status` (composite)
+
+### Messages Table
+- `index_messages_on_conversation_id`
+- `index_messages_on_sender` (polymorphic composite: sender_type, sender_id)
+- `index_messages_on_conversation_id_and_created_at` (composite)
+
+### ConversationParticipants Table
+- `index_conversation_participants_on_conversation_id_and_admin_user_id` (unique composite)
+- `index_conversation_participants_on_admin_user_id`
+
+### AdminPresences Table
+- `index_admin_presences_on_admin_user_id` (unique)
+- `index_admin_presences_on_status`
+- `index_admin_presences_on_last_seen_at`
+
 ### Versions Table (PaperTrail)
 - `index_versions_on_item_type_and_item_id` (composite)
 - `index_versions_on_whodunnit`
@@ -387,11 +638,12 @@ The schema supports two pricing strategies:
 
 ## Schema Version
 
-Current schema version: `2025_11_30_015033` (PostgreSQL 17)
+Current schema version: `2025_11_30_165804` (PostgreSQL 17)
 
 ## Foreign Key Constraints
 
 ### Cart Tables
+- `carts.user_id` → `users.id` (on_delete: nullify, nullable)
 - `cart_items.cart_id` → `carts.id` (on_delete: cascade, on_update: cascade)
 - `cart_items.product_id` → `products.id` (on_delete: cascade, on_update: cascade)
 - `cart_items.stock_id` → `stocks.id` (on_delete: cascade, on_update: cascade)
@@ -401,8 +653,20 @@ Current schema version: `2025_11_30_015033` (PostgreSQL 17)
 - `stocks.product_id` → `products.id`
 
 ### Order Tables
+- `orders.user_id` → `users.id` (nullable)
 - `order_products.product_id` → `products.id`
 - `order_products.order_id` → `orders.id`
+
+### User & Address Tables
+- `addresses.user_id` → `users.id` (on_delete: cascade)
+
+### Chat Tables
+- `conversations.user_id` → `users.id`
+- `messages.conversation_id` → `conversations.id`
+- `messages.sender_id` → polymorphic (users.id or admin_users.id, based on sender_type)
+- `conversation_participants.conversation_id` → `conversations.id`
+- `conversation_participants.admin_user_id` → `admin_users.id`
+- `admin_presences.admin_user_id` → `admin_users.id`
 
 ### Active Storage Tables
 - `active_storage_attachments.blob_id` → `active_storage_blobs.id`
@@ -414,9 +678,13 @@ Current schema version: `2025_11_30_015033` (PostgreSQL 17)
 - **Carts**: Deleting a cart automatically deletes all associated cart_items
 - **Products**: Deleting a product cascades to cart_items (prevents orphaned cart references)
 - **Categories**: Deleting a category cascades to products (as per model `dependent: :destroy`)
+- **Users**: Deleting a user cascades to addresses but nullifies cart references
+- **Conversations**: Messages are dependent on conversations (cascade delete expected)
 
 ### Referential Integrity
 - All foreign keys enforce referential integrity at the database level
 - Cart items cannot reference non-existent products, stocks, or carts
 - Order products maintain references even if product is deleted (no cascade on orders)
+- Messages use polymorphic association to reference either User or AdminUser as sender
+- Unique constraint on conversation_participants ensures one admin per conversation
 
