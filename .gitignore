@@ -39,6 +39,9 @@
 
 /node_modules
 
+# Ignore npm lock file (project uses Yarn)
+package-lock.json
+
 # Ignore vendored gems
 /vendor/bundle
 
