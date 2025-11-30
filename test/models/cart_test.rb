@@ -7,6 +7,8 @@ class CartTest < ActiveSupport::TestCase
     @cart = carts(:cart_one)
     @expired_cart = carts(:expired_cart)
     @product = products(:product_one)
+    @product_two = products(:product_two)
+    @product_three = products(:product_three)
   end
 
   test 'should be valid with required attributes' do
@@ -134,5 +136,179 @@ class CartTest < ActiveSupport::TestCase
     cart.destroy
 
     assert_nil CartItem.find_by(id: cart_item_id)
+  end
+
+  # ============================================================================
+  # CART MERGE SCENARIO TESTS
+  # ============================================================================
+
+  test 'merge_items! handles string keys in item hash' do
+    new_cart = Cart.create!(session_token: 'merge_string_keys_token')
+    initial_count = new_cart.cart_items.count
+
+    new_cart.merge_items!([
+                            { 'product_id' => @product.id, 'size' => '', 'quantity' => 2, 'price' => @product.price }
+                          ])
+
+    assert_equal initial_count + 1, new_cart.cart_items.count
+    item = new_cart.cart_items.first
+    assert_equal @product.id, item.product_id
+    assert_equal 2, item.quantity
+  end
+
+  test 'merge_items! handles id key instead of product_id' do
+    new_cart = Cart.create!(session_token: 'merge_id_key_token')
+
+    new_cart.merge_items!([
+                            { 'id' => @product.id, 'size' => '', 'quantity' => 1 }
+                          ])
+
+    assert_equal 1, new_cart.cart_items.count
+    assert_equal @product.id, new_cart.cart_items.first.product_id
+  end
+
+  test 'merge_items! ignores items with nil product_id' do
+    new_cart = Cart.create!(session_token: 'merge_nil_product_token')
+
+    new_cart.merge_items!([
+                            { 'product_id' => nil, 'size' => '', 'quantity' => 1 }
+                          ])
+
+    assert_equal 0, new_cart.cart_items.count
+  end
+
+  test 'merge_items! ignores items with invalid product_id' do
+    new_cart = Cart.create!(session_token: 'merge_invalid_product_token')
+
+    new_cart.merge_items!([
+                            { 'product_id' => 999_999, 'size' => '', 'quantity' => 1 }
+                          ])
+
+    assert_equal 0, new_cart.cart_items.count
+  end
+
+  test 'merge_items! handles mixed new and existing items' do
+    new_cart = Cart.create!(session_token: 'merge_mixed_token')
+    new_cart.cart_items.create!(product: @product, size: '', quantity: 5, price: @product.price)
+
+    initial_count = new_cart.cart_items.count
+    existing_item = new_cart.cart_items.first
+
+    new_cart.merge_items!([
+                            { 'product_id' => @product.id, 'size' => '', 'quantity' => 3 },
+                            { 'product_id' => @product_two.id, 'size' => '', 'quantity' => 2 }
+                          ])
+
+    existing_item.reload
+    assert_equal 8, existing_item.quantity # 5 + 3
+    assert_equal initial_count + 1, new_cart.cart_items.count # One new item added
+  end
+
+  test 'merge_items! handles size variant matching correctly' do
+    stock = stocks(:stock_one)
+    new_cart = Cart.create!(session_token: 'merge_size_variant_token')
+
+    # Add item with size variant
+    new_cart.cart_items.create!(product: @product, stock: stock, size: stock.size, quantity: 1, price: stock.price)
+
+    # Merge same product with different size (should create new item)
+    new_cart.merge_items!([
+                            { 'product_id' => @product.id, 'size' => 'different_size', 'quantity' => 2 }
+                          ])
+
+    # Should have 2 items: original with stock.size, new with 'different_size'
+    assert_equal 2, new_cart.cart_items.count
+    sizes = new_cart.cart_items.pluck(:size)
+    assert_includes sizes, stock.size
+    assert_includes sizes, 'different_size'
+  end
+
+  test 'merge_items! merges items with same product and size' do
+    new_cart = Cart.create!(session_token: 'merge_same_size_token')
+    new_cart.cart_items.create!(product: @product, size: 'Medium', quantity: 3, price: @product.price)
+
+    new_cart.merge_items!([
+                            { 'product_id' => @product.id, 'size' => 'Medium', 'quantity' => 4 }
+                          ])
+
+    assert_equal 1, new_cart.cart_items.count
+    assert_equal 7, new_cart.cart_items.first.quantity # 3 + 4
+  end
+
+  test 'merge_items! handles large quantity merges' do
+    new_cart = Cart.create!(session_token: 'merge_large_quantity_token')
+
+    new_cart.merge_items!([
+                            { 'product_id' => @product.id, 'size' => '', 'quantity' => 1000 }
+                          ])
+
+    assert_equal 1000, new_cart.cart_items.first.quantity
+  end
+
+  test 'merge_items! handles multiple items at once' do
+    new_cart = Cart.create!(session_token: 'merge_multiple_token')
+
+    new_cart.merge_items!([
+                            { 'product_id' => @product.id, 'size' => '', 'quantity' => 1 },
+                            { 'product_id' => @product_two.id, 'size' => '', 'quantity' => 2 },
+                            { 'product_id' => @product_three.id, 'size' => '', 'quantity' => 3 }
+                          ])
+
+    assert_equal 3, new_cart.cart_items.count
+    quantities = new_cart.cart_items.map(&:quantity).sort
+    assert_equal [1, 2, 3], quantities
+  end
+
+  test 'merge_items! preserves stock reference when price provided' do
+    stock = stocks(:stock_one)
+    new_cart = Cart.create!(session_token: 'merge_stock_ref_token')
+
+    # Merging with a known size should use stock price
+    new_cart.merge_items!([
+                            { 'product_id' => @product.id, 'size' => stock.size, 'quantity' => 1, 'price' => 99_999 }
+                          ])
+
+    item = new_cart.cart_items.first
+    assert_equal stock.id, item.stock_id
+    # Price from incoming data is used when provided
+    assert_equal 99_999, item.price
+  end
+
+  # ============================================================================
+  # TOTAL CALCULATION EDGE CASES
+  # ============================================================================
+
+  test 'total returns zero for empty cart' do
+    empty_cart = Cart.create!(session_token: 'empty_total_token')
+    assert_equal 0, empty_cart.total
+  end
+
+  test 'total handles single item correctly' do
+    single_cart = Cart.create!(session_token: 'single_total_token')
+    single_cart.cart_items.create!(product: @product, size: '', quantity: 3, price: 1000)
+
+    assert_equal 3000, single_cart.total # 3 * 1000
+  end
+
+  test 'total handles multiple items correctly' do
+    multi_cart = Cart.create!(session_token: 'multi_total_token')
+    multi_cart.cart_items.create!(product: @product, size: '', quantity: 2, price: 1000)
+    multi_cart.cart_items.create!(product: @product_two, size: '', quantity: 1, price: 2500)
+
+    assert_equal 4500, multi_cart.total # (2 * 1000) + (1 * 2500)
+  end
+
+  # ============================================================================
+  # EXPIRY EDGE CASES
+  # ============================================================================
+
+  test 'expired? returns true for cart that expires exactly now' do
+    just_expired = Cart.create!(session_token: 'just_expired_token', expires_at: Time.current)
+    assert just_expired.expired?
+  end
+
+  test 'expired? returns false for cart expiring in 1 second' do
+    almost_expired = Cart.create!(session_token: 'almost_expired_token', expires_at: 1.second.from_now)
+    assert_not almost_expired.expired?
   end
 end

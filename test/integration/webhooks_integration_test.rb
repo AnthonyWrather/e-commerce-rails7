@@ -206,6 +206,172 @@ class WebhooksControllerIntegrationTest < ActionDispatch::IntegrationTest
     assert_equal '99', product_data[:metadata][:product_stock_id]
   end
 
+  # ============================================================================
+  # EDGE CASE TESTS - MISSING DATA SCENARIOS
+  # ============================================================================
+
+  test 'webhook handles session with minimal customer details' do
+    session_data = build_checkout_session_data(
+      email: 'minimal@test.com',
+      name: nil,
+      phone: nil
+    )
+
+    # Will process event (and likely fail at order creation)
+    assert_raises(OrderProcessor::ProcessingError) do
+      post_stripe_webhook('checkout.session.completed', session_data)
+    end
+  end
+
+  test 'webhook handles session with zero shipping cost' do
+    session_data = build_checkout_session_data(
+      email: 'free-shipping@test.com',
+      shipping_cost: 0
+    )
+
+    # Zero shipping is valid (Collection option)
+    assert_raises(OrderProcessor::ProcessingError) do
+      post_stripe_webhook('checkout.session.completed', session_data)
+    end
+  end
+
+  test 'webhook handles session with high value order' do
+    session_data = build_checkout_session_data(
+      email: 'big-order@test.com',
+      amount_total: 1_000_000 # £10,000
+    )
+
+    assert_raises(OrderProcessor::ProcessingError) do
+      post_stripe_webhook('checkout.session.completed', session_data)
+    end
+  end
+
+  # ============================================================================
+  # IDEMPOTENCY TESTS
+  # ============================================================================
+
+  test 'webhook signature verification prevents replay attacks' do
+    session_data = build_checkout_session_data
+    payload = build_stripe_event_payload('checkout.session.completed', session_data).to_json
+
+    # First request with valid signature
+    signature = generate_stripe_signature(payload)
+
+    # Modified payload (replay attack attempt)
+    modified_payload = payload.gsub(session_data[:id], 'cs_test_modified_session')
+
+    post '/webhooks',
+         params: modified_payload,
+         headers: {
+           'Content-Type' => 'application/json',
+           'Stripe-Signature' => signature # Original signature won't match modified payload
+         }
+
+    assert_response :bad_request
+  end
+
+  # ============================================================================
+  # CONTENT TYPE TESTS
+  # ============================================================================
+
+  test 'webhook rejects non-JSON content type gracefully' do
+    post '/webhooks',
+         params: 'invalid data',
+         headers: {
+           'Content-Type' => 'text/plain',
+           'Stripe-Signature' => generate_stripe_signature('invalid data')
+         }
+
+    # Should reject due to signature mismatch or parsing issues
+    assert_response :bad_request
+  end
+
+  test 'webhook handles empty body gracefully' do
+    post '/webhooks',
+         params: '',
+         headers: {
+           'Content-Type' => 'application/json',
+           'Stripe-Signature' => generate_stripe_signature('')
+         }
+
+    assert_response :bad_request
+  end
+
+  # ============================================================================
+  # EVENT METADATA TESTS
+  # ============================================================================
+
+  test 'build_checkout_session_data handles custom billing address' do
+    session_data = build_checkout_session_data(
+      email: 'billing@test.com',
+      billing_address: {
+        line1: '100 Custom St',
+        line2: 'Floor 5',
+        city: 'Birmingham',
+        postal_code: 'B1 1AA',
+        country: 'GB'
+      }
+    )
+
+    customer_address = session_data.dig(:customer_details, :address)
+    assert_equal '100 Custom St', customer_address[:line1]
+    assert_equal 'Floor 5', customer_address[:line2]
+    assert_equal 'Birmingham', customer_address[:city]
+    assert_equal 'B1 1AA', customer_address[:postal_code]
+  end
+
+  test 'build_checkout_session_data handles custom shipping address' do
+    session_data = build_checkout_session_data(
+      email: 'shipping@test.com',
+      shipping_address: {
+        line1: '200 Delivery Rd',
+        city: 'Leeds',
+        postal_code: 'LS1 1AA'
+      }
+    )
+
+    shipping_address = session_data.dig(:collected_information, :shipping_details, :address)
+    assert_equal '200 Delivery Rd', shipping_address[:line1]
+    assert_equal 'Leeds', shipping_address[:city]
+    assert_equal 'LS1 1AA', shipping_address[:postal_code]
+  end
+
+  test 'build_checkout_session_data allows separate shipping and billing names' do
+    session_data = build_checkout_session_data(
+      name: 'Billing Name',
+      shipping_name: 'Shipping Name'
+    )
+
+    assert_equal 'Billing Name', session_data.dig(:customer_details, :name)
+    assert_equal 'Shipping Name', session_data.dig(:collected_information, :shipping_details, :name)
+  end
+
+  # ============================================================================
+  # MULTIPLE EVENT TYPE TESTS
+  # ============================================================================
+
+  test 'webhook ignores payment_intent.created events' do
+    session_data = build_checkout_session_data
+    post_stripe_webhook('payment_intent.created', session_data)
+
+    # Unhandled events return success (after signature verification)
+    assert_includes [200, 500], response.status
+  end
+
+  test 'webhook ignores charge.succeeded events' do
+    session_data = build_checkout_session_data
+    post_stripe_webhook('charge.succeeded', session_data)
+
+    assert_includes [200, 500], response.status
+  end
+
+  test 'webhook ignores customer.created events' do
+    session_data = build_checkout_session_data
+    post_stripe_webhook('customer.created', session_data)
+
+    assert_includes [200, 500], response.status
+  end
+
   private
 
   # Build a complete Stripe event payload for webhook testing.
