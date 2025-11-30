@@ -66,8 +66,21 @@ Rails.application.configure do
   # want to log everything, set the level to "debug".
   config.log_level = ENV.fetch('RAILS_LOG_LEVEL', 'info')
 
-  # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  # Use Redis cache store in production for improved performance
+  # Falls back to memory store if REDIS_URL is not configured
+  if ENV['REDIS_URL'].present?
+    config.cache_store = :redis_cache_store, {
+      url: ENV['REDIS_URL'],
+      expires_in: 1.hour,
+      namespace: 'ecommerce_cache',
+      error_handler: lambda { |method:, returning:, exception:|
+        Rails.logger.error "Redis cache error: #{exception.message}"
+        Honeybadger.notify(exception, context: { method: method, returning: returning })
+      }
+    }
+  else
+    config.cache_store = :memory_store, { size: 64.megabytes }
+  end
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter = :resque

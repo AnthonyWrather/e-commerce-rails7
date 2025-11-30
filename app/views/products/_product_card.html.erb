@@ -1,0 +1,7 @@
+<% first_image = product.images.first %>
+<%= link_to product_path(product) do %>
+  <div class="flex flex-col items-center justify-center max-w-xs p-4 hover:shadow-lg rounded-lg transition">
+    <%= first_image ? lazy_image_tag(first_image.variant(:medium), class: "rounded") : product_placeholder_image(class: "rounded") %>
+    <p class="mt-6 font-medium text-gray-800"><%= product.name %></p>
+  </div>
+<% end %>

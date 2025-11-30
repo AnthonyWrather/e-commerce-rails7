@@ -29,7 +29,7 @@
               <% @admin_categories.each do |c| %>
                 <tr class="border-b bg-gray-50">
                   <td class="px-6 py-4 font-medium text-gray-800 underline whitepsace-nowrap tex-sm">
-                    <%= c.image.attached? ? image_tag(c.image.variant(:thumb)) : image_tag("https://via.placeholder.com/50") %>
+                    <%= c.image.attached? ? image_tag(c.image.variant(:thumb)) : placeholder_thumb %>
                   </td>
                   <td class="px-6 py-4 font-medium text-gray-800 underline whitepsace-nowrap tex-sm">
                     <%= link_to c.name, edit_admin_category_path(c) %>
