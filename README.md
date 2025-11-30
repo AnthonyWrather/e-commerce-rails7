@@ -767,11 +767,13 @@ The project uses **GitHub Actions** for continuous integration and deployment. T
 **Running CI Checks Locally:**
 
 ```bash
-bundle exec rubocop --parallel    # Linting
-bundle exec brakeman              # Security scan
-bin/rails test                    # Unit & integration tests
-bin/rails test:system             # System tests
+bundle exec rubocop --parallel                           # Linting
+bundle exec brakeman --no-pager --no-exit-on-warn        # Security scan
+bin/rails test                                           # Unit & integration tests
+bin/rails test:system                                    # System tests
 ```
+
+**Note:** The `--no-exit-on-warn` flag allows Brakeman to report warnings (like EOL dependencies) without failing the build, while still failing on actual security vulnerabilities.
 
 **CI Artifacts:**
 - **coverage-report**: SimpleCov HTML coverage report

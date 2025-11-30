@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+# Limit the permissions of the GITHUB_TOKEN to the minimum required
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: RuboCop Linting
