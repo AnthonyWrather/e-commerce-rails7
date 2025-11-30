@@ -115,7 +115,7 @@ Instructions for building high-quality Ruby on Rails 7 applications with modern 
 - Follow the project's `.rubocop.yml` configuration
 - Keep line length reasonable (usually 120 characters)
 - Use consistent indentation (2 spaces)
-- Prefer double quotes for strings unless interpolation not needed
+- Use single quotes for strings when interpolation is not needed
 
 ## Common Patterns
 
