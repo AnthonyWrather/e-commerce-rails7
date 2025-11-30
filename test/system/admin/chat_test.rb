@@ -18,7 +18,7 @@ class Admin::ChatTest < ApplicationSystemTestCase
     visit admin_conversations_path
 
     assert_selector 'h1', text: 'Chat Dashboard'
-    assert_text 'All Conversations'
+    assert_text 'All Unresolved Conversations'
     assert_text 'My Conversations'
   end
 
@@ -72,9 +72,21 @@ class Admin::ChatTest < ApplicationSystemTestCase
     sign_in_admin @admin_user
     visit admin_conversations_path
 
-    click_button 'Go Online'
+    # Get the current status text (Online or Offline)
+    status_link = first('a[href*="toggle_availability"]')
+    initial_status = status_link.text.strip
 
-    assert_text 'Status updated to'
+    # Click to toggle
+    status_link.click
+
+    # Should redirect back to conversations page
+    assert_current_path admin_conversations_path
+
+    # Status should have changed (if was Online, now Offline, or vice versa)
+    new_status_link = first('a[href*="toggle_availability"]')
+    new_status = new_status_link.text.strip
+
+    assert_not_equal initial_status, new_status, 'Status should have toggled'
   end
 
   test 'chat sidebar shows in admin navigation' do
@@ -86,12 +98,26 @@ class Admin::ChatTest < ApplicationSystemTestCase
     end
   end
 
-  test 'admin can assign themselves to an open conversation' do
-    @conversation.conversation_participants.where(admin_user: @admin_user).destroy_all
-    sign_in_admin @admin_user
-    visit admin_conversation_path(@conversation)
+  test 'admin can assign themselves to an open conversation from the list view' do
+    # conversation_two has admin_user_two assigned but not admin_user_one
+    # So from admin_user_one's perspective, they can assign themselves
+    conversation_needing_assignment = conversations(:conversation_two)
 
-    assert_text 'Assign to Me'
+    sign_in_admin @admin_user
+    visit admin_conversations_path
+
+    # Should see the "Assign" link for conversations where this admin is not assigned
+    assign_path = assign_admin_conversation_path(conversation_needing_assignment)
+
+    # Verify assign link exists (it appears for conversations not assigned to current admin)
+    assert_selector "a[href='#{assign_path}']", text: 'Assign'
+
+    # Click to assign
+    find("a[href='#{assign_path}']", text: 'Assign').click
+
+    # Should redirect to the conversation
+    assert_text 'Customer Information'
+    assert_text conversation_needing_assignment.user.email
   end
 
   private
