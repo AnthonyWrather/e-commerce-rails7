@@ -11,3 +11,13 @@ cart_two:
 expired_cart:
   session_token: expired_session_token
   expires_at: <%= 1.day.ago %>
+
+user_one_cart:
+  session_token: user_one_cart_token
+  expires_at: <%= 30.days.from_now %>
+  user: user_one
+
+user_two_cart:
+  session_token: user_two_cart_token
+  expires_at: <%= 30.days.from_now %>
+  user: user_two

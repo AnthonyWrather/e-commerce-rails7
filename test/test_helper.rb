@@ -38,7 +38,8 @@ module ActiveSupport
 
     # Setup fixtures in dependency order to avoid foreign key violations
     # when database user lacks superuser privileges
-    fixtures :admin_users, :categories, :products, :stocks, :orders, :order_products, :carts, :cart_items
+    fixtures :admin_users, :users, :addresses, :categories, :products, :stocks, :orders, :order_products, :carts,
+             :cart_items
 
     # Add more helper methods to be used by all tests here...
   end
