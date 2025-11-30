@@ -96,24 +96,24 @@ class ConversationTest < ActiveSupport::TestCase
 
   test 'unresolved scope should return open and active conversations' do
     unresolved = Conversation.unresolved
-    assert unresolved.all? { |c| c.open? || c.active? }
+    assert(unresolved.all? { |c| c.open? || c.active? })
   end
 
   test 'for_user scope should return conversations for a specific user' do
     user_conversations = Conversation.for_user(@user.id)
-    assert user_conversations.all? { |c| c.user_id == @user.id }
+    assert(user_conversations.all? { |c| c.user_id == @user.id })
   end
 
   test 'for_admin scope should return conversations for a specific admin' do
     admin_conversations = Conversation.for_admin(@admin_user.id)
-    assert admin_conversations.all? { |c| c.conversation_participants.exists?(admin_user_id: @admin_user.id) }
+    assert(admin_conversations.all? { |c| c.conversation_participants.exists?(admin_user_id: @admin_user.id) })
   end
 
   # Instance methods
   test 'unread_messages_for should return messages after last_read_at' do
     participant = conversation_participants(:participant_one)
     unread = @conversation.unread_messages_for(participant)
-    assert unread.all? { |m| m.created_at > participant.last_read_at }
+    assert(unread.all? { |m| m.created_at > participant.last_read_at })
   end
 
   test 'latest_message should return most recent message' do

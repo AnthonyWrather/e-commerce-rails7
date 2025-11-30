@@ -53,7 +53,7 @@ class AdminPresenceTest < ActiveSupport::TestCase
   # Scopes
   test 'online scope should return only online presences' do
     online_presences = AdminPresence.online
-    assert online_presences.all? { |p| p.status == 'online' }
+    assert(online_presences.all? { |p| p.status == 'online' })
   end
 
   test 'available scope should return online and away presences' do
@@ -61,7 +61,7 @@ class AdminPresenceTest < ActiveSupport::TestCase
     @presence.update!(status: 'away')
 
     available = AdminPresence.available
-    assert available.all? { |p| %w[online away].include?(p.status) }
+    assert(available.all? { |p| %w[online away].include?(p.status) })
   end
 
   # Class methods
