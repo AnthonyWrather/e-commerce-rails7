@@ -53,4 +53,39 @@ class Admin::ImagesTest < ApplicationSystemTestCase
     assert_selector 'input[type="file"]'
     assert_selector 'label', text: 'Images'
   end
+
+  # Additional Image Management Tests
+  test 'product edit page shows existing images' do
+    visit edit_admin_product_path(@product)
+
+    assert_selector 'img'
+    assert_selector 'a', text: 'X'
+  end
+
+  test 'product edit page has file upload field with multiple attribute' do
+    visit edit_admin_product_path(@product)
+
+    assert_selector 'input[type="file"][multiple]'
+  end
+
+  test 'new product page has image upload field' do
+    visit new_admin_product_path
+
+    assert_selector 'label', text: 'Images'
+    assert_selector 'input[type="file"]'
+  end
+
+  test 'product with no images shows empty images section' do
+    product_without_images = products(:product_two)
+    visit edit_admin_product_path(product_without_images)
+
+    assert_selector 'label', text: 'Images'
+    assert_selector 'input[type="file"]'
+  end
+
+  test 'can navigate to edit stocks from product edit page' do
+    visit edit_admin_product_path(@product)
+
+    assert_selector 'a', text: 'Edit Product Size/Price/Stock'
+  end
 end
