@@ -56,6 +56,9 @@ group :development, :test do
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
 
+  # Security scanning
+  gem 'brakeman', require: false
+
   gem 'letter_opener'
   gem 'letter_opener_web', '~> 3.0'
 
