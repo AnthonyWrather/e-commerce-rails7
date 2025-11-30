@@ -19,7 +19,7 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
   // Moved the playwright install to the dev Dockerfile
 	// "postCreateCommand": "bundle install && npm install && npx playwright install-deps && npx playwright install",
-	"postCreateCommand": "bundle install",
+	"postCreateCommand": "bundle install && yarn install",
 
 	// Configure tool-specific properties.
 	"customizations": {

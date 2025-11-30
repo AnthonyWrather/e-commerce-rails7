@@ -1,6 +1,10 @@
 {
   "name": "app",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "yarn@1.22.22",
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.4",
@@ -18,7 +22,7 @@
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --minify --splitting --format=esm --outdir=app/assets/builds --public-path=/assets",
-    "build:ts": "tsc --noEmit && npm run build",
+    "build:ts": "tsc --noEmit && yarn build",
     "build:dev": "esbuild app/javascript/*.* --bundle --sourcemap --splitting --format=esm --outdir=app/assets/builds --public-path=/assets",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
