@@ -1,10 +1,10 @@
 # E-Commerce Rails 7 Documentation Index
 
-Last Updated: November 29, 2025
+Last Updated: November 30, 2025
 
 ## Overview
 
-This directory contains comprehensive documentation for the E-Commerce Rails 7 application, covering architecture analysis, database schema, testing strategy, implementation details, and contributing guidelines.
+This directory contains comprehensive documentation for the E-Commerce Rails 7 application, covering architecture analysis, database schema, testing strategy, implementation details, infrastructure setup, and contributing guidelines.
 
 ## Documentation Files
 
@@ -156,6 +156,32 @@ STRIPE_TAX_RATE_ID=txr_1Abc123...  # Set this to avoid creating rates on each re
 
 ---
 
+### 7. [Uptime Monitoring](uptime-monitoring.md)
+**Purpose:** External uptime monitoring setup and configuration guide
+
+**What's Inside:**
+- UptimeRobot setup instructions
+- Health check endpoint (`/up`) documentation
+- Alert configuration (downtime > 5 minutes)
+- SSL certificate monitoring setup
+- Response time tracking configuration
+- Integration with Render health checks
+- Troubleshooting guide
+
+**When to Read:**
+- Setting up monitoring for production
+- Configuring alerts and notifications
+- Understanding health check endpoints
+- Troubleshooting monitoring issues
+
+**Key Endpoints:**
+- Production: `https://shop.cariana.tech/up`
+- Test: `https://test.cariana.tech/up`
+
+**Status:** ✅ Configuration guide complete
+
+---
+
 ## Quick Reference Guide
 
 ### For New Developers
@@ -187,6 +213,7 @@ STRIPE_TAX_RATE_ID=txr_1Abc123...  # Set this to avoid creating rates on each re
 2. Review deployment configuration in main README.md
 3. Check [Test Analysis](test-analysis.md) for CI/CD recommendations
 4. Examine test environment configuration
+5. Follow [Uptime Monitoring](uptime-monitoring.md) for external monitoring setup
 
 ## Documentation Standards
 
@@ -216,7 +243,12 @@ All documentation should include:
 - Add notes about deprecated/completed items
 - Cross-reference related documents
 
-## Recent Updates (November 29, 2025)
+## Recent Updates (November 30, 2025)
+
+### Documentation Added
+- ✅ [Uptime Monitoring](uptime-monitoring.md) - External monitoring setup guide for UptimeRobot
+
+### Previous Updates (November 29, 2025)
 
 ### Documentation Added
 - ✅ [Status Code Fix](status-code-fix.md) - Comprehensive modernization documentation
@@ -274,6 +306,6 @@ If you have questions about the documentation or suggestions for improvement:
 ---
 
 **Maintained by:** Project Contributors
-**Last Reviewed:** November 29, 2025
-**Documentation Coverage:** 6 files covering testing, architecture, database, implementations
+**Last Reviewed:** November 30, 2025
+**Documentation Coverage:** 7 files covering testing, architecture, database, implementations, and infrastructure monitoring
 **Status:** ✅ Current and actively maintained

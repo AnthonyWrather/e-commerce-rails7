@@ -386,14 +386,14 @@ bin/render-build.sh
 **Monitoring Gaps:**
 1. **Error tracking** - No Sentry/Rollbar/Honeybadger
 2. **Performance monitoring** - No New Relic/Scout APM
-3. **Uptime monitoring** - No external checks
+3. ✅ **Uptime monitoring** - UptimeRobot setup documented (see [uptime-monitoring.md](uptime-monitoring.md))
 4. **Log aggregation** - No Papertrail/Loggly
 5. **Metrics** - No Prometheus/Grafana
 
 **Recommendations:**
 1. Add Honeybadger (already in Gemfile.lock! Config at config/honeybadger.yml)
 2. Implement Scout APM
-3. Add UptimeRobot for uptime monitoring
+3. ✅ Add UptimeRobot for uptime monitoring - DOCUMENTED (see [uptime-monitoring.md](uptime-monitoring.md))
 4. Implement log aggregation
 5. Set up custom dashboards
 
