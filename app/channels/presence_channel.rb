@@ -27,7 +27,7 @@ class PresenceChannel < ApplicationCable::Channel
   private
 
   def transmit_current_online_admins
-    AdminPresence.online.includes(:admin_user).find_each do |presence|
+    AdminPresence.online.includes(:admin_user).each do |presence|
       transmit({
                  admin_id: presence.admin_user.id,
                  status: presence.status,
