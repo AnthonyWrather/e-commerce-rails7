@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # User authentication routes - currently skipped, will be enabled in future sprint
-  # when customer accounts are implemented
-  devise_for :users, skip: :all
+  # Customer user authentication routes
+  devise_for :users, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations',
+    passwords: 'users/passwords',
+    confirmations: 'users/confirmations'
+  }
 
   namespace :admin do
     resources :reports
