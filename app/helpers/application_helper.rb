@@ -3,6 +3,11 @@
 module ApplicationHelper
   include Pagy::Frontend
 
+  # Placeholder image URLs for items without images
+  PLACEHOLDER_IMAGE_URL = 'https://via.placeholder.com/250x250.png?text=No+Image'
+  PLACEHOLDER_THUMB_URL = 'https://via.placeholder.com/50x50.png?text=No+Image'
+  PLACEHOLDER_CATEGORY_URL = 'https://via.placeholder.com/512x512.png?text=Category'
+
   def formatted_price(price)
     return '£0.00' if price.nil? || price.zero?
 
@@ -24,5 +29,20 @@ module ApplicationHelper
     options[:loading] ||= 'lazy'
     options[:decoding] ||= 'async'
     image_tag(source, options)
+  end
+
+  # Returns a placeholder image tag for products without images
+  def product_placeholder_image(options = {})
+    lazy_image_tag(PLACEHOLDER_IMAGE_URL, options.merge(alt: 'Product image placeholder'))
+  end
+
+  # Returns a placeholder image tag for category cards
+  def category_placeholder_image(options = {})
+    lazy_image_tag(PLACEHOLDER_CATEGORY_URL, options.merge(alt: 'Category image placeholder'))
+  end
+
+  # Returns a placeholder thumb image tag
+  def placeholder_thumb(options = {})
+    image_tag(PLACEHOLDER_THUMB_URL, options.merge(alt: 'Image placeholder'))
   end
 end

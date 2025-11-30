@@ -8,6 +8,18 @@ class AdminController < ApplicationController
     # Use indexed column for better query performance
     @orders = Order.unfulfilled.recent(5)
 
+    # Cache dashboard stats for 5 minutes to reduce database load
+    # Stats are tied to current month, so cache key includes month
+    cache_key = "admin_dashboard_stats_#{Date.today.strftime('%Y-%m')}"
+
+    @monthly_stats, @revenue_by_month, @days_of_month = Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
+      calculate_monthly_stats
+    end
+  end
+
+  private
+
+  def calculate_monthly_stats
     # Combine all Order aggregations into a single efficient query
     # This reduces 5 separate queries to 1 query
     monthly_aggregates = Order
@@ -41,7 +53,7 @@ class AdminController < ApplicationController
                           0
                         end
 
-    @monthly_stats = {
+    monthly_stats = {
       sales: num_orders_monthly,
       items: num_products_monthly,
       revenue: revenue_total,
@@ -59,11 +71,13 @@ class AdminController < ApplicationController
                     .to_h
 
     # Fill in missing days with zero revenue
-    @days_of_month = (1..Time.days_in_month(Date.today.month, Date.today.year)).to_a
-    @revenue_by_month = @days_of_month.map do |day|
+    days_of_month = (1..Time.days_in_month(Date.today.month, Date.today.year)).to_a
+    revenue_by_month = days_of_month.map do |day|
       date = Date.new(Date.today.year, Date.today.month, day)
       revenue = daily_revenue[date] || 0
       [day, revenue]
     end
+
+    [monthly_stats, revenue_by_month, days_of_month]
   end
 end
