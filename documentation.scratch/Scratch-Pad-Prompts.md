@@ -308,14 +308,24 @@ Remember to run rubocop, rails test, rails test:system
 Fix any test failures and continue.
 Do not let the test coverage drop below 60%
 
+--------------------------------
+
+Analyse the existing codebase and architecture.
+Analyse issue [#186](https://github.com/AnthonyWrather/e-commerce-rails7/issues/186)
+Create or update the implementation plan for the next sprint and create documentation.scratch/sprint-plan-user-accounts.md
+Create the issues in AnthonyWrather/e-commerce-rails7
+Add the issues to the e-commerce-rails7 Kanban Board (https://github.com/users/AnthonyWrather/projects/3/views/2)
 
 --------------------------------
 
+Coding Agent prompt.
 
-
---------------------------------
-
-
+Examine the sprint plan document "documentation.scratch/sprint-plan-user-accounts.md"
+Remember to run rubocop, rails test, rails test:system
+Fix any test failures and continue.
+Update any relevant documentation.
+Do not let the test coverage drop below 60% for "rails test"
+Do not let the test coverage drop below 60% for "rails test:system"
 
 --------------------------------
 
