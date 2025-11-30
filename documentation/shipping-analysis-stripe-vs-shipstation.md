@@ -248,8 +248,12 @@ class CheckoutsController < ApplicationController
   end
 
   def weight_description(grams)
-    kg = (grams / 1000.0).round(1)
-    kg < 1 ? "#{grams}g" : "#{kg}kg"
+    if grams < 1000
+      "under 1kg"
+    else
+      kg = (grams / 1000.0).ceil # Round up for shipping purposes
+      "approx #{kg}kg"
+    end
   end
 end
 ```
@@ -540,6 +544,7 @@ class ShippingCalculator
   
   def initialize(cart_items)
     @cart_items = cart_items
+    @products = load_products_with_stocks # Eager load to avoid N+1 queries
   end
   
   def calculate
@@ -553,12 +558,19 @@ class ShippingCalculator
   
   private
   
+  def load_products_with_stocks
+    product_ids = @cart_items.map { |item| item['id'] }
+    Product.includes(:stocks).where(id: product_ids).index_by(&:id)
+  end
+  
   def total_weight
     @total_weight ||= @cart_items.sum { |item| item_weight(item) }
   end
   
   def item_weight(item)
-    product = Product.find(item['id'])
+    product = @products[item['id'].to_i]
+    return 0 unless product
+    
     stock = product.stocks.find { |s| s.size == item['size'] }
     (stock&.shipping_weight || product.shipping_weight || 0) * item['quantity'].to_i
   end
