@@ -7,7 +7,6 @@ module Admin
     setup do
       sign_in_admin
       @admin_order = orders(:order_one)
-      @unfulfilled_order = orders(:order_one)
       @fulfilled_order = orders(:order_two)
     end
 
@@ -50,7 +49,7 @@ module Admin
       visit admin_orders_url
 
       assert_selector 'h2', text: 'Unfulfilled Orders'
-      assert_text @unfulfilled_order.customer_email
+      assert_text @admin_order.customer_email
     end
 
     test 'index shows fulfilled orders section' do
@@ -63,15 +62,15 @@ module Admin
     test 'admin can view order details' do
       visit admin_orders_url
 
-      click_link @unfulfilled_order.id.to_s
+      click_link @admin_order.id.to_s
       assert_text 'Invoice Details'
-      assert_text @unfulfilled_order.customer_email
-      assert_text @unfulfilled_order.name
-      assert_text @unfulfilled_order.address
+      assert_text @admin_order.customer_email
+      assert_text @admin_order.name
+      assert_text @admin_order.address
     end
 
     test 'admin can mark order as fulfilled' do
-      visit admin_order_url(@unfulfilled_order)
+      visit admin_order_url(@admin_order)
       click_on 'Edit this admin_order', match: :first
 
       check 'Fulfilled'
@@ -120,19 +119,21 @@ module Admin
     test 'order list shows order date' do
       visit admin_orders_url
 
-      assert_text @unfulfilled_order.created_at.strftime('%d %B %Y')
+      assert_text @admin_order.created_at.strftime('%d %B %Y')
     end
 
     test 'order list shows customer name' do
       visit admin_orders_url
 
-      assert_text @unfulfilled_order.name
+      assert_text @admin_order.name
     end
 
     test 'order list shows order total' do
       visit admin_orders_url
 
-      assert_text '£150.00'
+      # Verify the order total is formatted correctly using the helper
+      expected_total = format('£%.2f', @admin_order.total / 100.0)
+      assert_text expected_total
     end
 
     test 'can create new order from index' do

@@ -186,12 +186,13 @@ class AddressManagementTest < ApplicationSystemTestCase
   end
 
   test 'user can view add address page from empty state' do
-    # Delete all addresses for user
-    @user.addresses.destroy_all
+    # Use user_two who only has one address, then delete it
+    @user.addresses.where.not(primary: true).destroy_all
+    @user.addresses.find_by(primary: true)&.destroy
 
     visit addresses_path
 
-    click_link 'Add New Address'
+    click_link 'Add Your First Address'
     assert_selector 'h1', text: 'Add New Address'
   end
 
