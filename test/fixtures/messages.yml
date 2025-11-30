@@ -1,0 +1,22 @@
+# Test fixtures for messages
+# Messages represent individual chat messages in conversations
+
+message_one:
+  conversation: conversation_one
+  sender: user_one (User)
+  content: "Hello, I have a question about my order."
+
+message_two:
+  conversation: conversation_one
+  sender: admin_user_one (AdminUser)
+  content: "Hi! I would be happy to help you with your order question."
+
+message_three:
+  conversation: conversation_two
+  sender: user_two (User)
+  content: "Can you tell me more about this product?"
+
+message_four:
+  conversation: conversation_two
+  sender: admin_user_two (AdminUser)
+  content: "Of course! This product is made from high-quality materials."

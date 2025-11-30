@@ -1,0 +1,20 @@
+# Test fixtures for conversation participants
+# Tracks which admin users are participating in conversations
+
+participant_one:
+  conversation: conversation_one
+  admin_user: admin_user_one
+  last_read_at: <%= Time.current %>
+  active: true
+
+participant_two:
+  conversation: conversation_two
+  admin_user: admin_user_two
+  last_read_at: <%= 1.hour.ago %>
+  active: true
+
+participant_three:
+  conversation: conversation_resolved
+  admin_user: admin_user_one
+  last_read_at: <%= 1.day.ago %>
+  active: false
