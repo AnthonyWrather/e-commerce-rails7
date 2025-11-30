@@ -44,6 +44,30 @@ class Rack::Attack
     end
   end
 
+  # Throttle chat message creation by IP
+  # Allows 60 messages per minute per user to prevent spam
+  throttle('chat_messages/ip', limit: 60, period: 1.minute) do |req|
+    if req.path.match?(%r{/conversations/\d+/messages}) && req.post?
+      req.ip
+    end
+  end
+
+  # Throttle admin chat message creation by IP
+  # Allows 60 messages per minute per admin to prevent spam
+  throttle('admin_chat_messages/ip', limit: 60, period: 1.minute) do |req|
+    if req.path.match?(%r{/admin/conversations/\d+/messages}) && req.post?
+      req.ip
+    end
+  end
+
+  # Throttle conversation creation by IP
+  # Allows 10 new conversations per hour to prevent abuse
+  throttle('conversations/ip', limit: 10, period: 1.hour) do |req|
+    if req.path == '/conversations' && req.post?
+      req.ip
+    end
+  end
+
   self.blocklisted_responder = lambda do |_req|
     [429, { 'Content-Type' => 'text/plain' }, ['Too Many Requests. Please try again later.']]
   end
