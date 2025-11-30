@@ -97,14 +97,14 @@ class CartItemTest < ActiveSupport::TestCase
   end
 
   test 'refresh_price! updates price from stock when stock present' do
-    @cart_item.update_column(:price, 99999)
+    @cart_item.update_column(:price, 99_999)
     @cart_item.refresh_price!
     assert_equal @stock.price, @cart_item.price
   end
 
   test 'refresh_price! updates price from product when no stock' do
     product = @cart_item_without_stock.product
-    @cart_item_without_stock.update_column(:price, 99999)
+    @cart_item_without_stock.update_column(:price, 99_999)
     @cart_item_without_stock.refresh_price!
     assert_equal product.price, @cart_item_without_stock.price
   end

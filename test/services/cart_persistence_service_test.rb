@@ -51,7 +51,7 @@ class CartPersistenceServiceTest < ActiveSupport::TestCase
   test 'sync_from_local_storage uses current price from stock' do
     service = CartPersistenceService.new('price_sync_token')
     items_data = [
-      { 'id' => @product.id, 'size' => @stock.size, 'quantity' => 1, 'price' => 99999 }
+      { 'id' => @product.id, 'size' => @stock.size, 'quantity' => 1, 'price' => 99_999 }
     ]
 
     service.sync_from_local_storage(items_data)
@@ -63,7 +63,7 @@ class CartPersistenceServiceTest < ActiveSupport::TestCase
   test 'sync_from_local_storage uses current price from product when no stock' do
     service = CartPersistenceService.new('price_sync_product_token')
     items_data = [
-      { 'id' => @product_two.id, 'size' => '', 'quantity' => 1, 'price' => 99999 }
+      { 'id' => @product_two.id, 'size' => '', 'quantity' => 1, 'price' => 99_999 }
     ]
 
     service.sync_from_local_storage(items_data)
@@ -112,13 +112,13 @@ class CartPersistenceServiceTest < ActiveSupport::TestCase
 
   test 'load_cart refreshes prices' do
     cart_item = @cart.cart_items.first
-    cart_item.update_column(:price, 99999)
+    cart_item.update_column(:price, 99_999)
 
     service = CartPersistenceService.new(@cart.session_token)
     service.load_cart
 
     cart_item.reload
-    assert_not_equal 99999, cart_item.price
+    assert_not_equal 99_999, cart_item.price
   end
 
   test 'to_local_storage_format returns array of item hashes' do

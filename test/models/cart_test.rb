@@ -92,15 +92,15 @@ class CartTest < ActiveSupport::TestCase
 
   test 'refresh_prices! updates prices from current product prices' do
     cart_item = @cart.cart_items.first
-    original_price = cart_item.price
+    cart_item.price
 
     # Manually change cart item price to simulate outdated price
-    cart_item.update_column(:price, 99999)
+    cart_item.update_column(:price, 99_999)
     @cart.refresh_prices!
     cart_item.reload
 
     # Price should be refreshed to current product/stock price
-    assert_not_equal 99999, cart_item.price
+    assert_not_equal 99_999, cart_item.price
   end
 
   test 'merge_items! adds new items to cart' do
