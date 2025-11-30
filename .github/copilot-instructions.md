@@ -703,7 +703,11 @@ Limited use - mainly for quantities calculators:
 - **Development**: Redis at localhost:6379/1
 - **Production**: Redis from `REDIS_URL` ENV var
 - **Channel prefix**: ecomm_production
-- Currently minimal usage (infrastructure present but unused)
+- **Implemented**: Chat system using Action Cable for real-time messaging
+
+**Channels**:
+- `ConversationChannel`: Real-time chat messaging between users and admins
+- `PresenceChannel`: Admin online status broadcasting to customers
 
 ### Puma Web Server
 - **Threads**: 5 (configurable via `RAILS_MAX_THREADS`)
@@ -1163,16 +1167,33 @@ end
 ## Action Cable & WebSockets
 
 ### Current Status
-- **Action Cable configured** but unused
+- **Action Cable fully configured** for real-time chat system
 - Redis configured for production (`REDIS_URL`)
-- No channels defined (only `ApplicationCable::Channel` and `ApplicationCable::Connection` stubs)
-- No real-time features
+- Authenticated connection supporting both User and AdminUser
+- Two channels implemented for chat functionality
 
-**Potential Use Cases** (not implemented):
-- Real-time order notifications for admin
-- Live stock level updates
-- Chat support widget
-- Live visitor count
+**Implemented Features**:
+- Real-time chat messaging between customers and admins
+- Admin presence/availability status broadcasting
+- Typing indicators in conversations
+- Message broadcasting to conversation participants
+
+**Connection** (`app/channels/application_cable/connection.rb`):
+- Authenticates both `current_user` and `current_admin_user`
+- Extracts user IDs from Warden session cookies
+- Rejects unauthorized connections
+
+**ConversationChannel** (`app/channels/conversation_channel.rb`):
+- `subscribed`: Authorizes and streams conversation messages
+- `speak`: Creates and broadcasts new messages
+- `typing`: Broadcasts typing indicators
+- Authorization: Users can only access their own conversations; admins can only access assigned conversations
+- Updates admin presence on subscribe/unsubscribe
+
+**PresenceChannel** (`app/channels/presence_channel.rb`):
+- Public channel for broadcasting admin online status
+- Transmits list of online admins on subscription
+- `AdminPresence` model broadcasts status changes automatically
 
 **Configuration**:
 - Development: Redis at `redis://localhost:6379/1`
