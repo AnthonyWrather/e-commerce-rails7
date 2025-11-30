@@ -321,7 +321,7 @@ Add the issues to the e-commerce-rails7 Kanban Board (https://github.com/users/A
 Coding Agent prompt.
 
 Examine the sprint plan document "documentation.scratch/sprint-plan-user-accounts.md"
-Remember to run rubocop, rails test, rails test:system
+Remember to run "rubocop", "rails test", "rails test:system"
 Fix any test failures and continue.
 Update any relevant documentation.
 Do not let the test coverage drop below 60% for "rails test"
@@ -329,14 +329,26 @@ Do not let the test coverage drop below 60% for "rails test:system"
 
 --------------------------------
 
-
+Examine the sprint plan document "documentation.scratch/sprint-plan-user-accounts.md"
+Remember to run "rubocop", "rails test", "rails test:system"
+Fix any test failures and continue.
+Update any relevant documentation.
 
 --------------------------------
 
+gh auth login
+gh auth refresh
+gh auth refresh -s read:project -s project
 
+gh issue list
 
 --------------------------------
 
+Analyse the existing codebase and architecture.
+Analyse issue [#176](https://github.com/AnthonyWrather/e-commerce-rails7/issues/176)
+Create or update the implementation plan for the next sprint and create documentation.scratch/sprint-plan-add-a-chat-feature.md
+Create the issues in AnthonyWrather/e-commerce-rails7
+Add the issues to the e-commerce-rails7 Kanban Board (https://github.com/users/AnthonyWrather/projects/3/views/2)
 
 
 --------------------------------
