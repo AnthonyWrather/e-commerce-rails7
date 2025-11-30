@@ -6,8 +6,54 @@ on:
   pull_request:
     branches: [ main ]
 
+# Limit the permissions of the GITHUB_TOKEN to the minimum required
+permissions:
+  contents: read
+
 jobs:
+  lint:
+    name: RuboCop Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.3
+          bundler-cache: true
+
+      - name: Run RuboCop
+        run: bundle exec rubocop --parallel
+
+  security:
+    name: Security Scan (Brakeman)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.3
+          bundler-cache: true
+
+      - name: Run Brakeman
+        run: bundle exec brakeman --no-pager -o /dev/stdout -o brakeman-report.html --no-exit-on-warn
+
+      - name: Upload Brakeman Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: brakeman-report
+          path: brakeman-report.html
+
   test:
+    name: Unit & Integration Tests
     runs-on: ubuntu-latest
 
     services:
@@ -45,11 +91,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libvips
 
-      - name: Install Google Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-
       - name: Setup database
         run: |
           bin/rails db:prepare
@@ -59,13 +100,18 @@ jobs:
           PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE ROLE root WITH LOGIN SUPERUSER PASSWORD 'postgres';"
           PGPASSWORD=postgres psql -h localhost -U postgres -c "ALTER USER postgres WITH SUPERUSER;"
 
-      - name: Run RuboCop
-        run: bundle exec rubocop
-
       - name: Run tests
         run: bin/rails test
 
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+
   system-test:
+    name: System Tests
     runs-on: ubuntu-latest
 
     services:
@@ -113,3 +159,10 @@ jobs:
 
       - name: Run system tests
         run: bin/rails test:system
+
+      - name: Upload system test screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: system-test-screenshots
+          path: tmp/screenshots/

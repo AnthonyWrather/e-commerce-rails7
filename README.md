@@ -751,6 +751,54 @@ bin/rails test:all         # Run everything
 **Current Test Status:** All tests passing (507 runs, 1,151 assertions, 0 failures, 0 errors, 8 skips)
 **Code Coverage:** 86.22% (513/595 lines)
 
+### CI/CD Pipeline
+
+The project uses **GitHub Actions** for continuous integration and deployment. The CI workflow runs automatically on all pull requests and pushes to the `main` branch.
+
+**CI Jobs:**
+
+| Job | Description | Run Condition |
+|-----|-------------|---------------|
+| **lint** | RuboCop linting with parallel execution | All PRs |
+| **security** | Brakeman security scanning | All PRs |
+| **test** | Unit & integration tests with SimpleCov coverage | All PRs |
+| **system-test** | Capybara browser tests with Chrome | All PRs |
+
+**Running CI Checks Locally:**
+
+```bash
+bundle exec rubocop --parallel                           # Linting
+bundle exec brakeman --no-pager --no-exit-on-warn        # Security scan
+bin/rails test                                           # Unit & integration tests
+bin/rails test:system                                    # System tests
+```
+
+**Note:** The `--no-exit-on-warn` flag allows Brakeman to report warnings (like EOL dependencies) without failing the build, while still failing on actual security vulnerabilities.
+
+**CI Artifacts:**
+- **coverage-report**: SimpleCov HTML coverage report
+- **brakeman-report**: Brakeman security scan results (HTML)
+- **system-test-screenshots**: Screenshots from failed system tests
+
+**Branch Protection (Recommended Setup):**
+
+For production repositories, configure GitHub branch protection rules:
+
+1. Go to **Settings → Branches → Add rule**
+2. Branch name pattern: `main`
+3. Enable:
+   - ✅ Require a pull request before merging
+   - ✅ Require status checks to pass before merging
+   - ✅ Require branches to be up to date before merging
+4. Required status checks:
+   - `lint`
+   - `security`
+   - `test`
+   - `system-test`
+5. Save changes
+
+This ensures all CI checks must pass before PRs can be merged to `main`.
+
 ### Testing Stripe Webhooks Locally
 
 For local Stripe webhook testing, use **ngrok**:
