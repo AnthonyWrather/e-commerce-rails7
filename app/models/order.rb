@@ -3,6 +3,7 @@
 class Order < ApplicationRecord
   has_paper_trail
 
+  belongs_to :user, optional: true
   has_many :order_products
 
   # Scopes for filtering orders
@@ -10,6 +11,7 @@ class Order < ApplicationRecord
   scope :fulfilled, -> { where(fulfilled: true) }
   scope :recent, ->(limit = 5) { order(created_at: :desc).limit(limit) }
   scope :for_month, ->(date = Time.current) { where(created_at: date.beginning_of_month..date.end_of_month) }
+  scope :for_user, ->(user) { where(user: user) }
 
   # Validations
   validates :customer_email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }

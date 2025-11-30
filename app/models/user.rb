@@ -5,6 +5,7 @@ class User < ApplicationRecord
 
   has_many :carts, dependent: :nullify
   has_many :addresses, dependent: :destroy
+  has_many :orders, dependent: :nullify
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
@@ -16,5 +17,9 @@ class User < ApplicationRecord
 
   def display_name
     full_name.presence || email.split('@').first
+  end
+
+  def primary_address
+    addresses.find_by(primary: true)
   end
 end

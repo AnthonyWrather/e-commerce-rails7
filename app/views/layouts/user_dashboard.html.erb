@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Account - Southcoast Fibreglass Supplies Ltd</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true, type: "module" %>
+    <% if Rails.env.production? && Honeybadger.config[:api_key].present? %>
+      <%= javascript_include_tag "https://js.honeybadger.io/v6.11/honeybadger.min.js" %>
+      <meta name="honeybadger-api-key" content="<%= Honeybadger.config[:api_key] %>">
+      <meta name="honeybadger-environment" content="<%= Rails.env %>">
+      <meta name="honeybadger-revision" content="<%= Honeybadger.config[:revision] %>">
+    <% end %>
+    <%= favicon_link_tag %>
+  </head>
+
+  <body class="bg-gray-50">
+    <main class="flex min-h-screen">
+      <div class="flex w-full">
+        <nav class="sticky top-0 w-64 h-screen p-4 bg-blue-600 flex-shrink-0">
+          <div class="flex items-center mb-6">
+            <%= link_to root_path do %>
+              <%= image_tag 'SCFS-Logo.jpg', class: 'h-12 w-auto mr-2' %>
+            <% end %>
+            <h1 class="hidden py-2 font-bold text-white text-md md:block">My Account</h1>
+          </div>
+          <ul class="flex flex-col text-white space-y-1">
+            <li>
+              <%= link_to account_path, class: "block px-4 py-2 rounded hover:bg-blue-700 #{controller_name == 'accounts' && action_name == 'show' ? 'bg-blue-700' : ''}" do %>
+                <%= icon('fa-solid', 'gauge-high', class: 'mr-2') %> <span class="hidden md:inline-block">Dashboard</span>
+              <% end %>
+            </li>
+            <li>
+              <%= link_to edit_account_path, class: "block px-4 py-2 rounded hover:bg-blue-700 #{controller_name == 'accounts' && action_name == 'edit' ? 'bg-blue-700' : ''}" do %>
+                <%= icon('fa-solid', 'user', class: 'mr-2') %> <span class="hidden md:inline-block">Edit Profile</span>
+              <% end %>
+            </li>
+            <li>
+              <%= link_to addresses_path, class: "block px-4 py-2 rounded hover:bg-blue-700 #{controller_name == 'addresses' ? 'bg-blue-700' : ''}" do %>
+                <%= icon('fa-solid', 'location-dot', class: 'mr-2') %> <span class="hidden md:inline-block">Addresses</span>
+              <% end %>
+            </li>
+            <li>
+              <%= link_to orders_path, class: "block px-4 py-2 rounded hover:bg-blue-700 #{controller_name == 'orders' ? 'bg-blue-700' : ''}" do %>
+                <%= icon('fa-solid', 'box', class: 'mr-2') %> <span class="hidden md:inline-block">Order History</span>
+              <% end %>
+            </li>
+            <li class="pt-4 mt-4 border-t border-blue-500">
+              <%= link_to root_path, class: "block px-4 py-2 rounded hover:bg-blue-700" do %>
+                <%= icon('fa-solid', 'store', class: 'mr-2') %> <span class="hidden md:inline-block">Back to Shop</span>
+              <% end %>
+            </li>
+            <li>
+              <%= link_to destroy_user_session_path, data: { "turbo-method": :delete, "turbo-confirm": "Are you sure you want to sign out?" }, class: "block px-4 py-2 rounded hover:bg-blue-700" do %>
+                <%= icon('fa-solid', 'sign-out', class: 'mr-2') %> <span class="hidden md:inline-block">Sign Out</span>
+              <% end %>
+            </li>
+          </ul>
+        </nav>
+        <div class="flex-1 p-8">
+          <% if flash[:notice] %>
+            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+              <%= flash[:notice] %>
+            </div>
+          <% end %>
+          <% if flash[:alert] %>
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+              <%= flash[:alert] %>
+            </div>
+          <% end %>
+          <%= yield %>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

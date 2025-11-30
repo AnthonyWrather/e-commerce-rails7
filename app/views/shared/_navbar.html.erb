@@ -30,6 +30,17 @@
               </button>
             </div>
           <% end %>
+          <% if user_signed_in? %>
+            <%= link_to account_path, class: "text-gray-100 py-2" do %>
+              <%= icon 'fa-solid', 'user' %>
+            <% end %>
+            <%= link_to 'Account', account_path, class: "text-gray-100 hover:underline py-2 px-2 rounded-md text-md font-medium hidden sm:inline" %>
+          <% else %>
+            <%= link_to new_user_session_path, class: "text-gray-100 py-2" do %>
+              <%= icon 'fa-solid', 'sign-in-alt' %>
+            <% end %>
+            <%= link_to 'Sign In', new_user_session_path, class: "text-gray-100 hover:underline py-2 px-2 rounded-md text-md font-medium hidden sm:inline" %>
+          <% end %>
           <%= link_to cart_path, class: "text-gray-100 py-2" do %>
             <%= icon 'fa-solid', 'shopping-cart' %>
           <% end %>
