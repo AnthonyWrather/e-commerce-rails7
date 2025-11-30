@@ -56,10 +56,29 @@ B2B/B2C composite materials e-commerce platform with **material quantity calcula
 - **Has validations**: quantity (required, integer, >0), price (required, integer, ≥0)
 
 **AdminUser** (`app/models/admin_user.rb`)
-- Devise authentication model (migrated from `Admin` via `20251120215534_rename_admins_to_admin_users.rb`)
-- Modules: `:database_authenticatable`, `:registerable`, `:recoverable`, `:rememberable`, `:validatable`
+- Devise authentication model with Two-Factor Authentication
+- Modules: `:database_authenticatable`, `:registerable`, `:recoverable`, `:rememberable`, `:validatable`, `:two_factor_authenticatable`, `:two_factor_backupable`
 - Fields: `email`, `encrypted_password`, `reset_password_token`, `reset_password_sent_at`, `remember_created_at`
-- **Table name**: `admin_users` (previously had namespace conflict when named `admins`)
+- 2FA Fields: `otp_secret`, `consumed_timestep`, `otp_required_for_login`, `otp_backup_codes` (JSON array)
+- **Table name**: `admin_users` (migrated from `admins` to fix namespace conflict)
+- **2FA Methods**: `setup_two_factor!`, `enable_two_factor!(otp_attempt)`, `disable_two_factor!(password)`, `regenerate_backup_codes!`, `validate_backup_code(code)`
+- **Backup Codes**: 10 codes generated, JSON serialized, consumed on use
+
+**Cart** (`app/models/cart.rb`)
+- `has_many :cart_items, dependent: :destroy`
+- Fields: `session_token` (unique), `expires_at` (30 days from creation)
+- **Expiry**: `EXPIRY_DAYS = 30` constant, auto-set on creation
+- **Scopes**: `active` (not expired), `expired` (past expiry)
+- **Methods**: `find_or_create_by_token(token)`, `expired?`, `extend_expiry!`, `total`, `refresh_prices!`, `merge_items!(other_cart_items)`
+- **Session Token**: Stored in localStorage, used to retrieve cart across requests
+
+**CartItem** (`app/models/cart_item.rb`)
+- `belongs_to :cart`
+- `belongs_to :product`
+- `belongs_to :stock, optional: true`
+- Fields: `product_id`, `stock_id`, `size`, `quantity`, `price` (snapshot at time added)
+- **Validations**: quantity > 0, price >= 0, unique product+size per cart
+- **Methods**: `refresh_price!`, `name` (delegate to product), `total`, `stock_available?`
 
 **ProductStock** (`app/models/product_stock.rb`)
 - `belongs_to :product`
@@ -292,7 +311,7 @@ All admin authentication screens follow a consistent Tailwind design pattern:
 - `AddFiberglassFields` - added `fiberglass_reinforcement` and resin calculation fields
 - `AddPriceToOrderProducts` - capture price at purchase time
 - `AddNameToOrderOrders` - shipping name separate from billing
-- Latest schema version: `2025_11_27_015536`
+- Latest schema version: `2025_11_30_015033`
 
 ### Schema Backup Tables
 `products_backup` and `stocks_backup` exist in schema - likely from data migration work

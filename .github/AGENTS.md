@@ -11,7 +11,7 @@ bin/rails c               # Rails console
 yarn build                # Build TypeScript once
 
 # Testing
-bin/rails test:all        # All tests (507 runs, 1,151 assertions)
+bin/rails test:all        # All tests (648 runs, 1,447 assertions)
 rubocop -a               # Auto-fix style issues
 
 # Database
@@ -29,11 +29,13 @@ AdminUser.create(email: "admin@example.com", password: "12345678")
 **Why**: Ensures payment confirmation before inventory changes. Stock is decremented in `WebhooksController#stripe` after successful payment.
 **Critical**: Never create orders in `CheckoutsController` - this would bypass payment verification.
 
-### 2. **Client-Side Cart State**
-**Decision**: Shopping cart lives entirely in browser `localStorage` (no server session).
-**Why**: Simplifies guest checkout, reduces database load, no user accounts needed.
-**Tradeoff**: Cart not persistent across devices, abandoned cart tracking harder.
-**Implementation**: `cart_controller.ts` manages cart as JSON array.
+### 2. **Hybrid Cart State (Client + Server)**
+**Decision**: Shopping cart uses BOTH localStorage (client) AND database persistence (server).
+**Why**: Guest checkout simplicity PLUS cross-device support and abandoned cart recovery.
+**Server-Side**: `Cart` model with session_token, 30-day expiry, managed via `CartsController` API.
+**Client-Side**: `cart_controller.ts` manages localStorage for immediate UI updates.
+**Implementation**: API endpoints at `/api/carts` for create/update/destroy operations.
+**Merge Strategy**: `Cart#merge_items!` combines localStorage with server cart on session restore.
 
 ### 3. **Dual Pricing Model**
 **Decision**: Products support both single pricing and variant pricing (by size).
@@ -52,6 +54,82 @@ AdminUser.create(email: "admin@example.com", password: "12345678")
 **Build**: `yarn build` compiles to `app/assets/builds/application.js`.
 
 ## Critical Integration Points
+
+### Cart API Endpoints (Server-Side Persistence)
+```ruby
+# API routes for cart management
+POST   /api/carts              # Create cart, returns session_token
+GET    /api/carts/:token       # Retrieve cart by session_token
+PATCH  /api/carts/:token       # Update cart items
+DELETE /api/carts/:token       # Delete cart
+DELETE /api/carts/:token/expire # Manually expire cart
+```
+
+**Key Points**:
+- Session token stored in localStorage: `cartSessionToken`
+- Cart auto-expires after 30 days
+- `Cart#merge_items!` combines localStorage cart with server cart
+- API returns JSON with cart items, total, and expiry status
+- Controllers: `Api::CartsController` (namespaced under `/api`)
+
+### Admin Two-Factor Authentication Flow
+```mermaid
+sequenceDiagram
+    Admin->>AdminUser: Login with email/password
+    AdminUser->>Admin: Redirect to dashboard (2FA not required yet)
+    Admin->>TwoFactorController: Navigate to 2FA setup
+    TwoFactorController->>AdminUser: Generate OTP secret
+    TwoFactorController->>Admin: Display QR code (otp_provisioning_uri)
+    Admin->>AuthenticatorApp: Scan QR code
+    AuthenticatorApp->>Admin: Display 6-digit code
+    Admin->>TwoFactorController: Submit OTP code
+    TwoFactorController->>AdminUser: Verify code, enable 2FA
+    TwoFactorController->>AdminUser: Generate 10 backup codes
+    TwoFactorController->>Admin: Display backup codes (save securely!)
+    Note over Admin: 2FA now required on next login
+    Admin->>AdminUser: Logout
+    Admin->>AdminUser: Login with email/password
+    AdminUser->>TwoFactorVerificationController: Redirect to OTP verification
+    Admin->>TwoFactorVerificationController: Enter 6-digit code
+    TwoFactorVerificationController->>AdminUser: Verify code
+    AdminUser->>Admin: Redirect to dashboard
+```
+
+**Key Points**:
+- Gem: `devise-two-factor` with `rqrcode` for QR code generation
+- OTP secret encrypted using Rails secret_key_base
+- Backup codes: 10 codes, hashed, consumed on use
+- Controllers: `AdminUsers::TwoFactorController`, `AdminUsers::TwoFactorVerificationController`
+- Routes: `/admin_users/two_factor/setup`, `/admin_users/two_factor/verify`
+
+### PaperTrail Audit Log
+
+**Audited Models** (with `has_paper_trail`):
+1. **Product** - All CRUD operations tracked
+2. **Category** - All CRUD operations tracked
+3. **Stock** - All CRUD operations tracked
+4. **Order** - All CRUD operations tracked
+
+**Not Audited**: Cart, CartItem, OrderProduct, AdminUser
+
+```ruby
+# Version tracking for auditable models
+Product.paper_trail_enabled_for_model?  # => true
+product.versions                        # All versions
+product.versions.last.reify             # Restore previous version
+product.versions.last.changeset         # See what changed
+product.versions.last.whodunnit         # Who made the change
+```
+
+**Key Points**:
+- Gem: `paper_trail` (~> 15.1)
+- Tracks: create, update, destroy events
+- Stores: item_type, item_id, event, object (YAML), object_changes (YAML)
+- `whodunnit`: Admin user ID who made the change
+- `versions` table with polymorphic association
+- Indexes on: item_type+item_id, whodunnit, created_at, event
+- Admin UI at `/admin/audit_logs` with filtering and CSV export
+- 90-day retention policy via `rake audit_logs:cleanup`
 
 ### Stripe Payment Flow
 ```mermaid
@@ -166,10 +244,15 @@ sequenceDiagram
 categories ──┐
              ├─< products >─┬─< stocks (variant pricing)
              │              ├─< order_products (price snapshot)
+             │              ├─< cart_items (session-based cart)
              │              └─< images (Active Storage)
 orders ──────┴─< order_products
+admin_users (Devise auth with 2FA)
+versions (PaperTrail audit trail)
+carts ───────┬─< cart_items (30-day expiry, session_token)
 
-admin_users (Devise auth)
+admin_users (Devise auth with 2FA via TOTP)
+versions (PaperTrail audit trail)
 ```
 
 **Key Relationships**:
@@ -240,6 +323,9 @@ const vat = price - (price / 1.2);
 4. **DO NOT** store prices in pounds - always use pence (integers)
 5. **DO NOT** skip `with_attached_images` - will cause N+1 queries
 6. **DO NOT** use RSpec syntax - this project uses Minitest
+7. **DO NOT** bypass 2FA verification - always verify OTP codes via `validate_and_consume_otp!`
+8. **DO NOT** log backup codes - they're sensitive and should only be shown once
+9. **DO NOT** expire carts manually without checking for active sessions
 
 ### ✅ Best Practices
 
@@ -292,7 +378,11 @@ class Admin::ProductsTest < ApplicationSystemTestCase
 end
 ```
 
-**Current Status**: 507 tests, 1,151 assertions, 0 failures, 85.12% coverage
+**Current Status**: 648 tests, 1,447 assertions, 0 failures, 86.22% coverage
+
+**Test Coverage**:
+- Unit tests: 83.6% (app/models, app/helpers, app/mailers)
+- System tests: 47.84% (browser-based integration tests)
 
 **Critical Gap**: `WebhooksController` has NO tests (highest risk)
 
@@ -320,6 +410,7 @@ stripe:
 aws:
   access_key_id: AKIA...
   secret_access_key: ...
+otp_secret_encryption_key: ...  # For 2FA OTP secret encryption (fallback to secret_key_base)
 ```
 
 ## File Structure Hotspots
@@ -328,6 +419,8 @@ aws:
 app/
 ├── controllers/
 │   ├── admin/              # Admin CRUD (inherits from AdminController)
+│   ├── admin_users/        # 2FA controllers (TwoFactorController, TwoFactorVerificationController)
+│   ├── api/                # JSON API endpoints (CartsController)
 │   ├── quantities/         # Material calculators (business logic in controllers)
 │   ├── checkouts_controller.rb  # Stripe session creation
 │   └── webhooks_controller.rb   # Order creation (NO TESTS!)
@@ -336,7 +429,7 @@ app/
 │       ├── cart_controller.ts       # LocalStorage cart management
 │       ├── products_controller.ts   # Add to cart, size selection
 │       └── dashboard_controller.ts  # Chart.js revenue charts
-├── models/                 # 8 models: Product, Stock, Category, Order, OrderProduct, AdminUser, ProductStock
+├── models/                 # 10 models: Product, Stock, Category, Order, OrderProduct, Cart, CartItem, AdminUser, ProductStock, ApplicationRecord
 └── views/
     ├── admin/              # Admin interface (layout: admin.html.erb)
     ├── quantities/         # Calculator interfaces (Turbo Frames)
@@ -421,6 +514,194 @@ bundle exec rails db:migrate
 - `GET /quantities/dimensions` - Length/width calculation
 - `GET /quantities/mould_rectangle` - Rectangular mould (all 6 faces)
 
+## Testing Roadmap for Critical Paths
+
+### Current Test Coverage: 86.22% (648 runs, 1,447 assertions)
+
+#### ✅ Well-Tested Critical Paths (>80% coverage)
+
+**1. Product Management** (Unit: 83.6%)
+- ✅ Product model validations (name, price, stock_level, shipping dimensions)
+- ✅ Product scopes (active, in_price_range, fiberglass_reinforcement, sorted_by)
+- ✅ Full-text search with pg_search (search_by_text)
+- ✅ Active Storage image attachments (thumb, medium variants)
+- ✅ Admin CRUD operations via Admin::ProductsController
+- ✅ PaperTrail audit tracking for all CRUD events
+
+**2. Category Management**
+- ✅ Category model validations (name uniqueness, presence)
+- ✅ Cascade delete behavior (products deleted when category deleted)
+- ✅ Admin CRUD operations
+- ✅ PaperTrail audit tracking
+
+**3. Stock Management**
+- ✅ Stock model validations (size, price, stock_level, shipping dimensions)
+- ✅ Nested routes under products
+- ✅ Size variant pricing logic
+- ✅ PaperTrail audit tracking
+
+**4. Order Processing**
+- ✅ Order model validations (email format, total, address, name)
+- ✅ Order scopes (unfulfilled, fulfilled, recent, for_month)
+- ✅ PaperTrail audit tracking
+- ✅ Admin order fulfillment workflow
+
+**5. Material Calculators** (Quantities controllers)
+- ✅ Area calculations (QuantityCalculatorService.calculate_area)
+- ✅ Dimension calculations (calculate_dimensions)
+- ✅ Mould calculations (calculate_mould_rectangle)
+- ✅ Constants (MATERIAL_WIDTH, RESIN_TO_GLASS_RATIO, WASTAGE_FACTOR)
+- ✅ 14 material types with weight variants
+
+**6. Cart System** (Hybrid Client+Server)
+- ✅ Cart model (session_token, 30-day expiry, merge_items!)
+- ✅ CartItem model (validations, refresh_price!, stock_available?)
+- ✅ Cart API endpoints (POST/GET/PATCH/DELETE)
+- ✅ LocalStorage integration with server persistence
+
+**7. Admin Authentication & 2FA**
+- ✅ Devise authentication (AdminUser model)
+- ✅ Two-Factor Authentication setup flow
+- ✅ TOTP verification with devise-two-factor
+- ✅ Backup code generation and validation (10 codes)
+- ✅ 2FA management UI
+
+**8. Audit Logging**
+- ✅ PaperTrail version tracking (4 models)
+- ✅ Admin audit log viewer with filters
+- ✅ CSV export functionality
+- ✅ Retention policy (90-day cleanup task)
+- ✅ Whodunnit tracking (user_for_paper_trail)
+
+#### ⚠️ Critical Paths Needing Additional Tests (<60% coverage)
+
+**1. Stripe Payment Flow** (System: 47.84%)
+- ❌ **WebhooksController** - No tests currently
+  - **Risk**: High - handles order creation, stock decrement, email sending
+  - **Priority**: CRITICAL
+  - **Required Tests**:
+    - ✅ Successful `checkout.session.completed` webhook
+    - ✅ Order creation from Stripe session metadata
+    - ✅ Stock decrement logic (product vs variant pricing)
+    - ✅ Email sending (OrderMailer.new_order_email)
+    - ✅ Invalid signature rejection
+    - ✅ Idempotency (duplicate webhook handling)
+    - ✅ Error handling (failed stock decrement, email failure)
+
+**2. CheckoutsController** (System: 47.84%)
+- ⚠️ Needs more edge case coverage
+  - **Risk**: Medium - creates Stripe sessions with GBP currency
+  - **Required Tests**:
+    - ✅ Cart to Stripe session conversion
+    - ✅ Product vs Stock pricing logic (lines 13-23)
+    - ✅ VAT calculation (20% UK VAT)
+    - ❌ Empty cart handling
+    - ❌ Invalid product ID handling
+    - ❌ Out-of-stock product handling
+    - ❌ Stripe API error handling
+
+**3. Admin Dashboard Aggregations** (AdminController)
+- ⚠️ Revenue calculations not fully tested
+  - **Risk**: Medium - business metrics must be accurate
+  - **Required Tests**:
+    - ✅ Monthly stats calculation (sales, items, revenue, avg_sale, shipping)
+    - ✅ Daily revenue breakdown (fill missing days with 0)
+    - ✅ Previous month comparison
+    - ❌ Edge case: No orders in month
+    - ❌ Edge case: Month boundary calculations
+    - ❌ Performance: Large dataset aggregations (10k+ orders)
+
+**4. Email Delivery**
+- ⚠️ Integration tests needed
+  - **Risk**: Medium - customers must receive order confirmations
+  - **Required Tests**:
+    - ✅ OrderMailer.new_order_email format (HTML + text)
+    - ✅ VAT breakdown in email
+    - ❌ Email delivery success (letter_opener_web in dev)
+    - ❌ SMTP failure handling (production)
+    - ❌ Template rendering with product images
+
+**5. Image Upload & Processing**
+- ⚠️ Edge cases not covered
+  - **Risk**: Low - duplicate filename logic custom implementation
+  - **Required Tests**:
+    - ✅ Duplicate filename prevention (Admin::ProductsController#update)
+    - ✅ Image variant generation (thumb, medium)
+    - ❌ VIPS processing errors
+    - ❌ Large file uploads (>10MB)
+    - ❌ Invalid file type handling
+
+#### 🎯 Sprint Testing Priorities (Q1 2026)
+
+**Sprint 1: WebhooksController Tests** (Priority: CRITICAL)
+- Week 1: Write 7 webhook tests (success, order creation, stock, email, signature, idempotency, errors)
+- Week 2: Add integration test with real Stripe test mode webhook
+- Goal: Achieve 80%+ coverage for payment flow
+
+**Sprint 2: CheckoutsController Edge Cases** (Priority: HIGH)
+- Week 1: Add 4 edge case tests (empty cart, invalid product, out-of-stock, API error)
+- Week 2: Add stress test for concurrent checkouts
+- Goal: Harden checkout against race conditions
+
+**Sprint 3: Admin Dashboard Accuracy** (Priority: MEDIUM)
+- Week 1: Add 3 edge case tests (no orders, month boundaries, large datasets)
+- Week 2: Add performance benchmark (target: <500ms for 10k orders)
+- Goal: Ensure business metrics are always accurate
+
+**Sprint 4: Email & Image Processing** (Priority: LOW)
+- Week 1: Add 3 email delivery tests
+- Week 2: Add 3 image processing error tests
+- Goal: Reduce customer support tickets
+
+#### 📊 Test Metrics & Goals
+
+**Current State** (Nov 30, 2025):
+- Total Tests: 648 runs, 1,447 assertions, 0 failures
+- Unit Coverage: 83.6% (models, services)
+- System Coverage: 47.84% (controllers, integration)
+- Overall Coverage: 86.22%
+
+**Q1 2026 Goals**:
+- Total Tests: 750+ runs, 1,800+ assertions
+- Unit Coverage: 85%+ (maintain)
+- System Coverage: 70%+ (increase from 47.84%)
+- Overall Coverage: 88%+
+- WebhooksController: 0% → 80%+
+- CheckoutsController: 50% → 75%+
+
+**Test Execution Speed**:
+- Unit tests: ~5 seconds (648 tests)
+- System tests: ~45 seconds (16 tests, Capybara+Selenium)
+- Total: ~50 seconds (acceptable for CI/CD)
+
+**CI/CD Integration**:
+- GitHub Actions workflow runs on every push
+- Badge in README shows test status
+- Deploy blocked if tests fail
+
+#### 🔧 Testing Tools & Practices
+
+**Frameworks**:
+- Minitest (Rails default, not RSpec)
+- Capybara + Selenium (system tests, 1400x1400 screen)
+- Parallel execution (workers: number_of_processors)
+
+**Commands**:
+```bash
+bin/rails test              # Unit + integration (648 runs)
+bin/rails test:system       # Browser tests (16 runs)
+bin/rails test:all          # Everything (664 total)
+bin/rails test:coverage     # Generate coverage report
+```
+
+**Best Practices**:
+- Use fixtures for test data (all fixtures loaded)
+- Sign in with `sign_in admin_users(:admin_user_one)` for admin tests
+- Use `assert_difference` for counting changes
+- Follow "Arrange-Act-Assert" pattern
+- Test both happy path and edge cases
+- Mock Stripe API calls in tests (use Stripe test mode)
+
 ## Code Review Checklist
 
 ### Pre-Submission Checklist
@@ -428,8 +709,8 @@ bundle exec rails db:migrate
 Before submitting a PR, AI agents should verify:
 
 **Tests & Quality**
-- [ ] All tests pass: `bin/rails test:all` (507 runs, 1,151 assertions)
-- [ ] RuboCop passes: `rubocop -a` (136 files inspected, 0 offenses)
+- [ ] All tests pass: `bin/rails test:all` (648 runs, 1,447 assertions)
+- [ ] RuboCop passes: `rubocop -a` (173 files inspected, 0 offenses)
 - [ ] TypeScript builds: `yarn build` (no compilation errors)
 - [ ] Coverage maintained or improved (currently 85.12%)
 - [ ] New features include tests (unit + integration minimum)
@@ -552,6 +833,6 @@ When reviewing PRs, check:
 
 ---
 
-**Last Updated**: November 29, 2025
-**Schema Version**: 2025_11_27_015536
-**Test Coverage**: 85.12% (509/598 lines)
+**Last Updated**: November 30, 2025
+**Schema Version**: 2025_11_30_015033
+**Test Coverage**: 86.22% (513/595 lines)

@@ -302,6 +302,11 @@ Examine the documentation in `documentation/*.md` and analyse the codebase and t
 
 --------------------------------
 
+Coding Agent prompt.
+
+Remember to run rubocop, rails test, rails test:system
+Fix any test failures and continue.
+Do not let the test coverage drop below 60%
 
 
 --------------------------------
