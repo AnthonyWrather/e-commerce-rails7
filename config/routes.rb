@@ -69,6 +69,9 @@ Rails.application.routes.draw do
 
   post 'webhooks' => 'webhooks#stripe'
 
+  # CSP violation reporting endpoint
+  post 'csp_violations' => 'csp_violations#create'
+
   # Custom error pages with error tracking IDs
   match '/404', to: 'errors#not_found', via: :all, as: 'errors_not_found'
   match '/422', to: 'errors#unprocessable_entity', via: :all, as: 'errors_unprocessable_entity'

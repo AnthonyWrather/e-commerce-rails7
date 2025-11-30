@@ -55,6 +55,7 @@ Metrics/BlockLength:
     - 'test/**/*'
     - 'config/routes.rb'
     - 'config/environments/*.rb'
+    - 'config/initializers/content_security_policy.rb'
 
 Metrics/AbcSize:
   Max: 25  # Warn on complex methods
