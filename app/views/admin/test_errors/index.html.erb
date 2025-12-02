@@ -1,0 +1,81 @@
+<div class="max-w-4xl px-4 py-8 mx-auto">
+  <div class="mb-6">
+    <%= link_to '← Back to Dashboard', admin_root_path, class: 'text-blue-600 hover:text-blue-800' %>
+  </div>
+
+  <div class="mb-8">
+    <h1 class="mb-2 text-3xl font-bold text-gray-900">Honeybadger Error Testing</h1>
+    <p class="text-gray-600">
+      Test Honeybadger error reporting in <%= Rails.env %> environment.
+      <% if Rails.env.production? || Rails.env.test? || (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true') %>
+        <span class="px-2 py-1 ml-2 text-xs font-semibold text-green-800 bg-green-100 rounded">Error Reporting Enabled</span>
+      <% else %>
+        <span class="px-2 py-1 ml-2 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded">Error Reporting Disabled</span>
+      <% end %>
+    </p>
+  </div>
+
+  <div class="overflow-hidden bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+      <h2 class="text-xl font-semibold text-gray-900">Available Error Types</h2>
+    </div>
+
+    <div class="p-6">
+      <div class="space-y-4">
+        <% @error_types.each do |error_type| %>
+          <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div>
+              <h3 class="font-semibold text-gray-900"><%= error_type.titleize %></h3>
+              <p class="text-sm text-gray-600">
+                <% case error_type %>
+                <% when 'standard_error' %>
+                  Raises a basic StandardError exception
+                <% when 'argument_error' %>
+                  Raises an ArgumentError exception
+                <% when 'runtime_error' %>
+                  Raises a RuntimeError exception
+                <% when 'custom_error' %>
+                  Raises a custom error class
+                <% when 'notify_only' %>
+                  Sends a notification without raising an exception
+                <% end %>
+              </p>
+            </div>
+            <%= button_to 'Trigger Error',
+                          trigger_admin_test_errors_path(error_type: error_type),
+                          method: :post,
+                          class: 'px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500',
+                          data: { confirm: 'This will trigger an error. Continue?' } %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4 mt-6 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-blue-800">Configuration Information</h3>
+        <div class="mt-2 text-sm text-blue-700">
+          <ul class="pl-5 space-y-1 list-disc">
+            <li>Environment: <%= Rails.env %></li>
+            <li>Honeybadger API Key Set: <%= ENV['HONEYBADGER_API_KEY'].present? || Rails.application.credentials.dig(:honeybadger, :api_key).present? ? 'Yes' : 'No' %></li>
+            <% if Rails.env.development? %>
+              <li>Development Error Reporting: <%= ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true' ? 'Enabled (HONEYBADGER_ENABLED_IN_DEV=true)' : 'Disabled (set HONEYBADGER_ENABLED_IN_DEV=true to enable)' %></li>
+            <% elsif Rails.env.test? %>
+              <li>Test Error Reporting: Always Enabled</li>
+            <% elsif Rails.env.production? %>
+              <li>Production Error Reporting: Always Enabled</li>
+            <% end %>
+            <li>Insights Enabled: <%= Rails.env.production? || Rails.env.test? || (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true') ? 'Yes' : 'No' %></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
