@@ -366,6 +366,13 @@ Add the issue to the e-commerce-rails7 Kanban Board (https://github.com/users/An
 
 --------------------------------
 
+The Price is mandatory when creating and editing Products.
+The Price should be optional and null should be allowed.
+
+Do not run the playwright tests.
+Run all "bin/rails test" and "bin/rails test:system" and "bin/rails test:all" and fix any errors.
+Run rubocop and fix any errors.
+Do not commit the code.
 
 --------------------------------
 

@@ -77,7 +77,7 @@ class Product < ApplicationRecord
 
   # Validations
   validates :name, presence: true
-  validates :price, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :price, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :stock_level, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :shipping_weight, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :shipping_length, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
