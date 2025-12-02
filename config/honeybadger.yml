@@ -18,8 +18,8 @@ development_environments:
   - cucumber
 
 # By default, Honeybadger won't report errors in the development_environments.
-# Set to true in production to enable error reporting.
-report_data: <%= Rails.env.production? %>
+# Set to true in production and test (when HONEYBADGER_TEST_MODE is set) to enable error reporting.
+report_data: <%= Rails.env.production? || (Rails.env.test? && ENV['HONEYBADGER_TEST_MODE'] == 'true') %>
 
 # The current Git revision of your project. Defaults to the last commit hash.
 # revision: null
@@ -30,6 +30,11 @@ debug: false
 # Enable Honeybadger Insights for performance monitoring
 insights:
   enabled: <%= Rails.env.production? %>
+
+# Test mode configuration
+# Set HONEYBADGER_TEST_MODE=true in test environment to enable error reporting
+test:
+  backend: <%= ENV['HONEYBADGER_TEST_MODE'] == 'true' ? 'server' : 'null' %>
 
 # Filter sensitive data from error reports
 request:

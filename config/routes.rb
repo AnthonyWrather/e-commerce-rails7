@@ -45,6 +45,13 @@ Rails.application.routes.draw do
       resources :messages, only: [:create]
     end
     post 'conversations/toggle_availability', to: 'conversations#toggle_availability', as: :toggle_availability_conversations
+
+    # Honeybadger test error routes (only available in non-production or when HONEYBADGER_TEST_MODE is set)
+    resources :test_errors, only: [:index] do
+      collection do
+        post :trigger
+      end
+    end
   end
 
   # API endpoints for cart persistence

@@ -10,5 +10,31 @@ Honeybadger.configure do |config|
     if defined?(Current) && Current.respond_to?(:request_id)
       notice.context[:request_id] = Current.request_id
     end
+
+    # Add environment information
+    notice.context[:rails_env] = Rails.env
+    notice.context[:hostname] = begin
+      Socket.gethostname
+    rescue StandardError
+      'unknown'
+    end
+
+    # Add timestamp
+    notice.context[:error_timestamp] = Time.current.iso8601
+  end
+
+  # Configure test mode backend
+  if Rails.env.test? && ENV['HONEYBADGER_TEST_MODE'] == 'true'
+    config.backend = 'server'
+  elsif Rails.env.test?
+    config.backend = 'null'
+  end
+
+  # Add custom error grouping
+  config.before_notify do |notice|
+    # Group test errors separately
+    if notice.error_message&.include?('Test') && notice.error_message.include?('Honeybadger')
+      notice.fingerprint = "test-error-#{notice.error_class}"
+    end
   end
 end
