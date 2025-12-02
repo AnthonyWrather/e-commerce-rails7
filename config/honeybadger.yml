@@ -15,7 +15,6 @@ root: "<%= Rails.root.to_s %>"
 # Honeybadger won't report errors in these environments.
 development_environments:
   - development
-  - test
   - cucumber
 
 # By default, Honeybadger won't report errors in the development_environments.
