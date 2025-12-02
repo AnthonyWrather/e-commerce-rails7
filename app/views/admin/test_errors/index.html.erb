@@ -7,7 +7,11 @@
     <h1 class="mb-2 text-3xl font-bold text-gray-900">Honeybadger Error Testing</h1>
     <p class="text-gray-600">
       Test Honeybadger error reporting in <%= Rails.env %> environment.
-      <span class="px-2 py-1 ml-2 text-xs font-semibold text-green-800 bg-green-100 rounded">Error Reporting Enabled</span>
+      <% if Rails.env.production? || Rails.env.test? || (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true') %>
+        <span class="px-2 py-1 ml-2 text-xs font-semibold text-green-800 bg-green-100 rounded">Error Reporting Enabled</span>
+      <% else %>
+        <span class="px-2 py-1 ml-2 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded">Error Reporting Disabled</span>
+      <% end %>
     </p>
   </div>
 
@@ -61,8 +65,14 @@
           <ul class="pl-5 space-y-1 list-disc">
             <li>Environment: <%= Rails.env %></li>
             <li>Honeybadger API Key Set: <%= ENV['HONEYBADGER_API_KEY'].present? || Rails.application.credentials.dig(:honeybadger, :api_key).present? ? 'Yes' : 'No' %></li>
-            <li>Error Reporting: Enabled in all environments</li>
-            <li>Insights Enabled: Yes</li>
+            <% if Rails.env.development? %>
+              <li>Development Error Reporting: <%= ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true' ? 'Enabled (HONEYBADGER_ENABLED_IN_DEV=true)' : 'Disabled (set HONEYBADGER_ENABLED_IN_DEV=true to enable)' %></li>
+            <% elsif Rails.env.test? %>
+              <li>Test Error Reporting: Always Enabled</li>
+            <% elsif Rails.env.production? %>
+              <li>Production Error Reporting: Always Enabled</li>
+            <% end %>
+            <li>Insights Enabled: <%= Rails.env.production? || Rails.env.test? || (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true') ? 'Yes' : 'No' %></li>
           </ul>
         </div>
       </div>

@@ -23,9 +23,15 @@ Honeybadger.configure do |config|
     notice.context[:error_timestamp] = Time.current.iso8601
   end
 
-  # Configure backend for all environments
-  # Always use 'server' backend to enable error reporting in all environments
-  config.backend = 'server'
+  # Configure backend based on environment
+  # Development: Requires HONEYBADGER_ENABLED_IN_DEV=true to use 'server' backend
+  # Test: Always use 'server' backend
+  # Production: Always use 'server' backend
+  if Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] != 'true'
+    config.backend = 'null'
+  else
+    config.backend = 'server'
+  end
 
   # Add custom error grouping
   config.before_notify do |notice|
