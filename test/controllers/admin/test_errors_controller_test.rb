@@ -66,15 +66,11 @@ class Admin::TestErrorsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_admin_user_session_url
   end
 
-  test 'should show test mode status' do
+  test 'should show error reporting status' do
     get admin_test_errors_url
     assert_response :success
 
-    if ENV['HONEYBADGER_TEST_MODE'] == 'true'
-      assert_select 'span', text: /Test Mode Enabled/
-    else
-      assert_select 'span', text: /Test Mode Disabled/
-    end
+    assert_select 'span', text: /Error Reporting Enabled/
   end
 
   test 'should display configuration information' do
@@ -83,7 +79,7 @@ class Admin::TestErrorsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'h3', text: /Configuration Information/
     assert_match(/Environment:/, response.body)
     assert_match(/Honeybadger API Key Set:/, response.body)
-    assert_match(/Test Mode:/, response.body)
-    assert_match(/Report Data:/, response.body)
+    assert_match(/Error Reporting: Enabled in all environments/, response.body)
+    assert_match(/Insights Enabled: Yes/, response.body)
   end
 end

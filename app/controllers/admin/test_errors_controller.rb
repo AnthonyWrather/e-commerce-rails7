@@ -3,8 +3,7 @@
 # Controller for testing Honeybadger error reporting
 # Only available in test and development environments
 class Admin::TestErrorsController < AdminController
-  # Prevent access in production
-  before_action :check_environment
+  # Test errors controller available in all environments
 
   # GET /admin/test_errors
   def index
@@ -43,15 +42,6 @@ class Admin::TestErrorsController < AdminController
     else
       redirect_to admin_test_errors_path, alert: 'Invalid error type'
     end
-  end
-
-  private
-
-  def check_environment
-    # Only block in production unless explicitly enabled
-    return unless Rails.env.production? && ENV['HONEYBADGER_TEST_MODE'] != 'true'
-
-    redirect_to admin_root_path, alert: 'Test error controller is not available in production'
   end
 
   # Custom error class for testing

@@ -25,14 +25,10 @@ class Admin::TestErrorsTest < ApplicationSystemTestCase
     assert_text 'Notify Only'
   end
 
-  test 'shows test mode status' do
+  test 'shows error reporting status' do
     visit admin_test_errors_url
 
-    if ENV['HONEYBADGER_TEST_MODE'] == 'true'
-      assert_text 'Test Mode Enabled'
-    else
-      assert_text 'Test Mode Disabled'
-    end
+    assert_text 'Error Reporting Enabled'
   end
 
   test 'displays configuration information' do
@@ -41,8 +37,8 @@ class Admin::TestErrorsTest < ApplicationSystemTestCase
     assert_text 'Configuration Information'
     assert_text "Environment: #{Rails.env}"
     assert_text 'Honeybadger API Key Set:'
-    assert_text 'Test Mode:'
-    assert_text 'Report Data:'
+    assert_text 'Error Reporting: Enabled in all environments'
+    assert_text 'Insights Enabled: Yes'
   end
 
   test 'notify only error shows in list' do

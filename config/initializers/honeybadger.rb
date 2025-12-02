@@ -23,12 +23,9 @@ Honeybadger.configure do |config|
     notice.context[:error_timestamp] = Time.current.iso8601
   end
 
-  # Configure test mode backend
-  if Rails.env.test? && ENV['HONEYBADGER_TEST_MODE'] == 'true'
-    config.backend = 'server'
-  elsif Rails.env.test?
-    config.backend = 'null'
-  end
+  # Configure backend for all environments
+  # Always use 'server' backend to enable error reporting in all environments
+  config.backend = 'server'
 
   # Add custom error grouping
   config.before_notify do |notice|
