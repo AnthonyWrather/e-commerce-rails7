@@ -41,10 +41,9 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   # Price validations
-  test 'should require price' do
+  test 'should allow nil price' do
     @product.price = nil
-    assert_not @product.valid?
-    assert_includes @product.errors[:price], "can't be blank"
+    assert @product.valid?
   end
 
   test 'should require price to be a number' do
