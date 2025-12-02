@@ -376,12 +376,26 @@ Do not commit the code.
 
 --------------------------------
 
+Analyse the codebase and update documentation/codebase-analysis.md with the changes.
 
 --------------------------------
 
+Analyse the existing codebase and architecture and update the existing HoneyBadger implementation to generate errors in test and production.
+
+Do not run the playwright tests.
+Run all "bin/rails test" and "bin/rails test:system" and "bin/rails test:all" and fix any errors.
+Run rubocop and fix any errors.
+Do not commit the code.
 
 --------------------------------
 
+Update the Honeybadger configuration to require an environment variable to log HoneyBadger errors in development.
+Update documentation/HONEYBADGER-UPDATE-SUMMARY.md with all changes.
+
+Do not run the playwright tests.
+Run all "bin/rails test" and "bin/rails test:system" and "bin/rails test:all" and fix any errors.
+Run rubocop and fix any errors.
+Do not commit the code.
 
 --------------------------------
 
