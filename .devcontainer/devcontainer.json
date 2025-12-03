@@ -55,7 +55,12 @@
         "kaiwood.endwise",
         "manuelpuyol.erb-linter",
         "github.copilot-chat",
-        "playwright.playwright"
+        "playwright.playwright",
+        "playwright.playwright-test",
+        "ms-playwright.vscode-playwright-test-runner",
+        "formulahendry.auto-close-tag",
+        "formulahendry.auto-rename-tag",
+        "bierner.markdown-mermaid"
       ]
     }
   },

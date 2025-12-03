@@ -8,6 +8,42 @@ module ApplicationHelper
   PLACEHOLDER_THUMB_URL = 'https://via.placeholder.com/50x50.png?text=No+Image'
   PLACEHOLDER_CATEGORY_URL = 'https://via.placeholder.com/512x512.png?text=Category'
 
+  # Checks if Honeybadger JavaScript should be enabled
+  # Returns true if API key is present and either:
+  # - In production/test environment, OR
+  # - In development with HONEYBADGER_ENABLED_IN_DEV=true
+  def honeybadger_js_enabled?
+    return false unless Honeybadger.config[:api_key].present?
+
+    Rails.env.production? || Rails.env.test? ||
+      (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true')
+  end
+
+  # Returns the current user context for Honeybadger JavaScript error reporting
+  # Includes user identity information for debugging
+  # Uses respond_to? to safely check for authentication methods from Devise
+  def honeybadger_user_context
+    if respond_to?(:current_admin_user, true) && current_admin_user.present?
+      {
+        id: current_admin_user.id,
+        email: current_admin_user.email,
+        type: 'admin'
+      }
+    elsif respond_to?(:current_user, true) && current_user.present?
+      {
+        id: current_user.id,
+        email: current_user.email,
+        type: 'user'
+      }
+    else
+      {
+        id: nil,
+        email: nil,
+        type: 'guest'
+      }
+    end
+  end
+
   def formatted_price(price)
     return '£0.00' if price.nil? || price.zero?
 
