@@ -14,13 +14,13 @@ root: "<%= Rails.root.to_s %>"
 
 # Honeybadger won't report errors in these environments.
 development_environments:
-  - development
-  - test
   - cucumber
 
 # By default, Honeybadger won't report errors in the development_environments.
-# Set to true in production to enable error reporting.
-report_data: <%= Rails.env.production? %>
+# Development: Requires HONEYBADGER_ENABLED_IN_DEV=true environment variable
+# Test: Always enabled
+# Production: Always enabled
+report_data: <%= Rails.env.production? || Rails.env.test? || (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true') %>
 
 # The current Git revision of your project. Defaults to the last commit hash.
 # revision: null
@@ -29,8 +29,11 @@ report_data: <%= Rails.env.production? %>
 debug: false
 
 # Enable Honeybadger Insights for performance monitoring
+# Development: Requires HONEYBADGER_ENABLED_IN_DEV=true environment variable
+# Test: Always enabled
+# Production: Always enabled
 insights:
-  enabled: <%= Rails.env.production? %>
+  enabled: <%= Rails.env.production? || Rails.env.test? || (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true') %>
 
 # Filter sensitive data from error reports
 request:

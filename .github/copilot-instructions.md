@@ -84,6 +84,54 @@ B2B/B2C composite materials e-commerce platform with **material quantity calcula
 - `belongs_to :product`
 - Legacy model - appears unused (use `Stock` instead)
 
+**User** (`app/models/user.rb`)
+- Devise authentication model for customers
+- Modules: `:database_authenticatable`, `:registerable`, `:recoverable`, `:rememberable`, `:validatable`, `:confirmable`
+- `has_many :carts` - Shopping carts with session tokens
+- `has_many :addresses` - Shipping addresses
+- `has_many :orders` - Purchase history
+- `has_many :conversations` - Customer support conversations
+- `has_many :messages` (as sender, polymorphic)
+- Fields: `email`, `encrypted_password`, `full_name` (required), `phone`, confirmation tokens
+- **Validations**: full_name (2-100 chars), phone (optional, format: numbers/spaces/+/-)
+- **Methods**: `display_name` (full_name or email prefix), `primary_address`
+- **Has PaperTrail**: Audit logging enabled
+
+**Conversation** (`app/models/conversation.rb`)
+- `belongs_to :user` - Customer who initiated conversation
+- `has_many :messages` - Chat messages
+- `has_many :conversation_participants` - Admin assignments
+- `has_many :admin_users, through: :conversation_participants`
+- Fields: `user_id`, `status` (enum), `subject`, `last_message_at`
+- **Status Enum**: `open` (0), `active` (1), `resolved` (2), `closed` (3)
+- **Scopes**: `recent`, `unresolved`, `for_user(user_id)`, `for_admin(admin_user_id)`
+- **Methods**: `unread_messages_for(participant)`, `latest_message`, `participant_for(admin_user)`
+- **Has PaperTrail**: Audit logging enabled
+
+**Message** (`app/models/message.rb`)
+- `belongs_to :conversation` (touches `last_message_at`)
+- `belongs_to :sender` (polymorphic: User or AdminUser)
+- Fields: `conversation_id`, `sender_type`, `sender_id`, `content` (max 5000 chars), `read_at`, `created_at`
+- **Validations**: content (required, max 5000 chars), sender_type (only User or AdminUser)
+- **Scopes**: `recent` (asc order), `unread_for(participant)`
+- **Callbacks**: `after_create_commit :update_conversation_timestamp`
+- **Methods**: `sender_name`, `sender_type_class` (returns 'admin' or 'user')
+
+**ConversationParticipant** (`app/models/conversation_participant.rb`)
+- Join table for admin assignments to conversations
+- `belongs_to :conversation`
+- `belongs_to :admin_user`
+- Fields: `conversation_id`, `admin_user_id`, `last_read_at`, `active` (boolean)
+- **Unique Index**: conversation_id + admin_user_id (one admin per conversation)
+
+**AdminPresence** (`app/models/admin_presence.rb`)
+- Real-time online status tracking for admins
+- `belongs_to :admin_user`
+- Fields: `admin_user_id`, `status` (string: 'online'/'offline'), `last_seen_at`
+- **Unique Index**: admin_user_id (one presence record per admin)
+- **Indexes**: status, last_seen_at (for quick queries)
+- **Broadcasts**: Status changes via PresenceChannel (Action Cable)
+
 ### Pricing Logic
 Products can have two pricing models:
 1. **Single price**: Product has `stock_level` and `price` fields directly
@@ -322,25 +370,33 @@ All admin authentication screens follow a consistent Tailwind design pattern:
 Uses **Minitest** (Rails default, not RSpec) with Capybara for system tests.
 
 **Test Structure**:
-- `test/models/` - Model unit tests (mostly placeholder stubs)
+- `test/models/` - Model unit tests (comprehensive coverage for core models)
 - `test/controllers/` - Controller integration tests
 - `test/controllers/admin/` - Admin namespace controller tests
+- `test/system/` - Capybara browser tests for public UI
 - `test/system/admin/` - Capybara browser tests for admin UI
-- `test/fixtures/` - YAML test data (minimal fixtures defined)
+- `test/fixtures/` - YAML test data (comprehensive fixtures for chat, users, products)
 - `test/mailers/` - Mailer tests
 
 **Running Tests**:
 ```bash
-bin/rails test              # Run all unit/integration tests (285 runs, 730 assertions)
-bin/rails test:system       # Run Capybara system tests (16 runs, 19 assertions)
-bin/rails test:all          # Run everything (301 total runs, 749 assertions, 8 skips)
+bin/rails test              # Run all unit/integration tests
+bin/rails test:system       # Run Capybara system tests (182 runs, 380 assertions)
+bin/rails test:all          # Run everything (648+ total runs, 1,447+ assertions)
 ```
+
+**Current Test Status** (Nov 30, 2025):
+- **Total**: 182 system tests, 380 assertions, 0 failures, 0 errors, 3 skips
+- **Coverage**: 86.22% overall (513/595 lines)
+- **Chat Feature**: All 19 tests passing (10 customer + 9 admin)
+- **Skipped Tests**: 3 tests require JavaScript driver (expected/acceptable)
 
 **Test Patterns**:
 - Controller tests use `ActionDispatch::IntegrationTest`
-- System tests use Selenium with Chrome (1400x1400 screen size)
+- System tests use `rack_test` driver by default (no JavaScript)
 - Tests run in parallel (`parallelize(workers: :number_of_processors)`)
 - Admin controller tests use `sign_in admin_users(:admin_user_one)` for authentication
+- User controller tests use `sign_in users(:user_one)` for customer authentication
 - Fixtures loaded for all tests via `fixtures :all`
 - Rack::Attack tests skipped by default (6 tests in `test/integration/rack_attack_test.rb`)
 
@@ -349,8 +405,53 @@ bin/rails test:all          # Run everything (301 total runs, 749 assertions, 8 
 - Capybara automatically handles Puma server setup
 - See `test/application_system_test_case.rb` for simple default configuration
 
+**Test Environment Optimization**:
+Asset compilation is disabled in test environment to prevent intermittent hangs:
+- Tailwind CSS compilation skipped (`config/environments/test.rb` lines 55-62)
+- JavaScript building skipped via `ENV['SKIP_JS_BUILD'] = 'true'`
+- See `documentation/system-tests-troubleshooting.md` for details
+- **Result**: Fast, stable test execution (~9-10 seconds for 182 system tests)
+
 **Known Issue (Resolved)**:
 Previously had namespace conflict when admin model was named `Admin` (conflicted with `Admin::` module). Resolved via migration to `AdminUser` model.
+
+### Test Environment Configuration
+
+**Asset Compilation Disabled** (`config/environments/test.rb`):
+To prevent intermittent test hangs, asset compilation is disabled during test runs:
+
+```ruby
+# Skip JavaScript building in test environment
+ENV['SKIP_JS_BUILD'] = 'true' unless ENV['FORCE_JS_BUILD']
+
+# Disable Tailwind CSS compilation/watching in test environment
+config.after_initialize do
+  if defined?(Tailwindcss)
+    Tailwindcss::Commands.module_eval do
+      def self.watch_command(*); "echo 'Tailwind watch disabled in test'"; end
+      def self.compile_command(*); "echo 'Tailwind compile skipped in test'"; end
+    end
+  end
+end
+```
+
+**Why This Matters**:
+- `tailwindcss-rails` and `jsbundling-rails` gems hook into `test:prepare` task
+- Pre-test asset rebuilding occasionally hangs (50% hang rate before fix)
+- Test suite now runs consistently in ~9-10 seconds without hangs
+- Assets are pre-compiled once during Docker container build, not on every test run
+
+**Test Execution Commands**:
+```bash
+bin/rails test              # Unit & integration tests (~5s)
+bin/rails test:system       # System tests (~9-10s)
+bin/rails test:all          # Everything (~15s total)
+
+# Force asset rebuilding if needed:
+FORCE_JS_BUILD=true bin/rails test:system
+```
+
+**Troubleshooting**: See `documentation/system-tests-troubleshooting.md` for detailed analysis of asset compilation issues
 
 ### RuboCop
 Project uses `rubocop-rspec` gem but implements **Minitest**, not RSpec (likely leftover dependency).
@@ -703,7 +804,11 @@ Limited use - mainly for quantities calculators:
 - **Development**: Redis at localhost:6379/1
 - **Production**: Redis from `REDIS_URL` ENV var
 - **Channel prefix**: ecomm_production
-- Currently minimal usage (infrastructure present but unused)
+- **Implemented**: Chat system using Action Cable for real-time messaging
+
+**Channels**:
+- `ConversationChannel`: Real-time chat messaging between users and admins
+- `PresenceChannel`: Admin online status broadcasting to customers
 
 ### Puma Web Server
 - **Threads**: 5 (configurable via `RAILS_MAX_THREADS`)
@@ -1163,21 +1268,46 @@ end
 ## Action Cable & WebSockets
 
 ### Current Status
-- **Action Cable configured** but unused
+- **Action Cable fully configured** for real-time chat system
 - Redis configured for production (`REDIS_URL`)
-- No channels defined (only `ApplicationCable::Channel` and `ApplicationCable::Connection` stubs)
-- No real-time features
+- Authenticated connection supporting both User and AdminUser
+- Two channels implemented for chat functionality
 
-**Potential Use Cases** (not implemented):
-- Real-time order notifications for admin
-- Live stock level updates
-- Chat support widget
-- Live visitor count
+**Implemented Features**:
+- Real-time chat messaging between customers and admins
+- Admin presence/availability status broadcasting
+- Typing indicators in conversations
+- Message broadcasting to conversation participants
+- Auto-assignment of admins to open conversations
+
+**Connection** (`app/channels/application_cable/connection.rb`):
+- Authenticates both `current_user` and `current_admin_user`
+- Extracts user IDs from Warden session cookies
+- Rejects unauthorized connections
+
+**ConversationChannel** (`app/channels/conversation_channel.rb`):
+- `subscribed`: Authorizes and streams conversation messages
+- `speak`: Creates and broadcasts new messages
+- `typing`: Broadcasts typing indicators
+- Authorization: Users can only access their own conversations; admins can only access assigned conversations
+- Updates admin presence on subscribe/unsubscribe
+- Stream format: `conversation_channel_#{conversation_id}`
+
+**PresenceChannel** (`app/channels/presence_channel.rb`):
+- Public channel for broadcasting admin online status
+- Transmits list of online admins on subscription
+- `AdminPresence` model broadcasts status changes automatically
+- Stream format: `presence_channel`
 
 **Configuration**:
 - Development: Redis at `redis://localhost:6379/1`
 - Production: Redis from ENV `REDIS_URL`
 - Channel prefix: `ecomm_production`
+
+**Chat UI Integration**:
+- Customer chat: Real-time message updates, admin online status indicator
+- Admin chat dashboard: List of unresolved conversations, typing indicators, message notifications
+- Admin assignment: Automatically assigned to first admin who views conversation
 
 ## Image Handling & Active Storage
 

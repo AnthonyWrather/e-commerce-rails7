@@ -84,6 +84,39 @@ class RackAttackTest < ActionDispatch::IntegrationTest
     assert_equal 'Too Many Requests. Please try again later.', response.body
   end
 
+  # Chat message rate limiting tests
+  # These test the throttling rules added for chat endpoints:
+  # - chat_messages/ip: 60 messages per minute for user chat
+  # - admin_chat_messages/ip: 60 messages per minute for admin chat
+  # - conversations/ip: 10 new conversations per hour
+
+  test 'throttles chat message creation by IP' do
+    user = users(:user_one)
+    sign_in user
+    conversation = conversations(:conversation_one)
+
+    60.times do |i|
+      post conversation_messages_url(conversation), params: { message: { content: "Test message #{i}" } }, as: :json
+      refute_equal 429, response.status, "Request #{i + 1} should not be rate limited"
+    end
+
+    post conversation_messages_url(conversation), params: { message: { content: 'Rate limited message' } }, as: :json
+    assert_response 429
+  end
+
+  test 'throttles conversation creation by IP' do
+    user = users(:user_one)
+    sign_in user
+
+    10.times do |i|
+      post conversations_url, params: { conversation: { subject: "Test #{i}", initial_message: 'Hello' } }
+      refute_equal 429, response.status, "Request #{i + 1} should not be rate limited"
+    end
+
+    post conversations_url, params: { conversation: { subject: 'Rate limited', initial_message: 'Hello' } }
+    assert_response 429
+  end
+
   private
 
   def refute_response(status)

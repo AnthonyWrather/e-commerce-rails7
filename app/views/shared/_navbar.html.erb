@@ -31,6 +31,16 @@
             </div>
           <% end %>
           <% if user_signed_in? %>
+            <%= link_to conversations_path, class: "text-gray-100 py-2 relative" do %>
+              <%= icon 'fa-solid', 'comments' %>
+              <% unread_count = current_user.conversations.unresolved.count %>
+              <% if unread_count > 0 %>
+                <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                  <%= unread_count %>
+                </span>
+              <% end %>
+            <% end %>
+            <%= link_to 'Messages', conversations_path, class: "text-gray-100 hover:underline py-2 px-2 rounded-md text-md font-medium hidden sm:inline" %>
             <%= link_to account_path, class: "text-gray-100 py-2" do %>
               <%= icon 'fa-solid', 'user' %>
             <% end %>

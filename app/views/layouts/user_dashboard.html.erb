@@ -48,6 +48,11 @@
                 <%= icon('fa-solid', 'box', class: 'mr-2') %> <span class="hidden md:inline-block">Order History</span>
               <% end %>
             </li>
+            <li>
+              <%= link_to conversations_path, class: "block px-4 py-2 rounded hover:bg-blue-700 #{controller_name == 'conversations' ? 'bg-blue-700' : ''}" do %>
+                <%= icon('fa-solid', 'comments', class: 'mr-2') %> <span class="hidden md:inline-block">Messages</span>
+              <% end %>
+            </li>
             <li class="pt-4 mt-4 border-t border-blue-500">
               <%= link_to root_path, class: "block px-4 py-2 rounded hover:bg-blue-700" do %>
                 <%= icon('fa-solid', 'store', class: 'mr-2') %> <span class="hidden md:inline-block">Back to Shop</span>

@@ -265,8 +265,6 @@ Update documentation.
 /awesome-copilot create-readme
 Follow instructions in suggest-awesome-github-copilot-collections.prompt.md
 
-Follow instructions in [create-readme.prompt.md]
-
 Analyse the models, schema.rb, etc and update the existing schema-diagram.md
 
 Analyze this codebase to generate or update `.github/copilot-instructions.md` and `.github/AGENTS.md` for guiding AI coding agents.
@@ -289,6 +287,8 @@ Guidelines (read more at https://aka.ms/vscode-instructions-docs):
 - Reference key files/directories that exemplify important patterns
 
 Generate or update `.github/copilot-instructions.md` and `.github/AGENTS.md` for the user, then ask for feedback on any unclear or incomplete sections to iterate.
+
+Follow instructions in [create-readme.prompt.md]
 
 --------------------------------
 
@@ -366,15 +366,36 @@ Add the issue to the e-commerce-rails7 Kanban Board (https://github.com/users/An
 
 --------------------------------
 
+The Price is mandatory when creating and editing Products.
+The Price should be optional and null should be allowed.
+
+Do not run the playwright tests.
+Run all "bin/rails test" and "bin/rails test:system" and "bin/rails test:all" and fix any errors.
+Run rubocop and fix any errors.
+Do not commit the code.
 
 --------------------------------
 
+Analyse the codebase and update documentation/codebase-analysis.md with the changes.
 
 --------------------------------
 
+Analyse the existing codebase and architecture and update the existing HoneyBadger implementation to generate errors in test and production.
+
+Do not run the playwright tests.
+Run all "bin/rails test" and "bin/rails test:system" and "bin/rails test:all" and fix any errors.
+Run rubocop and fix any errors.
+Do not commit the code.
 
 --------------------------------
 
+Update the Honeybadger configuration to require an environment variable to log HoneyBadger errors in development.
+Update documentation/HONEYBADGER-UPDATE-SUMMARY.md with all changes.
+
+Do not run the playwright tests.
+Run all "bin/rails test" and "bin/rails test:system" and "bin/rails test:all" and fix any errors.
+Run rubocop and fix any errors.
+Do not commit the code.
 
 --------------------------------
 

@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/badge/License-Unlicense-green?style=flat-square)](LICENSE)
 [![CI](https://github.com/AnthonyWrather/e-commerce-rails7/actions/workflows/ci.yml/badge.svg)](https://github.com/AnthonyWrather/e-commerce-rails7/actions/workflows/ci.yml)
 
-A specialized B2B/B2C e-commerce platform for selling composite materials (fiberglass, resins, tools) with integrated **material quantity calculators** for precise project estimation. Built with Rails 7, TypeScript, and Stripe payments.
+A specialized B2B/B2C e-commerce platform for selling composite materials (fiberglass, resins, tools) with integrated **material quantity calculators** for precise project estimation and **real-time customer support chat**. Built with Rails 7, TypeScript, Action Cable, and Stripe payments.
 
 ## Table of Contents
 
@@ -58,20 +58,23 @@ This platform serves the composite materials industry with a unique combination 
 
 - **Product Sales**: Full e-commerce with product catalog, shopping cart, and Stripe checkout
 - **Material Calculators**: Three specialized calculators (Area, Dimensions, Mould Rectangle) for composite material estimation
+- **Real-Time Chat**: Customer support conversations with live messaging via Action Cable and Redis
+- **User Accounts**: Devise-based customer authentication with confirmable email, shipping addresses, order history
 - **Variant Pricing**: Products can have single pricing or variant pricing by size (e.g., Small £10, Large £15)
-- **Guest Checkout**: No customer accounts required; orders tracked via email
-- **Admin Dashboard**: CRUD operations, revenue charts, order management, and stock control
+- **Admin Dashboard**: CRUD operations, revenue charts, order management, stock control, and conversation management
 
 **Technology Highlights:**
 
 - Ruby 3.2.3 + Rails 7.1.2 with PostgreSQL 17 database
 - TypeScript 5.3.3 (strict mode) with Stimulus controllers
+- Action Cable with Redis for real-time WebSocket messaging
+- Devise for user authentication (customers + admins with 2FA)
 - Tailwind CSS for responsive UI
 - Stripe for secure payment processing (GBP currency)
 - Docker devcontainer for consistent development environment
 - AWS S3 for production image storage
 - Rack 3.2.4 with Rack::Attack rate limiting
-- Capybara 3.40.0 for system testing
+- Capybara 3.40.0 for system testing (182 tests, 86.22% coverage)
 
 ## Why It's Useful
 
@@ -108,13 +111,24 @@ Calculate exact quantities for composite material projects:
 
 #### E-Commerce Features
 
-- Guest checkout with localStorage-based shopping cart
+- User accounts with Devise authentication (optional for checkout)
+- Persistent shopping cart (server + client localStorage sync)
 - Multi-image product galleries with Active Storage
 - Category-based product organization
 - Stock management at product and variant levels
 - Stripe payment integration with webhook-driven order creation
 - Email order confirmations with full invoice details
 - Admin dashboard with revenue charts (Chart.js)
+
+#### Customer Support Features
+
+- **Real-Time Chat**: Action Cable-powered live messaging between customers and admins
+- **Conversation Management**: Status tracking (open/active/resolved/closed)
+- **Admin Presence**: Live online/offline status for admin availability
+- **Auto-Assignment**: First admin to view a conversation is automatically assigned
+- **Typing Indicators**: Real-time feedback during conversations
+- **Message History**: Full conversation audit log with PaperTrail
+- **Polymorphic Messaging**: Support for both customer and admin message types
 
 ## Architecture & Design
 
@@ -127,19 +141,25 @@ This application follows a **Rails MVC architecture** with modern JavaScript enh
 │                         Browser (Client)                        │
 │  ┌──────────────┐  ┌──────────────┐  ┌────────────────────┐   │
 │  │ Public Shop  │  │ Admin Panel  │  │ Calculator Tools   │   │
-│  │ (Guest)      │  │ (Devise Auth)│  │ (Turbo Frames)     │   │
+│  │ (User Auth)  │  │ (Devise Auth)│  │ (Turbo Frames)     │   │
 │  └──────────────┘  └──────────────┘  └────────────────────┘   │
+│         │                  │                     │              │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │         Real-Time Chat (Action Cable WebSocket)          │  │
+│  │  ConversationChannel • PresenceChannel • Typing Indicators│  │
+│  └──────────────────────────────────────────────────────────┘  │
 │         │                  │                     │              │
 │    localStorage       Stimulus Controllers (TypeScript)         │
 │    (Cart State)       ↓        ↓        ↓                       │
 └─────────────────────────────────────────────────────────────────┘
-                               ↓ HTTP/HTTPS
+                   ↓ HTTP/HTTPS         ↓ WebSocket (wss://)
 ┌─────────────────────────────────────────────────────────────────┐
 │                      Rails 7 Application                        │
 │  ┌──────────────────────────────────────────────────────────┐  │
 │  │                    Controllers Layer                      │  │
 │  │  • Public: Home, Categories, Products, Carts, Checkouts  │  │
-│  │  • Admin: Products, Categories, Orders, Stocks, Reports  │  │
+│  │  • Chat: Conversations, Messages (real-time)             │  │
+│  │  • Admin: Products, Orders, Stocks, Reports, Chat        │  │
 │  │  • Quantities: Area, Dimensions, Mould Rectangle         │  │
 │  │  • Webhooks: Stripe webhook handler                      │  │
 │  └──────────────────────────────────────────────────────────┘  │
@@ -149,9 +169,12 @@ This application follows a **Rails MVC architecture** with modern JavaScript enh
 │  │  • Product (has_many :stocks, :images)                   │  │
 │  │  • Category (has_many :products)                         │  │
 │  │  • Stock (belongs_to :product) - Variant pricing         │  │
-│  │  • Order (has_many :order_products)                      │  │
-│  │  • OrderProduct (join table with price snapshot)         │  │
-│  │  • AdminUser (Devise authentication)                     │  │
+│  │  • Order (has_many :order_products, belongs_to :user)    │  │
+│  │  • User (Devise, has_many :conversations, :orders)       │  │
+│  │  • Conversation (enum status, has_many :messages)        │  │
+│  │  • Message (polymorphic sender: User/AdminUser)          │  │
+│  │  • AdminUser (Devise with 2FA, has_many :messages)       │  │
+│  │  • AdminPresence (real-time status tracking)             │  │
 │  └──────────────────────────────────────────────────────────┘  │
 │                               ↓                                  │
 │  ┌──────────────────────────────────────────────────────────┐  │
@@ -159,15 +182,16 @@ This application follows a **Rails MVC architecture** with modern JavaScript enh
 │  │  • Tailwind CSS for styling                              │  │
 │  │  • Turbo Frames for calculator tools                     │  │
 │  │  • Stimulus for interactivity                            │  │
+│  │  • Action Cable for real-time chat                       │  │
 │  └──────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
                                ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │                   External Services                             │
-│  ┌─────────────┐  ┌─────────────┐  ┌────────────────────────┐ │
-│  │ PostgreSQL  │  │   Stripe    │  │  AWS S3 (Production)   │ │
-│  │  Database   │  │  Payments   │  │  Image Storage         │ │
-│  └─────────────┘  └─────────────┘  └────────────────────────┘ │
+│  ┌────────────┐ ┌─────────┐ ┌─────────┐ ┌──────────────────┐  │
+│  │PostgreSQL  │ │  Redis  │ │ Stripe  │ │ AWS S3 (Prod)    │  │
+│  │ Database   │ │ (Cable) │ │Payments │ │ Image Storage    │  │
+│  └────────────┘ └─────────┘ └─────────┘ └──────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -249,11 +273,23 @@ categories ──┐
              │
              ├─< products >─┬─< stocks (variant pricing)
              │              ├─< order_products
+             │              ├─< cart_items
              │              └─< images (Active Storage)
              │
 orders ──────┴─< order_products
+             ↑
+             │
+users ───────┼─< orders
+             ├─< carts
+             ├─< addresses
+             ├─< conversations ─┬─< messages (polymorphic sender)
+             │                  └─< conversation_participants ─> admin_users
+             └─< messages (as sender)
 
-admin_users (Devise authentication)
+admin_users (Devise authentication with 2FA)
+             ├─< messages (as sender)
+             ├─< conversation_participants
+             └─< admin_presences (real-time status)
 ```
 
 **Key Relationships:**
@@ -263,6 +299,14 @@ admin_users (Devise authentication)
 - **Product → Images**: One-to-many (Active Storage attachments)
 - **Product → OrderProducts**: One-to-many (purchase history)
 - **Order → OrderProducts**: One-to-many (line items)
+- **Order → User**: Many-to-one (order history, optional)
+- **User → Conversations**: One-to-many (customer support conversations)
+- **User → Orders**: One-to-many (purchase history)
+- **User → Addresses**: One-to-many (shipping addresses)
+- **Conversation → Messages**: One-to-many (chat messages)
+- **Message → Sender**: Polymorphic (User or AdminUser)
+- **AdminUser → ConversationParticipants**: One-to-many (admin assignments)
+- **AdminUser → AdminPresence**: One-to-one (online/offline status)
 - **OrderProduct**: Captures `price` at time of purchase (not calculated)
 
 **Pricing Models:**

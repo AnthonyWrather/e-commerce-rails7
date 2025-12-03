@@ -53,6 +53,28 @@ AdminUser.create(email: "admin@example.com", password: "12345678")
 **Why**: Type safety, better bundling, modern JavaScript patterns.
 **Build**: `yarn build` compiles to `app/assets/builds/application.js`.
 
+### 6. **Real-Time Chat with Action Cable**
+**Decision**: Customer support chat uses Action Cable with Redis for real-time messaging.
+**Why**: Enables instant communication between customers and admins without page refreshes.
+**Architecture**:
+- **User Authentication**: Devise for customers (confirmable)
+- **Conversation Model**: Enum status (open/active/resolved/closed)
+- **Polymorphic Messages**: sender_type can be User or AdminUser
+- **Admin Assignment**: Auto-assigned to first admin who views conversation
+- **Presence Tracking**: AdminPresence broadcasts online/offline status
+**Channels**:
+- `ConversationChannel`: Real-time messaging, typing indicators, auto-assignment
+- `PresenceChannel`: Admin availability broadcasting to customers
+**Controllers**: `ConversationsController`, `MessagesController`, `Admin::ConversationsController`, `Admin::MessagesController`
+**Note**: Uses PaperTrail for conversation audit logging, 5000 char limit on messages.
+
+### 7. **Test Environment Asset Optimization**
+**Decision**: Disable Tailwind CSS and JavaScript building during test runs.
+**Why**: Asset compilation caused 50% test hang rate, adding 30+ seconds to test suite.
+**Implementation**: `ENV['SKIP_JS_BUILD'] = 'true'` in `config/environments/test.rb`, Tailwind compilation stubbed.
+**Result**: Test suite runs in ~9-10 seconds consistently (was ~40+ seconds with hangs).
+**Note**: Assets pre-compiled during Docker build, not on every test run.
+
 ## Critical Integration Points
 
 ### Cart API Endpoints (Server-Side Persistence)
@@ -194,6 +216,60 @@ sequenceDiagram
     Quantities::AreaController->>User: Render results in same Turbo Frame
     Note over User: Page doesn't reload, only frame updates
 ```
+
+**Key Points**:
+- Pure calculation engine (no database persistence)
+- All formulas in controller `index` action (no model)
+- Uses Turbo Frames for partial page updates
+- Constants defined in controller (MATERIAL_WIDTH, RESIN_TO_GLASS_RATIO, WASTAGE_FACTOR)
+
+### Real-Time Chat Flow (Action Cable)
+```mermaid
+sequenceDiagram
+    Customer->>ConversationsController: POST /conversations (new conversation)
+    ConversationsController->>Conversation: Create with user_id, status: open
+    ConversationsController->>Customer: Redirect to /conversations/:id
+    Customer->>ConversationChannel: Subscribe via Action Cable
+    Note over Customer,ConversationChannel: Stream: conversation_channel_123
+    Admin->>Admin::ConversationsController: GET /admin/conversations (unresolved)
+    Admin::ConversationsController->>Admin: Display list of open conversations
+    Admin->>Admin::ConversationsController: GET /admin/conversations/:id
+    Admin::ConversationsController->>ConversationParticipant: Create (auto-assign admin)
+    Admin::ConversationsController->>Conversation: Update status to active
+    Admin->>ConversationChannel: Subscribe to same stream
+    Admin->>AdminPresence: Update status to online
+    AdminPresence->>PresenceChannel: Broadcast online status
+    PresenceChannel->>Customer: Receive admin online notification
+    Customer->>MessagesController: POST /conversations/:id/messages
+    MessagesController->>Message: Create with sender: User, content
+    Message->>ConversationChannel: Broadcast to conversation stream
+    ConversationChannel->>Admin: Receive new message (real-time)
+    Admin->>Admin::MessagesController: POST /admin/conversations/:id/messages
+    Admin::MessagesController->>Message: Create with sender: AdminUser, content
+    Message->>ConversationChannel: Broadcast to conversation stream
+    ConversationChannel->>Customer: Receive admin reply (real-time)
+    Admin->>Admin::ConversationsController: PATCH /admin/conversations/:id/resolve
+    Admin::ConversationsController->>Conversation: Update status to resolved
+```
+
+**Key Points**:
+- Redis required for Action Cable in production (`REDIS_URL`)
+- Development: Redis at localhost:6379/1
+- Authenticated connections via Warden session (supports both User and AdminUser)
+- Typing indicators via `ConversationChannel#typing` action
+- Auto-assignment: First admin to view conversation is assigned
+- Unique constraint: One admin per conversation (enforced at DB level)
+- PaperTrail tracks all conversation and message changes
+- Admin presence updates on channel subscribe/unsubscribe
+- Message max length: 5000 characters
+- Conversation status enum: open(0), active(1), resolved(2), closed(3)
+
+**Critical Files**:
+- `app/channels/conversation_channel.rb` - Real-time messaging
+- `app/channels/presence_channel.rb` - Admin online status
+- `app/models/conversation.rb` - Enum status, scopes
+- `app/models/message.rb` - Polymorphic sender, validations
+- `app/models/admin_presence.rb` - Status broadcasting
 
 **Key Points**:
 - Pure calculation engine (no database persistence)

@@ -18,6 +18,9 @@ Rails.application.routes.draw do
       end
     end
     resources :orders, only: %i[index show], controller: 'users/orders'
+    resources :conversations, only: %i[index show new create], controller: 'users/conversations' do
+      resources :messages, only: [:create], controller: 'users/messages'
+    end
   end
 
   namespace :admin do
@@ -31,6 +34,22 @@ Rails.application.routes.draw do
     resources :audit_logs, only: [:index] do
       collection do
         get :export
+      end
+    end
+    resources :conversations, only: %i[index show] do
+      member do
+        post :assign
+        patch :resolve
+        patch :close
+      end
+      resources :messages, only: [:create]
+    end
+    post 'conversations/toggle_availability', to: 'conversations#toggle_availability', as: :toggle_availability_conversations
+
+    # Honeybadger test error routes (only available in non-production or when HONEYBADGER_TEST_MODE is set)
+    resources :test_errors, only: [:index] do
+      collection do
+        post :trigger
       end
     end
   end
