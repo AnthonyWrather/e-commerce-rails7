@@ -30,15 +30,15 @@ Rails.application.configure do
 
   # Disable Tailwind CSS watcher in test environment to prevent hangs
   # Assets should be pre-compiled before running tests
-  # config.after_initialize do
-  #   if defined?(Tailwindcss)
-  #     # Prevent Tailwind from watching/rebuilding during tests
-  #     Tailwindcss::Commands.module_eval do
-  #       def self.watch_command(*) = "echo 'Tailwind watch disabled in test'"
-  #       def self.compile_command(*) = "echo 'Tailwind compile skipped in test'"
-  #     end
-  #   end
-  # end
+  config.after_initialize do
+    if defined?(Tailwindcss)
+      # Prevent Tailwind from watching/rebuilding during tests
+      Tailwindcss::Commands.module_eval do
+        def self.watch_command(*) = "echo 'Tailwind watch disabled in test'"
+        def self.compile_command(*) = "echo 'Tailwind compile skipped in test'"
+      end
+    end
+  end
 
   # Show full error reports and disable caching.
   config.consider_all_requests_local = true
