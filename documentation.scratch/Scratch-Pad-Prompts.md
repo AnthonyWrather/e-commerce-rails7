@@ -399,6 +399,7 @@ Do not commit the code.
 
 --------------------------------
 
+HONEYBADGER_API_KEY=hbp_VlzZzc4umNs9vgq8peejXvMl3ombZv2E3tVe HONEYBADGER_ENABLED_IN_DEV=true bin/dev
 
 --------------------------------
 
