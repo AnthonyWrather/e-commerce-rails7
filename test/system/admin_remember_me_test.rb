@@ -5,8 +5,7 @@ require 'application_system_test_case'
 class AdminRememberMeTest < ApplicationSystemTestCase
   setup do
     @admin_user = admin_users(:admin_user_one)
-    # Ensure we start with a clean session - visit logout URL
-    visit destroy_admin_user_session_path if page.has_css?('body')
+    # Ensure we start with a clean session
     Capybara.reset_sessions!
   end
 

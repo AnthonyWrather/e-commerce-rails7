@@ -9,12 +9,7 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true, type: "module" %>
-    <% if Rails.env.production? && Honeybadger.config[:api_key].present? %>
-      <%= javascript_include_tag "https://js.honeybadger.io/v6.11/honeybadger.min.js" %>
-      <meta name="honeybadger-api-key" content="<%= Honeybadger.config[:api_key] %>">
-      <meta name="honeybadger-environment" content="<%= Rails.env %>">
-      <meta name="honeybadger-revision" content="<%= Honeybadger.config[:revision] %>">
-    <% end %>
+    <%= render "shared/honeybadger_js" %>
 
     <%= favicon_link_tag %>
 </head>
