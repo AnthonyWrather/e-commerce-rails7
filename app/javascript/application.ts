@@ -19,7 +19,24 @@ interface HoneybadgerClient {
   beforeNotify: (callback: (notice: Record<string, unknown>) => boolean | void) => void;
 }
 
+interface UserContext {
+  id: number | null;
+  email: string | null;
+  type: 'admin' | 'user' | 'guest';
+}
+
 let honeybadgerInitialized = false;
+
+function getUserContext(): UserContext | null {
+  const userContextMeta = document.querySelector<HTMLMetaElement>("meta[name='honeybadger-user-context']");
+  if (!userContextMeta?.content) return null;
+
+  try {
+    return JSON.parse(userContextMeta.content) as UserContext;
+  } catch {
+    return null;
+  }
+}
 
 function initializeHoneybadger(): void {
   if (honeybadgerInitialized) return;
@@ -28,12 +45,21 @@ function initializeHoneybadger(): void {
   if (!honeybadgerApiKey || !window.Honeybadger) return;
 
   const honeybadgerEnv = document.querySelector<HTMLMetaElement>("meta[name='honeybadger-environment']")?.content;
+  const userContext = getUserContext();
 
   window.Honeybadger.configure({
     apiKey: honeybadgerApiKey,
     environment: honeybadgerEnv || 'production',
     revision: document.querySelector<HTMLMetaElement>("meta[name='honeybadger-revision']")?.content
   });
+
+  if (userContext) {
+    window.Honeybadger.setContext({
+      user_id: userContext.id,
+      user_email: userContext.email,
+      user_type: userContext.type
+    });
+  }
 
   window.addEventListener('error', (event: ErrorEvent) => {
     if (window.Honeybadger && event.error) {
