@@ -13,4 +13,4 @@ bundle exec rails javascript:build > /dev/null 2>&1
 # export DISABLE_ASSET_BUILDS_IN_TESTS=1
 
 # Run the tests with assets already built
-exec bundle exec rails test:system "$@"
+exec bundle exec rails test:system --verbose "$@"
