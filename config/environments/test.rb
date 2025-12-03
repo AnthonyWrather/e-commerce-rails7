@@ -34,8 +34,8 @@ Rails.application.configure do
     if defined?(Tailwindcss)
       # Prevent Tailwind from watching/rebuilding during tests
       Tailwindcss::Commands.module_eval do
-        def self.watch_command(*) = "echo 'Tailwind watch disabled in test'"
-        def self.compile_command(*) = "echo 'Tailwind compile skipped in test'"
+        # def self.watch_command(*) = "echo 'Tailwind watch disabled in test'"
+        # def self.compile_command(*) = "echo 'Tailwind compile skipped in test'"
       end
     end
   end
