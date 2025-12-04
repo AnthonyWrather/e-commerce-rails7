@@ -36,6 +36,13 @@ Rails.application.routes.draw do
         get :export
       end
     end
+    resources :data_management, only: [:index] do
+      collection do
+        post :export
+        delete :clear
+        post :import
+      end
+    end
     resources :conversations, only: %i[index show] do
       member do
         post :assign

@@ -54,6 +54,11 @@
               <% end %>
             </li>
             <li>
+              <%= link_to admin_data_management_index_path, class: "block px-4 py-2 hover:rounded hover:bg-gray-700" do %>
+                <%= icon('fa-solid', 'database', class: 'mr-2') %> <span class="hidden md:inline-block">Data Management</span>
+              <% end %>
+            </li>
+            <li>
               <%= link_to admin_test_errors_path, class: "block px-4 py-2 hover:rounded hover:bg-gray-700" do %>
                 <%= icon('fa-solid', 'bug', class: 'mr-2') %> <span class="hidden md:inline-block">Test Errors</span>
               <% end %>
