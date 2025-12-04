@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Cart < ApplicationRecord
+  has_paper_trail
+
   belongs_to :user, optional: true
   has_many :cart_items, dependent: :destroy
 

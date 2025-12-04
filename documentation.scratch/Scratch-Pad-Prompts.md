@@ -403,6 +403,12 @@ HONEYBADGER_API_KEY=hbp_VlzZzc4umNs9vgq8peejXvMl3ombZv2E3tVe HONEYBADGER_ENABLED
 
 --------------------------------
 
+If possible add the additional unit and system tests necessary to catch this problem.
+Do not run the playwright tests.
+Run all "bin/rails test" and "bin/rails test:system" and "bin/rails test:all" and fix any errors.
+Remember to run "bin/rails test" and "bin/rails test:all" with a timeout.
+Remember to check the test coverage percentages for unit and system tests and keep the percentages above 50%.
+Run rubocop and fix any errors.
 
 --------------------------------
 
