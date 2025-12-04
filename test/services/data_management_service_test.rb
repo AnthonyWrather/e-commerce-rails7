@@ -24,6 +24,11 @@ class DataManagementServiceTest < ActiveSupport::TestCase
     assert_includes DataManagementService::TABLES, 'stocks'
     assert_includes DataManagementService::TABLES, 'orders'
     assert_includes DataManagementService::TABLES, 'order_products'
+    assert_includes DataManagementService::TABLES, 'carts'
+    assert_includes DataManagementService::TABLES, 'cart_items'
+    assert_includes DataManagementService::TABLES, 'conversations'
+    assert_includes DataManagementService::TABLES, 'messages'
+    assert_includes DataManagementService::TABLES, 'conversation_participants'
   end
 
   # Export tests
@@ -402,5 +407,159 @@ class DataManagementServiceTest < ActiveSupport::TestCase
 
     success_tables = @service.results[:success].map { |s| s[:table] }
     assert_includes success_tables, 'stocks'
+  end
+
+  # Cart and Cart Items tests
+  test 'export returns hash with carts data' do
+    data = @service.export(['carts'])
+
+    assert data.key?('carts')
+    assert data['carts'].is_a?(Array)
+    assert data['carts'].any?
+  end
+
+  test 'export returns hash with cart_items data' do
+    data = @service.export(['cart_items'])
+
+    assert data.key?('cart_items')
+    assert data['cart_items'].is_a?(Array)
+    assert data['cart_items'].any?
+  end
+
+  test 'export cart includes user_email instead of user_id' do
+    cart = carts(:user_one_cart)
+    data = @service.export(['carts'])
+    cart_data = data['carts'].find { |c| c['session_token'] == cart.session_token }
+
+    assert_not_nil cart_data
+    assert cart_data.key?('user_email')
+    assert_not cart_data.key?('user_id')
+  end
+
+  test 'export cart_item includes cart_session_token and product_name' do
+    cart_item = cart_items(:cart_item_one)
+    data = @service.export(['cart_items'])
+    item_data = data['cart_items'].find { |i| i['size'] == cart_item.size }
+
+    assert_not_nil item_data
+    assert item_data.key?('cart_session_token')
+    assert item_data.key?('product_name')
+    assert_not item_data.key?('cart_id')
+    assert_not item_data.key?('product_id')
+  end
+
+  test 'clear carts removes all carts and cart_items' do
+    initial_cart_count = Cart.count
+    initial_cart_item_count = CartItem.count
+    assert initial_cart_count.positive?, 'Test requires carts to exist'
+    assert initial_cart_item_count.positive?, 'Test requires cart_items to exist'
+
+    @service.clear(['carts'])
+
+    assert_equal 0, Cart.count
+    assert_equal 0, CartItem.count
+    assert(@service.results[:success].any? { |r| r[:table] == 'carts' })
+  end
+
+  test 'clear cart_items removes only cart_items' do
+    initial_cart_count = Cart.count
+    initial_cart_item_count = CartItem.count
+    assert initial_cart_count.positive?, 'Test requires carts to exist'
+    assert initial_cart_item_count.positive?, 'Test requires cart_items to exist'
+
+    @service.clear(['cart_items'])
+
+    assert_equal initial_cart_count, Cart.count
+    assert_equal 0, CartItem.count
+    assert(@service.results[:success].any? { |r| r[:table] == 'cart_items' })
+  end
+
+  # Conversation, Message, and Participant tests
+  test 'export returns hash with conversations data' do
+    data = @service.export(['conversations'])
+
+    assert data.key?('conversations')
+    assert data['conversations'].is_a?(Array)
+    assert data['conversations'].any?
+  end
+
+  test 'export returns hash with messages data' do
+    data = @service.export(['messages'])
+
+    assert data.key?('messages')
+    assert data['messages'].is_a?(Array)
+    assert data['messages'].any?
+  end
+
+  test 'export returns hash with conversation_participants data' do
+    data = @service.export(['conversation_participants'])
+
+    assert data.key?('conversation_participants')
+    assert data['conversation_participants'].is_a?(Array)
+    assert data['conversation_participants'].any?
+  end
+
+  test 'export conversation includes user_email instead of user_id' do
+    conversation = conversations(:conversation_one)
+    data = @service.export(['conversations'])
+    conv_data = data['conversations'].find { |c| c['subject'] == conversation.subject }
+
+    assert_not_nil conv_data
+    assert conv_data.key?('user_email')
+    assert_not conv_data.key?('user_id')
+  end
+
+  test 'export message includes conversation_user_email and sender_email' do
+    message = messages(:message_one)
+    data = @service.export(['messages'])
+    msg_data = data['messages'].find { |m| m['content'] == message.content }
+
+    assert_not_nil msg_data
+    assert msg_data.key?('conversation_user_email')
+    assert msg_data.key?('sender_email')
+    assert_not msg_data.key?('conversation_id')
+    assert_not msg_data.key?('sender_id')
+  end
+
+  test 'clear conversations removes all conversations, messages, and participants' do
+    initial_conv_count = Conversation.count
+    initial_msg_count = Message.count
+    initial_part_count = ConversationParticipant.count
+    assert initial_conv_count.positive?, 'Test requires conversations to exist'
+    assert initial_msg_count.positive?, 'Test requires messages to exist'
+    assert initial_part_count.positive?, 'Test requires participants to exist'
+
+    @service.clear(['conversations'])
+
+    assert_equal 0, Conversation.count
+    assert_equal 0, Message.count
+    assert_equal 0, ConversationParticipant.count
+    assert(@service.results[:success].any? { |r| r[:table] == 'conversations' })
+  end
+
+  test 'clear messages removes only messages' do
+    initial_conv_count = Conversation.count
+    initial_msg_count = Message.count
+    assert initial_conv_count.positive?, 'Test requires conversations to exist'
+    assert initial_msg_count.positive?, 'Test requires messages to exist'
+
+    @service.clear(['messages'])
+
+    assert_equal initial_conv_count, Conversation.count
+    assert_equal 0, Message.count
+    assert(@service.results[:success].any? { |r| r[:table] == 'messages' })
+  end
+
+  test 'clear conversation_participants removes only participants' do
+    initial_conv_count = Conversation.count
+    initial_part_count = ConversationParticipant.count
+    assert initial_conv_count.positive?, 'Test requires conversations to exist'
+    assert initial_part_count.positive?, 'Test requires participants to exist'
+
+    @service.clear(['conversation_participants'])
+
+    assert_equal initial_conv_count, Conversation.count
+    assert_equal 0, ConversationParticipant.count
+    assert(@service.results[:success].any? { |r| r[:table] == 'conversation_participants' })
   end
 end

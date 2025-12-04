@@ -3,7 +3,8 @@
 class DataManagementService
   class DataManagementError < StandardError; end
 
-  TABLES = %w[categories products stocks orders order_products].freeze
+  TABLES = %w[categories products stocks orders order_products carts cart_items conversations messages
+              conversation_participants].freeze
 
   attr_reader :results
 
@@ -59,6 +60,16 @@ class DataManagementService
       export_orders
     when 'order_products'
       export_order_products
+    when 'carts'
+      export_carts
+    when 'cart_items'
+      export_cart_items
+    when 'conversations'
+      export_conversations
+    when 'messages'
+      export_messages
+    when 'conversation_participants'
+      export_conversation_participants
     else
       raise DataManagementError, "Unknown table: #{table}"
     end
@@ -111,6 +122,61 @@ class DataManagementService
     end
   end
 
+  def export_carts
+    Cart.includes(:user).map do |cart|
+      cart_data = cart.attributes.except('id', 'created_at', 'updated_at')
+      cart_data['user_email'] = cart.user&.email
+      cart_data.delete('user_id')
+      cart_data
+    end
+  end
+
+  def export_cart_items
+    CartItem.includes(:cart, :product, :stock).map do |cart_item|
+      item_data = cart_item.attributes.except('id', 'created_at', 'updated_at')
+      item_data['cart_session_token'] = cart_item.cart.session_token
+      item_data['product_name'] = cart_item.product.name
+      item_data['stock_size'] = cart_item.stock&.size
+      item_data.delete('cart_id')
+      item_data.delete('product_id')
+      item_data.delete('stock_id')
+      item_data
+    end
+  end
+
+  def export_conversations
+    Conversation.includes(:user).map do |conversation|
+      conv_data = conversation.attributes.except('id', 'created_at', 'updated_at')
+      conv_data['user_email'] = conversation.user.email
+      conv_data.delete('user_id')
+      conv_data
+    end
+  end
+
+  def export_messages
+    Message.includes(:conversation, :sender).map do |message|
+      msg_data = message.attributes.except('id', 'created_at', 'updated_at')
+      msg_data['conversation_user_email'] = message.conversation.user.email
+      msg_data['conversation_subject'] = message.conversation.subject
+      msg_data['sender_email'] = message.sender&.email
+      msg_data.delete('conversation_id')
+      msg_data.delete('sender_id')
+      msg_data
+    end
+  end
+
+  def export_conversation_participants
+    ConversationParticipant.includes(:conversation, :admin_user).map do |participant|
+      part_data = participant.attributes.except('id', 'created_at', 'updated_at')
+      part_data['conversation_user_email'] = participant.conversation.user.email
+      part_data['conversation_subject'] = participant.conversation.subject
+      part_data['admin_user_email'] = participant.admin_user.email
+      part_data.delete('conversation_id')
+      part_data.delete('admin_user_id')
+      part_data
+    end
+  end
+
   def encode_image(attachment)
     return nil unless attachment.attached?
 
@@ -122,10 +188,19 @@ class DataManagementService
   end
 
   def order_for_clearing(tables)
-    # Clear in reverse dependency order: order_products -> orders, stocks -> products -> categories
+    # Clear in reverse dependency order
     order = []
+    # Chat-related tables (messages depend on conversations, participants depend on conversations)
+    order << 'messages' if tables.include?('messages')
+    order << 'conversation_participants' if tables.include?('conversation_participants')
+    order << 'conversations' if tables.include?('conversations')
+    # Cart-related tables (cart_items depend on carts)
+    order << 'cart_items' if tables.include?('cart_items')
+    order << 'carts' if tables.include?('carts')
+    # Order-related tables
     order << 'order_products' if tables.include?('order_products')
     order << 'orders' if tables.include?('orders')
+    # Product-related tables
     order << 'stocks' if tables.include?('stocks')
     order << 'products' if tables.include?('products')
     order << 'categories' if tables.include?('categories')
@@ -133,13 +208,22 @@ class DataManagementService
   end
 
   def order_for_importing(tables)
-    # Import in dependency order: categories -> products -> stocks, orders -> order_products
+    # Import in dependency order
     order = []
+    # Product-related tables
     order << 'categories' if tables.include?('categories')
     order << 'products' if tables.include?('products')
     order << 'stocks' if tables.include?('stocks')
+    # Order-related tables
     order << 'orders' if tables.include?('orders')
     order << 'order_products' if tables.include?('order_products')
+    # Cart-related tables (carts first, then cart_items)
+    order << 'carts' if tables.include?('carts')
+    order << 'cart_items' if tables.include?('cart_items')
+    # Chat-related tables (conversations first, then messages and participants)
+    order << 'conversations' if tables.include?('conversations')
+    order << 'messages' if tables.include?('messages')
+    order << 'conversation_participants' if tables.include?('conversation_participants')
     order
   end
 
@@ -155,6 +239,16 @@ class DataManagementService
       clear_orders
     when 'order_products'
       clear_order_products
+    when 'carts'
+      clear_carts
+    when 'cart_items'
+      clear_cart_items
+    when 'conversations'
+      clear_conversations
+    when 'messages'
+      clear_messages
+    when 'conversation_participants'
+      clear_conversation_participants
     else
       raise DataManagementError, "Unknown table: #{table}"
     end
@@ -212,6 +306,31 @@ class DataManagementService
     OrderProduct.delete_all
   end
 
+  def clear_carts
+    # Clear cart_items first due to foreign key constraint
+    CartItem.delete_all
+    Cart.delete_all
+  end
+
+  def clear_cart_items
+    CartItem.delete_all
+  end
+
+  def clear_conversations
+    # Clear messages and participants first due to foreign key constraints
+    Message.delete_all
+    ConversationParticipant.delete_all
+    Conversation.delete_all
+  end
+
+  def clear_messages
+    Message.delete_all
+  end
+
+  def clear_conversation_participants
+    ConversationParticipant.delete_all
+  end
+
   def import_table(table, records)
     return if records.blank?
 
@@ -226,6 +345,16 @@ class DataManagementService
       import_orders(records)
     when 'order_products'
       import_order_products(records)
+    when 'carts'
+      import_carts(records)
+    when 'cart_items'
+      import_cart_items(records)
+    when 'conversations'
+      import_conversations(records)
+    when 'messages'
+      import_messages(records)
+    when 'conversation_participants'
+      import_conversation_participants(records)
     else
       raise DataManagementError, "Unknown table: #{table}"
     end
@@ -315,6 +444,115 @@ class DataManagementService
     attributes = record.except('id', 'created_at', 'updated_at').merge(order: order, product: product)
     order_product = OrderProduct.create!(attributes)
     @results[:success] << { table: 'order_products', item: "#{product.name} - #{order_product.size}" }
+  end
+
+  def import_carts(records)
+    records.each do |record|
+      import_cart(record)
+    rescue StandardError => e
+      @results[:errors] << { table: 'carts', item: record['session_token'], error: e.message }
+    end
+  end
+
+  def import_cart(record)
+    user_email = record.delete('user_email')
+    user = user_email.present? ? User.find_by(email: user_email) : nil
+
+    cart = Cart.create!(record.except('id', 'created_at', 'updated_at').merge(user: user))
+    @results[:success] << { table: 'carts', item: cart.session_token }
+  end
+
+  def import_cart_items(records)
+    records.each do |record|
+      import_cart_item(record)
+    rescue StandardError => e
+      item_name = "#{record['product_name']} - #{record['size']}"
+      @results[:errors] << { table: 'cart_items', item: item_name, error: e.message }
+    end
+  end
+
+  def import_cart_item(record)
+    cart_session_token = record.delete('cart_session_token')
+    product_name = record.delete('product_name')
+    stock_size = record.delete('stock_size')
+
+    cart = Cart.find_by!(session_token: cart_session_token)
+    product = Product.find_by!(name: product_name)
+    stock = stock_size.present? ? product.stocks.find_by(size: stock_size) : nil
+
+    attributes = record.except('id', 'created_at', 'updated_at').merge(cart: cart, product: product, stock: stock)
+    cart_item = CartItem.create!(attributes)
+    @results[:success] << { table: 'cart_items', item: "#{product.name} - #{cart_item.size}" }
+  end
+
+  def import_conversations(records)
+    records.each do |record|
+      import_conversation(record)
+    rescue StandardError => e
+      @results[:errors] << { table: 'conversations', item: record['subject'], error: e.message }
+    end
+  end
+
+  def import_conversation(record)
+    user_email = record.delete('user_email')
+    user = User.find_by!(email: user_email)
+
+    conversation = Conversation.create!(record.except('id', 'created_at', 'updated_at').merge(user: user))
+    @results[:success] << { table: 'conversations', item: conversation.subject }
+  end
+
+  def import_messages(records)
+    records.each do |record|
+      import_message(record)
+    rescue StandardError => e
+      @results[:errors] << { table: 'messages', item: record['content']&.truncate(30), error: e.message }
+    end
+  end
+
+  def import_message(record)
+    conversation_user_email = record.delete('conversation_user_email')
+    conversation_subject = record.delete('conversation_subject')
+    sender_email = record.delete('sender_email')
+    sender_type = record['sender_type']
+
+    conversation = Conversation.joins(:user).find_by!(users: { email: conversation_user_email }, subject: conversation_subject)
+    sender = find_sender(sender_type, sender_email)
+
+    attributes = record.except('id', 'created_at', 'updated_at').merge(conversation: conversation, sender: sender)
+    message = Message.create!(attributes)
+    @results[:success] << { table: 'messages', item: message.content.truncate(30) }
+  end
+
+  def find_sender(sender_type, sender_email)
+    return nil unless sender_email.present?
+
+    case sender_type
+    when 'User'
+      User.find_by!(email: sender_email)
+    when 'AdminUser'
+      AdminUser.find_by!(email: sender_email)
+    end
+  end
+
+  def import_conversation_participants(records)
+    records.each do |record|
+      import_conversation_participant(record)
+    rescue StandardError => e
+      @results[:errors] << { table: 'conversation_participants', item: record['admin_user_email'], error: e.message }
+    end
+  end
+
+  def import_conversation_participant(record)
+    conversation_user_email = record.delete('conversation_user_email')
+    conversation_subject = record.delete('conversation_subject')
+    admin_user_email = record.delete('admin_user_email')
+
+    conversation = Conversation.joins(:user).find_by!(users: { email: conversation_user_email }, subject: conversation_subject)
+    admin_user = AdminUser.find_by!(email: admin_user_email)
+
+    attributes = record.except('id', 'created_at', 'updated_at').merge(conversation: conversation, admin_user: admin_user)
+    ConversationParticipant.create!(attributes)
+    @results[:success] << { table: 'conversation_participants', item: admin_user.email }
   end
 
   def attach_image(record, attribute, image_data)

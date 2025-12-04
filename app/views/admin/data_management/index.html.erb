@@ -41,6 +41,26 @@
             <%= check_box_tag 'tables[]', 'order_products', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
             <span class="ml-2 text-sm text-gray-700">Order Products (<%= OrderProduct.count %>)</span>
           </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'carts', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
+            <span class="ml-2 text-sm text-gray-700">Carts (<%= Cart.count %>)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'cart_items', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
+            <span class="ml-2 text-sm text-gray-700">Cart Items (<%= CartItem.count %>)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'conversations', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
+            <span class="ml-2 text-sm text-gray-700">Conversations (<%= Conversation.count %>)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'messages', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
+            <span class="ml-2 text-sm text-gray-700">Messages (<%= Message.count %>)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'conversation_participants', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
+            <span class="ml-2 text-sm text-gray-700">Conversation Participants (<%= ConversationParticipant.count %>)</span>
+          </label>
         </div>
       </div>
       
@@ -89,6 +109,26 @@
           <label class="inline-flex items-center">
             <%= check_box_tag 'tables[]', 'order_products', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
             <span class="ml-2 text-sm text-gray-700">Order Products only</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'carts', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
+            <span class="ml-2 text-sm text-gray-700">Carts (will also delete all cart items)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'cart_items', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
+            <span class="ml-2 text-sm text-gray-700">Cart Items only</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'conversations', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
+            <span class="ml-2 text-sm text-gray-700">Conversations (will also delete messages and participants)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'messages', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
+            <span class="ml-2 text-sm text-gray-700">Messages only</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'conversation_participants', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
+            <span class="ml-2 text-sm text-gray-700">Conversation Participants only</span>
           </label>
         </div>
       </div>

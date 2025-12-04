@@ -127,6 +127,11 @@ class Admin::DataManagementControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Stocks \(\d+\)/, response.body)
     assert_match(/Orders \(\d+\)/, response.body)
     assert_match(/Order Products \(\d+\)/, response.body)
+    assert_match(/Carts \(\d+\)/, response.body)
+    assert_match(/Cart Items \(\d+\)/, response.body)
+    assert_match(/Conversations \(\d+\)/, response.body)
+    assert_match(/Messages \(\d+\)/, response.body)
+    assert_match(/Conversation Participants \(\d+\)/, response.body)
   end
 
   test 'should export orders and order_products' do
@@ -199,5 +204,88 @@ class Admin::DataManagementControllerTest < ActionDispatch::IntegrationTest
     # Verify the controller has access to the format_errors_for_flash method
     controller = Admin::DataManagementController.new
     assert controller.respond_to?(:format_errors_for_flash, true)
+  end
+
+  test 'should export carts and cart_items' do
+    post export_admin_data_management_index_url, params: { tables: %w[carts cart_items] }
+    assert_response :success
+
+    data = JSON.parse(response.body)
+    assert data.key?('carts')
+    assert data.key?('cart_items')
+    assert data['carts'].any?
+    assert data['cart_items'].any?
+  end
+
+  test 'should export conversations and messages' do
+    post export_admin_data_management_index_url, params: { tables: %w[conversations messages conversation_participants] }
+    assert_response :success
+
+    data = JSON.parse(response.body)
+    assert data.key?('conversations')
+    assert data.key?('messages')
+    assert data.key?('conversation_participants')
+    assert data['conversations'].any?
+    assert data['messages'].any?
+    assert data['conversation_participants'].any?
+  end
+
+  test 'should clear carts and cart_items' do
+    initial_cart_count = Cart.count
+    initial_cart_item_count = CartItem.count
+    assert initial_cart_count.positive?, 'Test requires carts to exist'
+    assert initial_cart_item_count.positive?, 'Test requires cart_items to exist'
+
+    delete clear_admin_data_management_index_url, params: { tables: ['carts'] }
+
+    assert_redirected_to admin_data_management_index_path
+    assert_equal 0, Cart.count
+    assert_equal 0, CartItem.count
+    assert_includes flash[:notice], 'carts'
+  end
+
+  test 'should clear only cart_items' do
+    initial_cart_count = Cart.count
+    initial_cart_item_count = CartItem.count
+    assert initial_cart_count.positive?, 'Test requires carts to exist'
+    assert initial_cart_item_count.positive?, 'Test requires cart_items to exist'
+
+    delete clear_admin_data_management_index_url, params: { tables: ['cart_items'] }
+
+    assert_redirected_to admin_data_management_index_path
+    assert_equal initial_cart_count, Cart.count
+    assert_equal 0, CartItem.count
+    assert_includes flash[:notice], 'cart_items'
+  end
+
+  test 'should clear conversations and related data' do
+    initial_conv_count = Conversation.count
+    initial_msg_count = Message.count
+    initial_part_count = ConversationParticipant.count
+    assert initial_conv_count.positive?, 'Test requires conversations to exist'
+    assert initial_msg_count.positive?, 'Test requires messages to exist'
+    assert initial_part_count.positive?, 'Test requires participants to exist'
+
+    delete clear_admin_data_management_index_url, params: { tables: ['conversations'] }
+
+    assert_redirected_to admin_data_management_index_path
+    assert_equal 0, Conversation.count
+    assert_equal 0, Message.count
+    assert_equal 0, ConversationParticipant.count
+    assert_includes flash[:notice], 'conversations'
+  end
+
+  test 'should clear only messages' do
+    initial_conv_count = Conversation.count
+    initial_msg_count = Message.count
+    assert initial_conv_count.positive?, 'Test requires conversations to exist'
+    assert initial_msg_count.positive?, 'Test requires messages to exist'
+
+    delete clear_admin_data_management_index_url, params: { tables: ['messages'] }
+
+    assert_redirected_to admin_data_management_index_path
+    assert_equal initial_conv_count, Conversation.count
+    assert_equal 0, Message.count
+    assert_includes flash[:notice], 'messages'
   end
 end

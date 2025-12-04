@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class CartItem < ApplicationRecord
+  has_paper_trail
+
   belongs_to :cart
   belongs_to :product
   belongs_to :stock, optional: true
