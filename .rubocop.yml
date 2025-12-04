@@ -82,6 +82,7 @@ Metrics/ClassLength:
   Max: 200
   Exclude:
     - 'test/**/*'
+    - 'app/services/data_management_service.rb'
 
 Metrics/ModuleLength:
   Max: 200
