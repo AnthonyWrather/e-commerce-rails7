@@ -33,6 +33,14 @@
             <%= check_box_tag 'tables[]', 'stocks', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
             <span class="ml-2 text-sm text-gray-700">Stocks (<%= Stock.count %>)</span>
           </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'orders', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
+            <span class="ml-2 text-sm text-gray-700">Orders (<%= Order.count %>)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'order_products', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
+            <span class="ml-2 text-sm text-gray-700">Order Products (<%= OrderProduct.count %>)</span>
+          </label>
         </div>
       </div>
       
@@ -73,6 +81,14 @@
           <label class="inline-flex items-center">
             <%= check_box_tag 'tables[]', 'stocks', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
             <span class="ml-2 text-sm text-gray-700">Stocks only</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'orders', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
+            <span class="ml-2 text-sm text-gray-700">Orders (will also delete all order products)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'order_products', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
+            <span class="ml-2 text-sm text-gray-700">Order Products only</span>
           </label>
         </div>
       </div>
