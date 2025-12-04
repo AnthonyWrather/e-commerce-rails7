@@ -26,6 +26,10 @@ Rails.application.configure do
     policy.style_src :self,
                      :unsafe_inline # Required for Tailwind and inline styles
 
+    # Style attributes - allow inline style attributes on elements
+    # This is separate from style-src and needed for style="..." attributes
+    policy.style_src_attr :unsafe_inline
+
     # Images - allow self, https, data URIs, and specific sources
     policy.img_src :self,
                    :https,

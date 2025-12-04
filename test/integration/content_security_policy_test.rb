@@ -113,4 +113,15 @@ class ContentSecurityPolicyTest < ActionDispatch::IntegrationTest
 
     assert_match(%r{connect-src[^;]*https://api\.stripe\.com}, csp_header)
   end
+
+  test 'CSP header allows inline style attributes' do
+    get root_url
+
+    csp_header = response.headers['Content-Security-Policy'] ||
+                 response.headers['Content-Security-Policy-Report-Only']
+
+    # style-src-attr directive should allow 'unsafe-inline' for style="" attributes
+    assert_match(/style-src-attr[^;]*'unsafe-inline'/, csp_header,
+                 'CSP should include style-src-attr directive with unsafe-inline to allow style attributes')
+  end
 end
