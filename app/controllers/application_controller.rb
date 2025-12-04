@@ -2,6 +2,7 @@
 
 class ApplicationController < ActionController::Base
   include Pagy::Backend
+  include FlashMessageSanitizer
 
   before_action :set_honeybadger_context
   before_action :set_paper_trail_whodunnit
