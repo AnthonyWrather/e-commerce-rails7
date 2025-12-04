@@ -1,0 +1,51 @@
+<div id="flash-messages">
+  <% flash.each do |type, message| %>
+    <% next if message.blank? %>
+    <%
+      # Map flash types to appropriate Tailwind classes
+      type_classes = case type.to_s
+      when 'notice', 'success'
+        'bg-green-100 border-green-400 text-green-700'
+      when 'alert', 'error'
+        'bg-red-100 border-red-400 text-red-700'
+      when 'warning'
+        'bg-yellow-100 border-yellow-400 text-yellow-700'
+      else
+        'bg-blue-100 border-blue-400 text-blue-700'
+      end
+      
+      icon = case type.to_s
+      when 'notice', 'success'
+        'circle-check'
+      when 'alert', 'error'
+        'circle-exclamation'
+      when 'warning'
+        'triangle-exclamation'
+      else
+        'circle-info'
+      end
+    %>
+    <div
+      class="flex items-center p-4 mb-4 border rounded-lg <%= type_classes %>"
+      data-controller="flash"
+      data-flash-dismiss-after-value="5000"
+      role="alert"
+    >
+      <div class="flex-shrink-0">
+        <%= icon('fa-solid', icon, class: 'w-5 h-5') %>
+      </div>
+      <div class="ml-3 text-sm font-medium flex-grow">
+        <%= message %>
+      </div>
+      <button
+        type="button"
+        class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex items-center justify-center h-8 w-8 hover:bg-opacity-20 hover:bg-gray-500"
+        data-action="click->flash#dismiss"
+        aria-label="Close"
+      >
+        <span class="sr-only">Close</span>
+        <%= icon('fa-solid', 'xmark', class: 'w-4 h-4') %>
+      </button>
+    </div>
+  <% end %>
+</div>

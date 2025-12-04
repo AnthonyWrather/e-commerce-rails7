@@ -10,6 +10,7 @@ import DashboardController from "./dashboard_controller"
 import QuantitiesController from "./quantities_controller"
 import ChatController from "./chat_controller"
 import PresenceController from "./presence_controller"
+import FlashController from "./flash_controller"
 
 application.register("cart", CartController)
 application.register("products", ProductsController)
@@ -17,3 +18,4 @@ application.register("dashboard", DashboardController)
 application.register("quantities", QuantitiesController)
 application.register("chat", ChatController)
 application.register("presence", PresenceController)
+application.register("flash", FlashController)
