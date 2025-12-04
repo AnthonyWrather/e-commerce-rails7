@@ -22,6 +22,8 @@ class DataManagementServiceTest < ActiveSupport::TestCase
     assert_includes DataManagementService::TABLES, 'categories'
     assert_includes DataManagementService::TABLES, 'products'
     assert_includes DataManagementService::TABLES, 'stocks'
+    assert_includes DataManagementService::TABLES, 'orders'
+    assert_includes DataManagementService::TABLES, 'order_products'
   end
 
   # Export tests
@@ -86,6 +88,45 @@ class DataManagementServiceTest < ActiveSupport::TestCase
     assert_equal @stock.product.name, stock_data['product_name']
   end
 
+  test 'export returns hash with orders data' do
+    data = @service.export(['orders'])
+
+    assert data.key?('orders')
+    assert data['orders'].is_a?(Array)
+    assert data['orders'].any?
+  end
+
+  test 'export returns hash with order_products data' do
+    data = @service.export(['order_products'])
+
+    assert data.key?('order_products')
+    assert data['order_products'].is_a?(Array)
+    assert data['order_products'].any?
+  end
+
+  test 'export order includes customer_email' do
+    order = orders(:order_one)
+    data = @service.export(['orders'])
+    order_data = data['orders'].find { |o| o['customer_email'] == order.customer_email }
+
+    assert_not_nil order_data
+    assert_equal order.customer_email, order_data['customer_email']
+    assert_equal order.total, order_data['total']
+  end
+
+  test 'export order_product includes product_name and order references' do
+    order_product = order_products(:order_product_one)
+    data = @service.export(['order_products'])
+    op_data = data['order_products'].find { |op| op['size'] == order_product.size }
+
+    assert_not_nil op_data
+    assert op_data.key?('product_name')
+    assert op_data.key?('order_customer_email')
+    assert op_data.key?('order_payment_id')
+    assert_not op_data.key?('order_id')
+    assert_not op_data.key?('product_id')
+  end
+
   # Clear tests
   test 'clear stocks removes all stocks' do
     initial_stock_count = Stock.count
@@ -126,6 +167,32 @@ class DataManagementServiceTest < ActiveSupport::TestCase
 
     assert(@service.results[:success].any? { |r| r[:table] == 'categories' })
     assert_equal 0, Category.count
+  end
+
+  test 'clear orders removes all orders and order_products' do
+    initial_order_count = Order.count
+    initial_order_product_count = OrderProduct.count
+    assert initial_order_count.positive?
+    assert initial_order_product_count.positive?
+
+    @service.clear(['orders'])
+
+    assert_equal 0, Order.count
+    assert_equal 0, OrderProduct.count
+    assert(@service.results[:success].any? { |r| r[:table] == 'orders' })
+  end
+
+  test 'clear order_products removes only order_products' do
+    initial_order_count = Order.count
+    initial_order_product_count = OrderProduct.count
+    assert initial_order_count.positive?
+    assert initial_order_product_count.positive?
+
+    @service.clear(['order_products'])
+
+    assert_equal initial_order_count, Order.count
+    assert_equal 0, OrderProduct.count
+    assert(@service.results[:success].any? { |r| r[:table] == 'order_products' })
   end
 
   # Import tests
@@ -240,6 +307,79 @@ class DataManagementServiceTest < ActiveSupport::TestCase
     # Should have one error and one success
     assert @service.results[:errors].any?
     assert Category.find_by(name: 'Valid Category For Continue Test')
+  end
+
+  test 'import creates orders' do
+    data = {
+      'orders' => [
+        {
+          'customer_email' => 'import_test@example.com',
+          'fulfilled' => false,
+          'total' => 5000,
+          'address' => '123 Import Test Lane',
+          'name' => 'Import Test User',
+          'phone' => '01onal234567890',
+          'payment_status' => 'paid',
+          'payment_id' => 'pi_import_test_123'
+        }
+      ]
+    }
+
+    assert_difference('Order.count', 1) do
+      @service.import(data)
+    end
+
+    order = Order.find_by(customer_email: 'import_test@example.com')
+    assert order
+    assert_equal 5000, order.total
+    assert(@service.results[:success].any? { |r| r[:table] == 'orders' })
+  end
+
+  test 'import creates order_products with order and product references' do
+    order = orders(:order_one)
+    data = {
+      'order_products' => [
+        {
+          'order_customer_email' => order.customer_email,
+          'order_payment_id' => order.payment_id,
+          'product_name' => @product.name,
+          'category_name' => @product.category.name,
+          'size' => 'Import Test Size',
+          'quantity' => 5,
+          'price' => 2500
+        }
+      ]
+    }
+
+    assert_difference('OrderProduct.count', 1) do
+      @service.import(data)
+    end
+
+    op = OrderProduct.find_by(size: 'Import Test Size')
+    assert op
+    assert_equal order.id, op.order_id
+    assert_equal @product.id, op.product_id
+    assert(@service.results[:success].any? { |r| r[:table] == 'order_products' })
+  end
+
+  test 'import records errors for missing order reference in order_products' do
+    data = {
+      'order_products' => [
+        {
+          'order_customer_email' => 'nonexistent@example.com',
+          'order_payment_id' => 'pi_nonexistent',
+          'product_name' => @product.name,
+          'category_name' => @product.category.name,
+          'size' => 'Test Size',
+          'quantity' => 1,
+          'price' => 1000
+        }
+      ]
+    }
+
+    @service.import(data)
+
+    assert(@service.results[:errors].any? { |e| e[:table] == 'order_products' })
   end
 
   # Results tracking tests
