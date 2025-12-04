@@ -126,4 +126,37 @@ class Admin::DataManagementControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Products \(\d+\)/, response.body)
     assert_match(/Stocks \(\d+\)/, response.body)
   end
+
+  test 'should handle import with many errors without cookie overflow' do
+    # Create import data with many invalid records that will generate errors
+    data = {
+      'categories' => (1..20).map { { 'name' => '' } }, # Invalid: blank names
+      'products' => (1..20).map { |i| { 'name' => "Product #{i}", 'category_name' => 'NonExistent' } }
+    }
+
+    import_file = Rack::Test::UploadedFile.new(
+      StringIO.new(JSON.generate(data)),
+      'application/json',
+      original_filename: 'import.json'
+    )
+
+    # This should not raise ActionDispatch::Cookies::CookieOverflow
+    assert_nothing_raised do
+      post import_admin_data_management_index_url, params: { import_file: import_file }
+    end
+
+    assert_redirected_to admin_data_management_index_path
+
+    # Flash message should be truncated and manageable
+    error_message = flash[:error]
+    assert error_message.present?, 'Expected error flash message'
+    assert error_message.length <= FlashMessageSanitizer::MAX_MESSAGE_SIZE,
+           "Error message too long: #{error_message.length} characters"
+  end
+
+  test 'format_errors_for_flash is available in controller' do
+    # Verify the controller has access to the format_errors_for_flash method
+    controller = Admin::DataManagementController.new
+    assert controller.respond_to?(:format_errors_for_flash, true)
+  end
 end
