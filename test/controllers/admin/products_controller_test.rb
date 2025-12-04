@@ -64,5 +64,41 @@ module Admin
 
       assert_redirected_to admin_products_url
     end
+
+    test 'should set notice flash on create' do
+      post admin_products_url,
+           params: { product: { active: true, category_id: @admin_product.category_id,
+                                description: 'Flash test', name: 'Flash Test Product', price: 100 } }
+
+      assert_equal 'Product was successfully created.', flash[:notice]
+    end
+
+    test 'should set notice flash on update' do
+      patch admin_product_url(@admin_product),
+            params: { product: { name: 'Updated Product Name', price: @admin_product.price,
+                                 category_id: @admin_product.category_id } }
+
+      assert_equal 'Product was successfully updated.', flash[:notice]
+    end
+
+    test 'should set notice flash on destroy' do
+      product_to_delete = products(:product_three)
+      delete admin_product_url(product_to_delete)
+
+      assert_equal 'Product was successfully destroyed.', flash[:notice]
+    end
+
+    test 'flash messages are logged in audit logs via paper_trail' do
+      # Create a product and check that PaperTrail logged the creation
+      assert_difference('PaperTrail::Version.count') do
+        post admin_products_url,
+             params: { product: { active: true, category_id: @admin_product.category_id,
+                                  description: 'Audit test', name: 'Audit Test Product', price: 200 } }
+      end
+
+      version = PaperTrail::Version.last
+      assert_equal 'create', version.event
+      assert_equal 'Product', version.item_type
+    end
   end
 end
