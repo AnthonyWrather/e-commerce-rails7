@@ -318,7 +318,7 @@ class DataManagementServiceTest < ActiveSupport::TestCase
           'total' => 5000,
           'address' => '123 Import Test Lane',
           'name' => 'Import Test User',
-          'phone' => '01onal234567',
+          'phone' => '01onal234567890',
           'payment_status' => 'paid',
           'payment_id' => 'pi_import_test_123'
         }
