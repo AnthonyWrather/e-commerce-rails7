@@ -3,7 +3,7 @@
 class DataManagementService
   class DataManagementError < StandardError; end
 
-  TABLES = %w[categories products stocks].freeze
+  TABLES = %w[categories products stocks orders order_products].freeze
 
   attr_reader :results
 
@@ -55,6 +55,10 @@ class DataManagementService
       export_products
     when 'stocks'
       export_stocks
+    when 'orders'
+      export_orders
+    when 'order_products'
+      export_order_products
     else
       raise DataManagementError, "Unknown table: #{table}"
     end
@@ -88,6 +92,25 @@ class DataManagementService
     end
   end
 
+  def export_orders
+    Order.all.map do |order|
+      order.attributes.except('id', 'created_at', 'updated_at')
+    end
+  end
+
+  def export_order_products
+    OrderProduct.includes(:order, product: :category).map do |order_product|
+      op_data = order_product.attributes.except('id', 'created_at', 'updated_at')
+      op_data['order_customer_email'] = order_product.order.customer_email
+      op_data['order_payment_id'] = order_product.order.payment_id
+      op_data['product_name'] = order_product.product.name
+      op_data['category_name'] = order_product.product.category.name
+      op_data.delete('order_id')
+      op_data.delete('product_id')
+      op_data
+    end
+  end
+
   def encode_image(attachment)
     return nil unless attachment.attached?
 
@@ -99,8 +122,10 @@ class DataManagementService
   end
 
   def order_for_clearing(tables)
-    # Clear in reverse dependency order: stocks -> products -> categories
+    # Clear in reverse dependency order: order_products -> orders, stocks -> products -> categories
     order = []
+    order << 'order_products' if tables.include?('order_products')
+    order << 'orders' if tables.include?('orders')
     order << 'stocks' if tables.include?('stocks')
     order << 'products' if tables.include?('products')
     order << 'categories' if tables.include?('categories')
@@ -108,11 +133,13 @@ class DataManagementService
   end
 
   def order_for_importing(tables)
-    # Import in dependency order: categories -> products -> stocks
+    # Import in dependency order: categories -> products -> stocks, orders -> order_products
     order = []
     order << 'categories' if tables.include?('categories')
     order << 'products' if tables.include?('products')
     order << 'stocks' if tables.include?('stocks')
+    order << 'orders' if tables.include?('orders')
+    order << 'order_products' if tables.include?('order_products')
     order
   end
 
@@ -124,6 +151,10 @@ class DataManagementService
       clear_products
     when 'stocks'
       clear_stocks
+    when 'orders'
+      clear_orders
+    when 'order_products'
+      clear_order_products
     else
       raise DataManagementError, "Unknown table: #{table}"
     end
@@ -171,6 +202,16 @@ class DataManagementService
     Stock.delete_all
   end
 
+  def clear_orders
+    # Clear order_products first due to foreign key constraint
+    OrderProduct.delete_all
+    Order.delete_all
+  end
+
+  def clear_order_products
+    OrderProduct.delete_all
+  end
+
   def import_table(table, records)
     return if records.blank?
 
@@ -181,6 +222,10 @@ class DataManagementService
       import_products(records)
     when 'stocks'
       import_stocks(records)
+    when 'orders'
+      import_orders(records)
+    when 'order_products'
+      import_order_products(records)
     else
       raise DataManagementError, "Unknown table: #{table}"
     end
@@ -235,6 +280,41 @@ class DataManagementService
     product = Product.find_by!(name: product_name)
     stock = Stock.create!(record.except('id', 'created_at', 'updated_at').merge(product: product))
     @results[:success] << { table: 'stocks', item: "#{product.name} - #{stock.size}" }
+  end
+
+  def import_orders(records)
+    records.each do |record|
+      import_order(record)
+    rescue StandardError => e
+      @results[:errors] << { table: 'orders', item: record['customer_email'], error: e.message }
+    end
+  end
+
+  def import_order(record)
+    order = Order.create!(record.except('id', 'created_at', 'updated_at'))
+    @results[:success] << { table: 'orders', item: order.customer_email }
+  end
+
+  def import_order_products(records)
+    records.each do |record|
+      import_order_product(record)
+    rescue StandardError => e
+      item_name = "#{record['product_name']} - #{record['size']}"
+      @results[:errors] << { table: 'order_products', item: item_name, error: e.message }
+    end
+  end
+
+  def import_order_product(record)
+    order_customer_email = record.delete('order_customer_email')
+    order_payment_id = record.delete('order_payment_id')
+    product_name = record.delete('product_name')
+    record.delete('category_name')
+
+    order = Order.find_by!(customer_email: order_customer_email, payment_id: order_payment_id)
+    product = Product.find_by!(name: product_name)
+    attributes = record.except('id', 'created_at', 'updated_at').merge(order: order, product: product)
+    order_product = OrderProduct.create!(attributes)
+    @results[:success] << { table: 'order_products', item: "#{product.name} - #{order_product.size}" }
   end
 
   def attach_image(record, attribute, image_data)
