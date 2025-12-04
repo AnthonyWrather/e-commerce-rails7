@@ -13,7 +13,7 @@ class Admin::DataManagementController < AdminController
     data = service.export(selected_tables)
 
     if service.results[:errors].any?
-      flash[:error] = "Export completed with errors: #{format_errors(service.results[:errors])}"
+      flash[:error] = format_errors_for_flash(service.results[:errors], prefix: 'Export completed with errors')
     end
 
     send_data(
@@ -29,7 +29,7 @@ class Admin::DataManagementController < AdminController
     service.clear(selected_tables)
 
     if service.results[:errors].any?
-      flash[:error] = "Clear completed with errors: #{format_errors(service.results[:errors])}"
+      flash[:error] = format_errors_for_flash(service.results[:errors], prefix: 'Clear completed with errors')
     else
       flash[:notice] = "Successfully cleared data from: #{selected_tables.join(', ')}"
     end
@@ -60,7 +60,7 @@ class Admin::DataManagementController < AdminController
 
   def handle_import_flash_messages(results)
     if results[:errors].any?
-      error_message = format_errors(results[:errors])
+      error_message = format_errors_for_flash(results[:errors])
       flash[:error] = "Import completed with #{results[:errors].count} error(s): #{error_message}"
     end
 
@@ -85,9 +85,5 @@ class Admin::DataManagementController < AdminController
 
     flash[:error] = 'Please select a file to import'
     redirect_to admin_data_management_index_path
-  end
-
-  def format_errors(errors)
-    errors.map { |e| "#{e[:table]}: #{e[:error]}" }.join('; ')
   end
 end
