@@ -1,0 +1,83 @@
+<h1 class="my-4 text-2xl font-bold text-gray-800">Data Management</h1>
+
+<div class="flex flex-col gap-6">
+  <% if flash[:notice] %>
+    <div class="p-4 text-green-700 bg-green-100 border border-green-400 rounded">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
+  <% if flash[:error] %>
+    <div class="p-4 text-red-700 bg-red-100 border border-red-400 rounded">
+      <%= flash[:error] %>
+    </div>
+  <% end %>
+
+  <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+    <h2 class="mb-4 text-lg font-semibold text-gray-700">Export Data</h2>
+    <p class="mb-4 text-sm text-gray-600">Export selected tables to a JSON file with embedded images.</p>
+    
+    <%= form_with url: export_admin_data_management_index_path, method: :post, class: "space-y-4" do |form| %>
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700">Select tables to export:</label>
+        <div class="flex flex-wrap gap-4">
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'categories', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
+            <span class="ml-2 text-sm text-gray-700">Categories (<%= Category.count %>)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'products', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
+            <span class="ml-2 text-sm text-gray-700">Products (<%= Product.count %>)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'stocks', true, class: 'w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500' %>
+            <span class="ml-2 text-sm text-gray-700">Stocks (<%= Stock.count %>)</span>
+          </label>
+        </div>
+      </div>
+      
+      <%= form.submit 'Export Selected Tables', class: 'inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer' %>
+    <% end %>
+  </div>
+
+  <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+    <h2 class="mb-4 text-lg font-semibold text-gray-700">Import Data</h2>
+    <p class="mb-4 text-sm text-gray-600">Import data from a JSON file. Existing records will be preserved.</p>
+    
+    <%= form_with url: import_admin_data_management_index_path, method: :post, multipart: true, class: "space-y-4" do |form| %>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Select JSON file to import:</label>
+        <%= file_field_tag :import_file, accept: '.json', class: 'block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100' %>
+      </div>
+      
+      <%= form.submit 'Import Data', class: 'inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer' %>
+    <% end %>
+  </div>
+
+  <div class="p-6 bg-white border border-red-200 rounded-lg shadow">
+    <h2 class="mb-4 text-lg font-semibold text-red-700">Clear Data</h2>
+    <p class="mb-4 text-sm text-red-600">Warning: This action is irreversible! All selected data will be permanently deleted.</p>
+    
+    <%= form_with url: clear_admin_data_management_index_path, method: :delete, data: { turbo_confirm: 'Are you absolutely sure you want to delete the selected data? This action cannot be undone!' }, class: "space-y-4" do |form| %>
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700">Select tables to clear:</label>
+        <div class="flex flex-wrap gap-4">
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'categories', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
+            <span class="ml-2 text-sm text-gray-700">Categories (will also delete all products and stocks)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'products', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
+            <span class="ml-2 text-sm text-gray-700">Products (will also delete all stocks)</span>
+          </label>
+          <label class="inline-flex items-center">
+            <%= check_box_tag 'tables[]', 'stocks', false, class: 'w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500' %>
+            <span class="ml-2 text-sm text-gray-700">Stocks only</span>
+          </label>
+        </div>
+      </div>
+      
+      <%= form.submit 'Clear Selected Tables', class: 'inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 cursor-pointer' %>
+    <% end %>
+  </div>
+</div>
