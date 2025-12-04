@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
+const ANIMATION_DURATION_MS = 300
+
 export default class extends Controller {
   static values = {
     dismissAfter: { type: Number, default: 5000 }
@@ -28,6 +30,6 @@ export default class extends Controller {
     this.element.classList.add('opacity-0', 'transition-opacity', 'duration-300')
     setTimeout(() => {
       this.element.remove()
-    }, 300)
+    }, ANIMATION_DURATION_MS)
   }
 }
