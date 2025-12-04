@@ -125,6 +125,47 @@ class Admin::DataManagementControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Categories \(\d+\)/, response.body)
     assert_match(/Products \(\d+\)/, response.body)
     assert_match(/Stocks \(\d+\)/, response.body)
+    assert_match(/Orders \(\d+\)/, response.body)
+    assert_match(/Order Products \(\d+\)/, response.body)
+  end
+
+  test 'should export orders and order_products' do
+    post export_admin_data_management_index_url, params: { tables: %w[orders order_products] }
+    assert_response :success
+
+    data = JSON.parse(response.body)
+    assert data.key?('orders')
+    assert data.key?('order_products')
+    assert data['orders'].any?
+    assert data['order_products'].any?
+  end
+
+  test 'should clear orders and order_products' do
+    initial_order_count = Order.count
+    initial_order_product_count = OrderProduct.count
+    assert initial_order_count.positive?, 'Test requires orders to exist'
+    assert initial_order_product_count.positive?, 'Test requires order_products to exist'
+
+    delete clear_admin_data_management_index_url, params: { tables: ['orders'] }
+
+    assert_redirected_to admin_data_management_index_path
+    assert_equal 0, Order.count
+    assert_equal 0, OrderProduct.count
+    assert_includes flash[:notice], 'orders'
+  end
+
+  test 'should clear only order_products' do
+    initial_order_count = Order.count
+    initial_order_product_count = OrderProduct.count
+    assert initial_order_count.positive?, 'Test requires orders to exist'
+    assert initial_order_product_count.positive?, 'Test requires order_products to exist'
+
+    delete clear_admin_data_management_index_url, params: { tables: ['order_products'] }
+
+    assert_redirected_to admin_data_management_index_path
+    assert_equal initial_order_count, Order.count
+    assert_equal 0, OrderProduct.count
+    assert_includes flash[:notice], 'order_products'
   end
 
   test 'should handle import with many errors without cookie overflow' do

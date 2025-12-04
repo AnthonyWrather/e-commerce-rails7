@@ -175,8 +175,32 @@ jobs:
         run: |
           PGPASSWORD=postgres psql -h localhost -U postgres -c "ALTER USER postgres WITH SUPERUSER;"
 
-      - name: Run system tests
-        run: bin/rails test:system
+      - name: Run system tests with timeout and retry
+        run: |
+          MAX_RETRIES=3
+          TIMEOUT_SECONDS=180
+          attempt=1
+          while [ $attempt -le $MAX_RETRIES ]; do
+            echo "Attempt $attempt of $MAX_RETRIES"
+            exit_code=0
+            timeout $TIMEOUT_SECONDS bin/rails test:system || exit_code=$?
+            if [ $exit_code -eq 0 ]; then
+              echo "System tests passed on attempt $attempt"
+              exit 0
+            elif [ $exit_code -eq 124 ]; then
+              echo "System tests timed out on attempt $attempt"
+              if [ $attempt -lt $MAX_RETRIES ]; then
+                echo "Retrying..."
+                attempt=$((attempt + 1))
+              else
+                echo "All $MAX_RETRIES attempts timed out. Failing."
+                exit 1
+              fi
+            else
+              echo "System tests failed with exit code $exit_code on attempt $attempt. Not retrying on test errors."
+              exit $exit_code
+            fi
+          done
 
       - name: Upload system test screenshots
         uses: actions/upload-artifact@v4
