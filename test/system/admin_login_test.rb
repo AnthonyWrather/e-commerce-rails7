@@ -56,4 +56,29 @@ class AdminLoginTest < ApplicationSystemTestCase
     # Should be redirected to login page when not authenticated
     assert_current_path new_admin_user_session_path
   end
+
+  test 'login error flash message uses consistent styling' do
+    visit new_admin_user_session_path
+
+    fill_in 'Email', with: 'admin1@example.com'
+    fill_in 'Password', with: 'wrongpassword'
+    click_button 'Log in'
+
+    # Verify flash message uses the shared flash messages partial with stimulus controller
+    assert_selector '#flash-messages div[role="alert"]'
+    assert_selector '#flash-messages .bg-red-100'
+    assert_selector '#flash-messages button[aria-label="Close"]'
+    assert_selector '#flash-messages div[data-controller="flash"]'
+  end
+
+  test 'login flash message has correct dismiss timeout' do
+    visit new_admin_user_session_path
+
+    fill_in 'Email', with: 'admin1@example.com'
+    fill_in 'Password', with: 'wrongpassword'
+    click_button 'Log in'
+
+    # Verify flash message has 3 second timeout
+    assert_selector '#flash-messages div[data-flash-dismiss-after-value="3000"]'
+  end
 end
