@@ -63,4 +63,25 @@ class Admin::FlashMessagesTest < ApplicationSystemTestCase
     assert_selector '#flash-messages div[role="alert"]'
     assert_selector '#flash-messages .bg-green-100'
   end
+
+  test 'flash message has close button' do
+    visit new_admin_category_url
+
+    fill_in 'Name', with: 'Flash Close Button Test Category'
+    fill_in 'Description', with: 'Test Description'
+    click_on 'Create Category'
+
+    assert_selector '#flash-messages div[role="alert"]'
+    assert_selector '#flash-messages button[aria-label="Close"]'
+  end
+
+  test 'flash message has dismiss after value set to 3 seconds' do
+    visit new_admin_category_url
+
+    fill_in 'Name', with: 'Flash Timeout Test Category'
+    fill_in 'Description', with: 'Test Description'
+    click_on 'Create Category'
+
+    assert_selector '#flash-messages div[data-flash-dismiss-after-value="3000"]'
+  end
 end
