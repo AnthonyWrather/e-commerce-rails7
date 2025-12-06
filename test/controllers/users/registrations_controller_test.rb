@@ -105,4 +105,16 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     get new_user_registration_path
     assert_select 'a[href=?]', new_user_session_path
   end
+
+  test 'registration sends confirmation email' do
+    assert_difference 'ActionMailer::Base.deliveries.size', 1 do
+      post user_registration_path, params: @user_params
+    end
+
+    email = ActionMailer::Base.deliveries.last
+    assert_equal [@user_params[:user][:email]], email.to
+    assert_match(/confirm/i, email.subject)
+    # Verify email contains a confirmation URL
+    assert_match %r{http://localhost:3000/users/confirmation}, email.body.encoded
+  end
 end
