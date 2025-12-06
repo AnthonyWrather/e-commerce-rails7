@@ -77,7 +77,8 @@ test.describe('Error Handling and Edge Cases', () => {
       const criticalErrors = jsErrors.filter(error =>
         !error.includes('favicon') &&
         !error.includes('analytics') &&
-        !error.includes('gtag')
+        !error.includes('gtag') &&
+        !error.includes('ResizeObserver loop') // Benign Chart.js warning - filtered in application.ts
       );
 
       expect(criticalErrors).toHaveLength(0);
@@ -183,6 +184,7 @@ test.describe('Error Handling and Edge Cases', () => {
         !error.includes('favicon') &&
         !error.includes('analytics') &&
         !error.includes('gtag') &&
+        !error.includes('ResizeObserver loop') && // Benign Chart.js warning - filtered in application.ts
         !error.includes('Refused to connect') && // Common for external resources
         !error.includes('net::ERR_') // Network errors for external resources
       );
