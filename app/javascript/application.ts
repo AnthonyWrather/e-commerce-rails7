@@ -63,6 +63,14 @@ function initializeHoneybadger(): void {
 
   window.addEventListener('error', (event: ErrorEvent) => {
     if (window.Honeybadger && event.error) {
+      // Filter out benign ResizeObserver errors from Chart.js and other libraries
+      // These are harmless browser warnings that don't affect functionality
+      const errorMessage = event.error?.message || event.message || '';
+      if (errorMessage.includes('ResizeObserver loop') || 
+          errorMessage.includes('ResizeObserver loop completed with undelivered notifications')) {
+        return; // Silently ignore ResizeObserver errors
+      }
+
       window.Honeybadger.notify(event.error, {
         context: {
           url: window.location.href,
