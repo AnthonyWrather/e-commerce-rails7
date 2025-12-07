@@ -885,6 +885,45 @@ When reviewing PRs, check:
 
 ## Where to Learn More
 
+### Honeybadger Error Tracking
+
+**Configuration** (as of December 2, 2025):
+
+The application uses **Honeybadger** for error monitoring with environment-specific behavior:
+
+- **Production**: Error reporting always enabled
+- **Test**: Error reporting always enabled
+- **Development**: Disabled by default, opt-in with `HONEYBADGER_ENABLED_IN_DEV=true`
+
+**Enable in Development:**
+```bash
+# Set environment variable before starting server
+export HONEYBADGER_ENABLED_IN_DEV=true
+bin/dev
+
+# Or inline
+HONEYBADGER_ENABLED_IN_DEV=true bin/dev
+```
+
+**Configuration Files:**
+- `config/honeybadger.yml` - Main configuration with conditional `report_data` and `insights.enabled`
+- `config/initializers/honeybadger.rb` - Backend configuration ('null' in dev without env var, 'server' otherwise)
+- Context enrichment: request_id, rails_env, hostname, error_timestamp
+- Custom error grouping for test errors
+
+**Test Errors Panel:**
+Admin users can access `/admin/test_errors` to manually trigger test errors and verify Honeybadger integration works correctly.
+
+**Key Points:**
+- Development requires `HONEYBADGER_ENABLED_IN_DEV=true` to avoid error noise during normal development
+- Reduces Honeybadger quota usage (dev errors don't count unless enabled)
+- Always captures errors in test environment (CI/CD)
+- Always captures errors in production (real user issues)
+
+**Documentation:** See `HONEYBADGER-UPDATE-SUMMARY.md` for detailed changelog
+
+## Where to Learn More
+
 - **Comprehensive Guide**: [.github/copilot-instructions.md](.github/copilot-instructions.md) (detailed)
 - **Contributing**: [CONTRIBUTING.md](../CONTRIBUTING.md) (coding standards)
 - **Database Schema**: [documentation/schema-diagram.md](../documentation/schema-diagram.md) (ERD)
@@ -909,6 +948,6 @@ When reviewing PRs, check:
 
 ---
 
-**Last Updated**: November 30, 2025
+**Last Updated**: December 7, 2025
 **Schema Version**: 2025_11_30_015033
 **Test Coverage**: 86.22% (513/595 lines)

@@ -901,6 +901,45 @@ http://localhost:3000/letter_opener
 # Trigger test email by completing a checkout
 ```
 
+### Error Tracking with Honeybadger
+
+The application uses **Honeybadger** for error monitoring and tracking:
+
+**Environment Configuration:**
+
+- **Production**: Error reporting always enabled
+- **Test**: Error reporting always enabled
+- **Development**: Disabled by default, enable with environment variable
+
+**Enable in Development:**
+
+```bash
+# Set environment variable before starting server
+export HONEYBADGER_ENABLED_IN_DEV=true
+bin/dev
+
+# Or inline:
+HONEYBADGER_ENABLED_IN_DEV=true bin/dev
+```
+
+**Test Errors Panel:**
+
+Admin users can access the Test Errors panel to manually trigger test errors and verify Honeybadger integration:
+
+```
+http://localhost:3000/admin/test_errors
+```
+
+**Configuration Files:**
+
+- `config/honeybadger.yml` - Main configuration
+- `config/initializers/honeybadger.rb` - Runtime configuration with context enrichment
+- `HONEYBADGER-UPDATE-SUMMARY.md` - Detailed documentation of recent changes
+
+**Why Development is Opt-In:**
+
+This approach keeps development quiet (no error noise during normal development) while allowing you to test error reporting when needed. This also reduces Honeybadger quota usage since development errors don't count unless explicitly enabled.
+
 ### Project Structure
 
 ```text

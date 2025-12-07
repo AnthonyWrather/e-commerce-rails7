@@ -117,6 +117,8 @@ gem 'jsbundling-rails', '~> 1.3'
 
 gem 'honeybadger', '~> 6.1'
 
+gem 'rails_semantic_logger', '~> 4.17'
+
 gem 'rack-attack', '~> 6.7'
 
 gem 'paper_trail', '~> 15.1'
