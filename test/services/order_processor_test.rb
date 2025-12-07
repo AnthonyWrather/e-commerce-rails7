@@ -228,160 +228,160 @@ class OrderProcessorTest < ActiveSupport::TestCase
   # Build a mock Stripe::StripeObject with the structure expected by OrderProcessor
   def build_stripe_session(options = {})
     Stripe::StripeObject.construct_from({
-      'id' => options[:session_id] || "cs_test_#{SecureRandom.hex(12)}",
-      'object' => 'checkout.session',
-      'amount_total' => options[:amount_total] || 15_000,
-      'currency' => 'gbp',
-      'customer_details' => {
-        'email' => options[:email] || 'test@example.com',
-        'name' => options[:name] || 'Test Customer',
-        'phone' => options[:phone] || '01234567890',
-        'address' => {
-          'line1' => options.dig(:billing_address, :line1) || '123 Billing St',
-          'line2' => options.dig(:billing_address, :line2) || 'Suite 100',
-          'city' => options.dig(:billing_address, :city) || 'London',
-          'state' => options.dig(:billing_address, :state) || '',
-          'postal_code' => options.dig(:billing_address, :postal_code) || 'SW1A 1AA',
-          'country' => options.dig(:billing_address, :country) || 'GB'
-        }
-      },
-      'collected_information' => {
-        'shipping_details' => {
-          'name' => options[:shipping_name] || options[:name] || 'Test Customer',
-          'address' => {
-            'line1' => options.dig(:shipping_address, :line1) || '456 Shipping Ave',
-            'line2' => options.dig(:shipping_address, :line2) || '',
-            'city' => options.dig(:shipping_address, :city) || 'Manchester',
-            'state' => options.dig(:shipping_address, :state) || '',
-            'postal_code' => options.dig(:shipping_address, :postal_code) || 'M1 1AA',
-            'country' => options.dig(:shipping_address, :country) || 'GB'
-          }
-        }
-      },
-      'payment_status' => options[:payment_status] || 'paid',
-      'payment_intent' => options[:payment_intent_id] || "pi_test_#{SecureRandom.hex(12)}",
-      'shipping_cost' => {
-        'amount_total' => options[:shipping_cost] || 500,
-        'shipping_rate' => options[:shipping_rate_id] || "shr_test_#{SecureRandom.hex(12)}"
-      },
-      'metadata' => options[:metadata] || {}
-    })
+                                          'id' => options[:session_id] || "cs_test_#{SecureRandom.hex(12)}",
+                                          'object' => 'checkout.session',
+                                          'amount_total' => options[:amount_total] || 15_000,
+                                          'currency' => 'gbp',
+                                          'customer_details' => {
+                                            'email' => options[:email] || 'test@example.com',
+                                            'name' => options[:name] || 'Test Customer',
+                                            'phone' => options[:phone] || '01234567890',
+                                            'address' => {
+                                              'line1' => options.dig(:billing_address, :line1) || '123 Billing St',
+                                              'line2' => options.dig(:billing_address, :line2) || 'Suite 100',
+                                              'city' => options.dig(:billing_address, :city) || 'London',
+                                              'state' => options.dig(:billing_address, :state) || '',
+                                              'postal_code' => options.dig(:billing_address, :postal_code) || 'SW1A 1AA',
+                                              'country' => options.dig(:billing_address, :country) || 'GB'
+                                            }
+                                          },
+                                          'collected_information' => {
+                                            'shipping_details' => {
+                                              'name' => options[:shipping_name] || options[:name] || 'Test Customer',
+                                              'address' => {
+                                                'line1' => options.dig(:shipping_address, :line1) || '456 Shipping Ave',
+                                                'line2' => options.dig(:shipping_address, :line2) || '',
+                                                'city' => options.dig(:shipping_address, :city) || 'Manchester',
+                                                'state' => options.dig(:shipping_address, :state) || '',
+                                                'postal_code' => options.dig(:shipping_address, :postal_code) || 'M1 1AA',
+                                                'country' => options.dig(:shipping_address, :country) || 'GB'
+                                              }
+                                            }
+                                          },
+                                          'payment_status' => options[:payment_status] || 'paid',
+                                          'payment_intent' => options[:payment_intent_id] || "pi_test_#{SecureRandom.hex(12)}",
+                                          'shipping_cost' => {
+                                            'amount_total' => options[:shipping_cost] || 500,
+                                            'shipping_rate' => options[:shipping_rate_id] || "shr_test_#{SecureRandom.hex(12)}"
+                                          },
+                                          'metadata' => options[:metadata] || {}
+                                        })
   end
 
   def build_stripe_session_without_billing_address
     Stripe::StripeObject.construct_from({
-      'customer_details' => {
-        'email' => 'test@example.com',
-        'name' => 'Test Customer',
-        'phone' => '01234567890'
-      },
-      'collected_information' => {
-        'shipping_details' => {
-          'name' => 'Test Customer',
-          'address' => {
-            'line1' => '456 Shipping Ave',
-            'city' => 'Manchester',
-            'postal_code' => 'M1 1AA',
-            'country' => 'GB'
-          }
-        }
-      },
-      'payment_status' => 'paid',
-      'payment_intent' => 'pi_test_123'
-    })
+                                          'customer_details' => {
+                                            'email' => 'test@example.com',
+                                            'name' => 'Test Customer',
+                                            'phone' => '01234567890'
+                                          },
+                                          'collected_information' => {
+                                            'shipping_details' => {
+                                              'name' => 'Test Customer',
+                                              'address' => {
+                                                'line1' => '456 Shipping Ave',
+                                                'city' => 'Manchester',
+                                                'postal_code' => 'M1 1AA',
+                                                'country' => 'GB'
+                                              }
+                                            }
+                                          },
+                                          'payment_status' => 'paid',
+                                          'payment_intent' => 'pi_test_123'
+                                        })
   end
 
   def build_stripe_session_without_shipping
     Stripe::StripeObject.construct_from({
-      'customer_details' => {
-        'email' => 'test@example.com',
-        'name' => 'Test Customer',
-        'phone' => '01234567890',
-        'address' => {
-          'line1' => '123 Test St',
-          'city' => 'London',
-          'postal_code' => 'SW1A 1AA',
-          'country' => 'GB'
-        }
-      },
-      'payment_status' => 'paid',
-      'payment_intent' => 'pi_test_123'
-    })
+                                          'customer_details' => {
+                                            'email' => 'test@example.com',
+                                            'name' => 'Test Customer',
+                                            'phone' => '01234567890',
+                                            'address' => {
+                                              'line1' => '123 Test St',
+                                              'city' => 'London',
+                                              'postal_code' => 'SW1A 1AA',
+                                              'country' => 'GB'
+                                            }
+                                          },
+                                          'payment_status' => 'paid',
+                                          'payment_intent' => 'pi_test_123'
+                                        })
   end
 
   def build_stripe_session_without_shipping_details
     Stripe::StripeObject.construct_from({
-      'customer_details' => {
-        'email' => 'test@example.com',
-        'name' => 'Test Customer',
-        'phone' => '01234567890',
-        'address' => {
-          'line1' => '123 Test St',
-          'city' => 'London',
-          'postal_code' => 'SW1A 1AA',
-          'country' => 'GB'
-        }
-      },
-      'collected_information' => {},
-      'payment_status' => 'paid',
-      'payment_intent' => 'pi_test_123'
-    })
+                                          'customer_details' => {
+                                            'email' => 'test@example.com',
+                                            'name' => 'Test Customer',
+                                            'phone' => '01234567890',
+                                            'address' => {
+                                              'line1' => '123 Test St',
+                                              'city' => 'London',
+                                              'postal_code' => 'SW1A 1AA',
+                                              'country' => 'GB'
+                                            }
+                                          },
+                                          'collected_information' => {},
+                                          'payment_status' => 'paid',
+                                          'payment_intent' => 'pi_test_123'
+                                        })
   end
 
   def build_stripe_session_without_shipping_name
     Stripe::StripeObject.construct_from({
-      'customer_details' => {
-        'email' => 'test@example.com',
-        'name' => 'Test Customer',
-        'phone' => '01234567890',
-        'address' => {
-          'line1' => '123 Test St',
-          'city' => 'London',
-          'postal_code' => 'SW1A 1AA',
-          'country' => 'GB'
-        }
-      },
-      'collected_information' => {
-        'shipping_details' => {
-          'address' => {
-            'line1' => '456 Shipping Ave',
-            'city' => 'Manchester',
-            'postal_code' => 'M1 1AA',
-            'country' => 'GB'
-          }
-        }
-      },
-      'payment_status' => 'paid',
-      'payment_intent' => 'pi_test_123'
-    })
+                                          'customer_details' => {
+                                            'email' => 'test@example.com',
+                                            'name' => 'Test Customer',
+                                            'phone' => '01234567890',
+                                            'address' => {
+                                              'line1' => '123 Test St',
+                                              'city' => 'London',
+                                              'postal_code' => 'SW1A 1AA',
+                                              'country' => 'GB'
+                                            }
+                                          },
+                                          'collected_information' => {
+                                            'shipping_details' => {
+                                              'address' => {
+                                                'line1' => '456 Shipping Ave',
+                                                'city' => 'Manchester',
+                                                'postal_code' => 'M1 1AA',
+                                                'country' => 'GB'
+                                              }
+                                            }
+                                          },
+                                          'payment_status' => 'paid',
+                                          'payment_intent' => 'pi_test_123'
+                                        })
   end
 
   def build_stripe_session_without_shipping_cost
     Stripe::StripeObject.construct_from({
-      'customer_details' => {
-        'email' => 'test@example.com',
-        'name' => 'Test Customer',
-        'phone' => '01234567890',
-        'address' => {
-          'line1' => '123 Test St',
-          'city' => 'London',
-          'postal_code' => 'SW1A 1AA',
-          'country' => 'GB'
-        }
-      },
-      'collected_information' => {
-        'shipping_details' => {
-          'name' => 'Test Customer',
-          'address' => {
-            'line1' => '456 Shipping Ave',
-            'city' => 'Manchester',
-            'postal_code' => 'M1 1AA',
-            'country' => 'GB'
-          }
-        }
-      },
-      'payment_status' => 'paid',
-      'payment_intent' => 'pi_test_123'
-    })
+                                          'customer_details' => {
+                                            'email' => 'test@example.com',
+                                            'name' => 'Test Customer',
+                                            'phone' => '01234567890',
+                                            'address' => {
+                                              'line1' => '123 Test St',
+                                              'city' => 'London',
+                                              'postal_code' => 'SW1A 1AA',
+                                              'country' => 'GB'
+                                            }
+                                          },
+                                          'collected_information' => {
+                                            'shipping_details' => {
+                                              'name' => 'Test Customer',
+                                              'address' => {
+                                                'line1' => '456 Shipping Ave',
+                                                'city' => 'Manchester',
+                                                'postal_code' => 'M1 1AA',
+                                                'country' => 'GB'
+                                              }
+                                            }
+                                          },
+                                          'payment_status' => 'paid',
+                                          'payment_intent' => 'pi_test_123'
+                                        })
   end
 end
