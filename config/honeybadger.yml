@@ -18,9 +18,9 @@ development_environments:
 
 # By default, Honeybadger won't report errors in the development_environments.
 # Development: Requires HONEYBADGER_ENABLED_IN_DEV=true environment variable
-# Test: Always enabled
+# Test: Requires HONEYBADGER_ENABLED_IN_TEST=true environment variable
 # Production: Always enabled
-report_data: <%= Rails.env.production? || Rails.env.test? || (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true') %>
+report_data: <%= Rails.env.production? || (Rails.env.test? && ENV['HONEYBADGER_ENABLED_IN_TEST'] == 'true') || (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true') %>
 
 # The current Git revision of your project. Defaults to the last commit hash.
 # revision: null
@@ -30,10 +30,10 @@ debug: false
 
 # Enable Honeybadger Insights for performance monitoring
 # Development: Requires HONEYBADGER_ENABLED_IN_DEV=true environment variable
-# Test: Always enabled
+# Test: Requires HONEYBADGER_ENABLED_IN_TEST=true environment variable
 # Production: Always enabled
 insights:
-  enabled: <%= Rails.env.production? || Rails.env.test? || (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true') %>
+  enabled: <%= Rails.env.production? || (Rails.env.test? && ENV['HONEYBADGER_ENABLED_IN_TEST'] == 'true') || (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true') %>
 
 # Filter sensitive data from error reports
 request:
