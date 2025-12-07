@@ -3,7 +3,7 @@
 class AdminController < ApplicationController
   layout 'admin'
   before_action :authenticate_admin_user!
-  after_action :discard_flash
+  after_action :discard_flash, if: -> { response.successful? }
 
   def index
     # Use indexed column for better query performance
@@ -82,10 +82,13 @@ class AdminController < ApplicationController
     [monthly_stats, revenue_by_month, days_of_month]
   end
 
-  # Discard flash messages after they've been rendered to prevent them from
-  # persisting across multiple requests. This ensures flash messages only
-  # appear once and are not shown again when navigating between admin pages.
+  # Discard flash messages after they've been rendered on successful responses.
+  # This ensures flash messages only appear once and don't persist across page navigations.
+  # Only called for successful responses (200-299 status codes), not redirects.
   def discard_flash
-    flash.discard
+    # Delete all flash keys immediately to prevent persistence
+    # rubocop:disable Style/HashEachMethods
+    flash.keys.each { |key| flash.delete(key) } # FlashHash doesn't implement each_key
+    # rubocop:enable Style/HashEachMethods
   end
 end
