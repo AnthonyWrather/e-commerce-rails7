@@ -1,7 +1,7 @@
 # Database Schema Diagram
 
-Last updated: 2025-11-30
-Schema version: 2025_11_30_015033
+Last updated: 2025-12-07
+Schema version: 2025_11_30_165804
 
 ```mermaid
 erDiagram
@@ -93,6 +93,7 @@ erDiagram
         integer shipping_cost "in pence"
         string shipping_id
         string shipping_description
+        bigint user_id FK "optional, for logged-in users"
     }
 
     order_products {
