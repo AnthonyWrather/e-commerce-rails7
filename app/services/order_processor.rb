@@ -87,7 +87,7 @@ class OrderProcessor
   def billing_name = @stripe_session['customer_details']['name']
 
   def billing_address
-    address = @stripe_session.dig('customer_details', 'address')
+    address = @stripe_session['customer_details']&.[]('address')
     return '' unless address
 
     format_address(address)
@@ -97,7 +97,7 @@ class OrderProcessor
     collected_information = @stripe_session['collected_information']
     return 'Address not found.' unless collected_information
 
-    address = collected_information.dig('shipping_details', 'address')
+    address = collected_information['shipping_details']&.[]('address')
     return 'Address not found.' unless address
 
     format_address(address)
@@ -105,7 +105,7 @@ class OrderProcessor
 
   def shipping_name
     collected_information = @stripe_session['collected_information']
-    collected_information&.dig('shipping_details', 'name') || billing_name
+    collected_information&.[]('shipping_details')&.[]('name') || billing_name
   end
 
   def format_address(address)
@@ -113,8 +113,8 @@ class OrderProcessor
      address['state'], address['postal_code'], address['country']].compact.join(', ')
   end
 
-  def shipping_cost = @stripe_session.dig('shipping_cost', 'amount_total')
-  def shipping_id = @stripe_session.dig('shipping_cost', 'shipping_rate')
+  def shipping_cost = @stripe_session['shipping_cost']&.[]('amount_total')
+  def shipping_id = @stripe_session['shipping_cost']&.[]('shipping_rate')
 
   def shipping_description
     return 'Collection' unless shipping_id
