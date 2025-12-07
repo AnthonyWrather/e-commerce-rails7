@@ -3,6 +3,7 @@
 class AdminController < ApplicationController
   layout 'admin'
   before_action :authenticate_admin_user!
+  after_action :discard_flash
 
   def index
     # Use indexed column for better query performance
@@ -79,5 +80,12 @@ class AdminController < ApplicationController
     end
 
     [monthly_stats, revenue_by_month, days_of_month]
+  end
+
+  # Discard flash messages after they've been rendered to prevent them from
+  # persisting across multiple requests. This ensures flash messages only
+  # appear once and are not shown again when navigating between admin pages.
+  def discard_flash
+    flash.discard
   end
 end

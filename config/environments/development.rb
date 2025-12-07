@@ -92,9 +92,10 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     address: 'smtp.mailersend.net',
     port: 587,
-    domain: Rails.application.credentials.mailersend.domain,
-    user_name: Rails.application.credentials.mailersend.username,
-    password: Rails.application.credentials.mailersend.password,
+    domain: Rails.application.credentials.dig(:mailersend, :domain) || ENV['MAILERSEND_DOMAIN'] || 'example.com',
+    user_name: Rails.application.credentials.dig(:mailersend,
+                                                 :username) || ENV['MAILERSEND_USERNAME'] || 'test@example.com',
+    password: Rails.application.credentials.dig(:mailersend, :password) || ENV['MAILERSEND_PASSWORD'] || 'password',
     authentication: 'plain',
     enable_starttls: true
   }
