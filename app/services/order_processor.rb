@@ -110,7 +110,7 @@ class OrderProcessor
 
   def format_address(address)
     [address['line1'], address['line2'], address['city'],
-     address['state'], address['postal_code'], address['country']].compact.join(', ')
+     address['state'], address['postal_code'], address['country']].compact.reject(&:empty?).join(', ')
   end
 
   def shipping_cost = @stripe_session['shipping_cost']&.[]('amount_total')
