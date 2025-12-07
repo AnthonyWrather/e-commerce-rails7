@@ -14,7 +14,7 @@ class AdminFlashMessagesTest < ApplicationSystemTestCase
     click_on 'New product'
     fill_in 'Name', with: 'Test Flash Product'
     fill_in 'Price', with: '1000'
-    select categories(:one).name, from: 'Category'
+    select categories(:category_one).name, from: 'Category'
     click_button 'Create Product'
 
     # Verify flash message is displayed after creation
@@ -37,7 +37,7 @@ class AdminFlashMessagesTest < ApplicationSystemTestCase
     sign_in_admin
 
     # Edit an existing product
-    product = products(:one)
+    product = products(:product_one)
     visit edit_admin_product_path(product)
 
     fill_in 'Name', with: 'Updated Product Name'
@@ -60,7 +60,7 @@ class AdminFlashMessagesTest < ApplicationSystemTestCase
     visit admin_products_path
 
     # Delete a product
-    product = products(:three)
+    product = products(:product_three)
     accept_confirm do
       within("#product_#{product.id}") do
         click_on 'Destroy'
@@ -84,7 +84,7 @@ class AdminFlashMessagesTest < ApplicationSystemTestCase
     visit new_admin_product_path
     fill_in 'Name', with: 'First Flash Product'
     fill_in 'Price', with: '1000'
-    select categories(:one).name, from: 'Category'
+    select categories(:category_one).name, from: 'Category'
     click_button 'Create Product'
 
     assert_selector '#flash-messages', text: 'Product was successfully created'
@@ -93,7 +93,7 @@ class AdminFlashMessagesTest < ApplicationSystemTestCase
     visit new_admin_product_path
     fill_in 'Name', with: 'Second Flash Product'
     fill_in 'Price', with: '2000'
-    select categories(:one).name, from: 'Category'
+    select categories(:category_one).name, from: 'Category'
     click_button 'Create Product'
 
     # Only the second creation message should appear
@@ -113,7 +113,7 @@ class AdminFlashMessagesTest < ApplicationSystemTestCase
     visit new_admin_product_path
     fill_in 'Name', with: 'Close Button Test Product'
     fill_in 'Price', with: '1500'
-    select categories(:one).name, from: 'Category'
+    select categories(:category_one).name, from: 'Category'
     click_button 'Create Product'
 
     # Verify message appears

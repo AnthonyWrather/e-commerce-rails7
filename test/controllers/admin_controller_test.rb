@@ -19,7 +19,7 @@ class AdminControllerTest < ActionDispatch::IntegrationTest
   test 'flash messages are cleared after create action' do
     # Create a product which sets a flash message
     post admin_products_url,
-         params: { product: { name: 'Test Product', price: 1000, category_id: categories(:one).id } }
+         params: { product: { name: 'Test Product', price: 1000, category_id: categories(:category_one).id } }
 
     # Should redirect with flash
     assert_redirected_to admin_product_url(Product.last)
@@ -91,7 +91,7 @@ class AdminControllerTest < ActionDispatch::IntegrationTest
   test 'multiple successive actions do not accumulate flash messages' do
     # Create first product
     post admin_products_url,
-         params: { product: { name: 'First Product', price: 1000, category_id: categories(:one).id } }
+         params: { product: { name: 'First Product', price: 1000, category_id: categories(:category_one).id } }
     follow_redirect!
 
     # Navigate away to clear flash
@@ -99,7 +99,7 @@ class AdminControllerTest < ActionDispatch::IntegrationTest
 
     # Create second product
     post admin_products_url,
-         params: { product: { name: 'Second Product', price: 2000, category_id: categories(:one).id } }
+         params: { product: { name: 'Second Product', price: 2000, category_id: categories(:category_one).id } }
     follow_redirect!
 
     # Only the second creation message should be in flash
