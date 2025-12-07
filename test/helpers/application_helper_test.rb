@@ -55,11 +55,14 @@ class ApplicationHelperTest < ActionView::TestCase
     Honeybadger.config[:api_key] = original_api_key
   end
 
-  test 'honeybadger_js_enabled? returns true in test environment with API key' do
+  test 'honeybadger_js_enabled? returns true in test environment with API key and env var set' do
     original_api_key = Honeybadger.config[:api_key]
+    original_env = ENV.fetch('HONEYBADGER_ENABLED_IN_TEST', nil)
     Honeybadger.config[:api_key] = 'test_api_key'
+    ENV['HONEYBADGER_ENABLED_IN_TEST'] = 'true'
     assert honeybadger_js_enabled?
     Honeybadger.config[:api_key] = original_api_key
+    ENV['HONEYBADGER_ENABLED_IN_TEST'] = original_env
   end
 
   test 'honeybadger_user_context returns guest context when no user is logged in' do

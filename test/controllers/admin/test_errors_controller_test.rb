@@ -70,8 +70,12 @@ class Admin::TestErrorsControllerTest < ActionDispatch::IntegrationTest
     get admin_test_errors_url
     assert_response :success
 
-    # In test environment, error reporting is always enabled
-    assert_select 'span', text: /Error Reporting Enabled/
+    # In test environment, error reporting is disabled unless HONEYBADGER_ENABLED_IN_TEST=true
+    if ENV['HONEYBADGER_ENABLED_IN_TEST'] == 'true'
+      assert_select 'span', text: /Error Reporting Enabled/
+    else
+      assert_select 'span', text: /Error Reporting Disabled/
+    end
   end
 
   test 'should display configuration information' do
@@ -80,7 +84,12 @@ class Admin::TestErrorsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'h3', text: /Configuration Information/
     assert_match(/Environment:/, response.body)
     assert_match(/Honeybadger API Key Set:/, response.body)
-    assert_match(/Test Error Reporting: Always Enabled/, response.body)
-    assert_match(/Insights Enabled: Yes/, response.body)
+    if ENV['HONEYBADGER_ENABLED_IN_TEST'] == 'true'
+      assert_match(/Test Error Reporting: Enabled/, response.body)
+      assert_match(/Insights Enabled: Yes/, response.body)
+    else
+      assert_match(/Test Error Reporting: Disabled/, response.body)
+      assert_match(/Insights Enabled: No/, response.body)
+    end
   end
 end
