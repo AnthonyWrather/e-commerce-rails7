@@ -197,8 +197,19 @@ EDITOR="code --wait" rails credentials:edit
 Required credentials:
 - `stripe.secret_key` - Stripe API key
 - `stripe.webhook_key` - Stripe webhook signing secret
+- `honeybadger.api_key` - Honeybadger error tracking API key
 
-Fallback to ENV vars: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_KEY`
+Fallback to ENV vars: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_KEY`, `HONEYBADGER_API_KEY`
+
+### Honeybadger Configuration
+- **Production**: Error reporting always enabled
+- **Test**: Error reporting always enabled
+- **Development**: Disabled by default, enable with `HONEYBADGER_ENABLED_IN_DEV=true`
+
+```bash
+# Enable Honeybadger in development
+HONEYBADGER_ENABLED_IN_DEV=true bin/dev
+```
 
 ## DevContainer Setup
 

@@ -430,6 +430,15 @@ yarn run v1.22.22
 
 --------------------------------
 
+Analyse the fault on HoneyBadger listed above.
+Based on the analysis above, create a fix and a test to prove it works.
+
+If possible add the additional unit and system tests necessary to catch this problem in the future.
+Do not run the playwright tests.
+Run all "bin/rails test" and "bin/rails test:system" and fix any errors.
+Remember to run "bin/rails test" with a timeout.
+Remember to check the test coverage percentages for system tests and keep the percentages above 40%.
+Run rubocop and fix any errors.
 
 --------------------------------
 
