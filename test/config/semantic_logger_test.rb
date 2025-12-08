@@ -24,8 +24,8 @@ class SemanticLoggerConfigurationTest < ActiveSupport::TestCase
     assert_match(/Rails\.env\.production\?/, initializer_content,
                  'Must enable Honeybadger logging in production')
 
-    assert_match(/Rails\.env\.test\?/, initializer_content,
-                 'Must enable Honeybadger logging in test')
+    assert_match(/ENV\['HONEYBADGER_ENABLED_IN_TEST'\]/, initializer_content,
+                 'Must check HONEYBADGER_ENABLED_IN_TEST for test')
 
     assert_match(/ENV\['HONEYBADGER_ENABLED_IN_DEV'\]/, initializer_content,
                  'Must check HONEYBADGER_ENABLED_IN_DEV for development')

@@ -3,7 +3,7 @@
 # Rails Semantic Logger configuration
 # Enhances logging and integrates with Honeybadger for error context
 # - Production: Always streams structured logs
-# - Test: Always streams structured logs
+# - Test: Only streams if HONEYBADGER_ENABLED_IN_TEST=true
 # - Development: Only streams if HONEYBADGER_ENABLED_IN_DEV=true
 
 # Configure SemanticLogger
@@ -23,7 +23,7 @@ SemanticLogger.add_appender(
 # Configure Honeybadger breadcrumb logging based on environment
 # Breadcrumbs provide context when errors occur
 honeybadger_enabled = Rails.env.production? ||
-                      Rails.env.test? ||
+                      (Rails.env.test? && ENV['HONEYBADGER_ENABLED_IN_TEST'] == 'true') ||
                       (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true')
 
 if honeybadger_enabled && defined?(Honeybadger)
