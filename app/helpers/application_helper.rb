@@ -15,7 +15,7 @@ module ApplicationHelper
   def honeybadger_js_enabled?
     return false unless Honeybadger.config[:api_key].present?
 
-    Rails.env.production? || Rails.env.test? ||
+    Rails.env.production? || (Rails.env.test? && ENV['HONEYBADGER_ENABLED_IN_TEST'] == 'true') ||
       (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] == 'true')
   end
 

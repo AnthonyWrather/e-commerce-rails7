@@ -25,9 +25,10 @@ Honeybadger.configure do |config|
 
   # Configure backend based on environment
   # Development: Requires HONEYBADGER_ENABLED_IN_DEV=true to use 'server' backend
-  # Test: Always use 'server' backend
+  # Test: Requires HONEYBADGER_ENABLED_IN_TEST=true to use 'server' backend
   # Production: Always use 'server' backend
-  if Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] != 'true'
+  if (Rails.env.development? && ENV['HONEYBADGER_ENABLED_IN_DEV'] != 'true') ||
+     (Rails.env.test? && ENV['HONEYBADGER_ENABLED_IN_TEST'] != 'true')
     config.backend = 'null'
   else
     config.backend = 'server'
