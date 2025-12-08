@@ -844,6 +844,14 @@ For production repositories, configure GitHub branch protection rules:
 
 This ensures all CI checks must pass before PRs can be merged to `main`.
 
+**Copilot Development Environment:**
+
+For GitHub Copilot agents, a dedicated workflow provides a complete development environment:
+- Manual trigger via Actions tab: **Copilot Development Environment Setup**
+- Includes PostgreSQL 15 and Redis 7 services
+- Two modes: minimal (env setup only) or full (with tests)
+- See [Copilot Setup Documentation](.github/workflows/README-COPILOT-SETUP.md) for details
+
 ### Testing Stripe Webhooks Locally
 
 For local Stripe webhook testing, use **ngrok**:
@@ -1305,6 +1313,7 @@ bin/rails db:rollback STEP=1
 ### Documentation
 
 - **[Copilot Instructions](.github/copilot-instructions.md)** - Comprehensive codebase guide for AI-assisted development (1222 lines)
+- **[Copilot Dev Environment](.github/workflows/README-COPILOT-SETUP.md)** - GitHub Copilot setup workflow with PostgreSQL, Redis, and all services
 - **[Database Schema](documentation/schema-diagram.md)** - Entity-relationship diagram with model relationships
 - **[Test Suite Analysis](documentation/test-analysis.md)** - Complete testing strategy and coverage report (301 tests, 749 assertions)
 - **[Codebase Analysis](documentation/codebase-analysis.md)** - Detailed analysis of 10 areas for improvement

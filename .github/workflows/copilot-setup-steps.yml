@@ -1,0 +1,131 @@
+name: Copilot Development Environment Setup
+
+# This workflow defines the setup steps for GitHub Copilot agents to create
+# a consistent development environment for testing and bug fixing.
+# It mirrors the production CI environment to ensure reproducibility.
+
+on:
+  workflow_dispatch:
+    inputs:
+      setup_type:
+        description: 'Type of setup to perform'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - minimal
+
+jobs:
+  setup-dev-environment:
+    name: Setup Development Environment
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: e_commerce_rails7_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/e_commerce_rails7_test
+      REDIS_URL: redis://localhost:6379/1
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.3
+          bundler-cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvips libpq-dev
+
+      - name: Install JavaScript dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build JavaScript/TypeScript assets
+        run: yarn build
+
+      - name: Setup database
+        run: |
+          bin/rails db:prepare
+
+      - name: Grant database permissions
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -c "ALTER USER postgres WITH SUPERUSER;"
+
+      - name: Verify environment
+        run: |
+          echo "=== Environment Verification ==="
+          echo "Ruby version: $(ruby -v)"
+          echo "Node version: $(node -v)"
+          echo "Yarn version: $(yarn -v)"
+          echo "PostgreSQL version:"
+          PGPASSWORD=postgres psql -h localhost -U postgres -c "SELECT version();"
+          echo "Redis version:"
+          redis-cli --version
+          echo "Database status:"
+          PGPASSWORD=postgres psql -h localhost -U postgres -c "\l" | grep e_commerce
+          echo "=== Rails Environment ==="
+          bin/rails about
+          echo "=== Asset Compilation Status ==="
+          ls -lh app/assets/builds/
+
+      - name: Run linting checks
+        if: inputs.setup_type == 'full'
+        run: bundle exec rubocop --parallel
+
+      - name: Run security scan
+        if: inputs.setup_type == 'full'
+        run: bundle exec brakeman --no-pager -o /dev/stdout --no-exit-on-warn
+
+      - name: Run unit and integration tests
+        if: inputs.setup_type == 'full'
+        run: bin/rails test
+
+      - name: Run system tests
+        if: inputs.setup_type == 'full'
+        run: bin/rails test:system
+
+      - name: Upload test artifacts
+        if: failure() && inputs.setup_type == 'full'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts
+          path: |
+            tmp/screenshots/
+            coverage/
