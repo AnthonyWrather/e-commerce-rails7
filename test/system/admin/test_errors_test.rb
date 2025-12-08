@@ -28,8 +28,12 @@ class Admin::TestErrorsTest < ApplicationSystemTestCase
   test 'shows error reporting status' do
     visit admin_test_errors_url
 
-    # In test environment, error reporting is always enabled
-    assert_text 'Error Reporting Enabled'
+    # In test environment, error reporting is disabled unless HONEYBADGER_ENABLED_IN_TEST=true
+    if ENV['HONEYBADGER_ENABLED_IN_TEST'] == 'true'
+      assert_text 'Error Reporting Enabled'
+    else
+      assert_text 'Error Reporting Disabled'
+    end
   end
 
   test 'displays configuration information' do
@@ -38,8 +42,13 @@ class Admin::TestErrorsTest < ApplicationSystemTestCase
     assert_text 'Configuration Information'
     assert_text "Environment: #{Rails.env}"
     assert_text 'Honeybadger API Key Set:'
-    assert_text 'Test Error Reporting: Always Enabled'
-    assert_text 'Insights Enabled: Yes'
+    if ENV['HONEYBADGER_ENABLED_IN_TEST'] == 'true'
+      assert_text 'Test Error Reporting: Enabled'
+      assert_text 'Insights Enabled: Yes'
+    else
+      assert_text 'Test Error Reporting: Disabled'
+      assert_text 'Insights Enabled: No'
+    end
   end
 
   test 'notify only error shows in list' do
